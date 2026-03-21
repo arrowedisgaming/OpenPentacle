@@ -1,0 +1,8 @@
+@import 'tailwindcss';
+@import './lib/themes/base.css';
+@import './lib/themes/dark.css';
+@import './lib/themes/notebook.css';
+@import './lib/themes/notebook-effects.css';
+
+@custom-variant dark (&:is(.dark *));
+@custom-variant notebook (&:is(.notebook *));

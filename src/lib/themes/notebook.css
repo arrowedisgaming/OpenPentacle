@@ -1,0 +1,44 @@
+/* ── Notebook Theme — Colors ──────────────────────
+   Warm, parchment-toned overrides applied when
+   .notebook is on <html>. Decorative effects are
+   in notebook-effects.css.
+   ────────────────────────────────────────────────── */
+
+.notebook {
+	--color-background:              hsl(48 30% 94%);
+	--color-foreground:              hsl(220 15% 22%);
+	--color-card:                    hsl(50 28% 96%);
+	--color-card-foreground:         hsl(220 15% 22%);
+	--color-popover:                 hsl(50 28% 96%);
+	--color-popover-foreground:      hsl(220 15% 22%);
+	--color-primary:                 hsl(221 65% 38%);
+	--color-primary-foreground:      hsl(48 30% 96%);
+	--color-secondary:               hsl(46 25% 88%);
+	--color-secondary-foreground:    hsl(220 15% 30%);
+	--color-muted:                   hsl(46 22% 89%);
+	--color-muted-foreground:        hsl(220 12% 48%);
+	--color-accent:                  hsl(46 25% 88%);
+	--color-accent-foreground:       hsl(220 15% 22%);
+	--color-destructive:             hsl(3 72% 42%);
+	--color-destructive-foreground:  hsl(48 30% 96%);
+	--color-border:                  hsl(220 25% 75%);
+	--color-input:                   hsl(220 25% 80%);
+	--color-ring:                    hsl(221 65% 38%);
+	--radius: 2px;
+
+	--color-sidebar:                         hsl(50 28% 96%);
+	--color-sidebar-foreground:              hsl(220 15% 28%);
+	--color-sidebar-primary:                 hsl(221 65% 38%);
+	--color-sidebar-primary-foreground:      hsl(48 30% 96%);
+	--color-sidebar-accent:                  hsl(46 25% 88%);
+	--color-sidebar-accent-foreground:       hsl(220 15% 22%);
+	--color-sidebar-border:                  hsl(220 25% 75%);
+	--color-sidebar-ring:                    hsl(221 65% 38%);
+
+	--color-success:             hsl(140 50% 32%);
+	--color-success-foreground:  hsl(48 30% 96%);
+	--color-warning:             hsl(40 90% 44%);
+	--color-warning-foreground:  hsl(48 30% 96%);
+	--color-info:                hsl(221 65% 38%);
+	--color-info-foreground:     hsl(48 30% 96%);
+}

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content="Create 5th-edition-compatible characters for any open-license rule system" />
+		<meta name="theme-color" content="#0f172a" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
+		<link rel="manifest" href="%sveltekit.assets%/manifest.json" />
+		<!-- Patrick Hand font loaded dynamically by theme store when notebook theme is active -->
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute">
+			<defs>
+				<filter id="sketch-border" x="-5%" y="-5%" width="110%" height="110%">
+					<feTurbulence type="fractalNoise" baseFrequency="0.04 0.065" numOctaves="2" seed="8" result="noise" />
+					<feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
+				</filter>
+				<filter id="sketch-circle" x="-15%" y="-15%" width="130%" height="130%">
+					<feTurbulence type="fractalNoise" baseFrequency="0.065" numOctaves="3" seed="14" result="noise" />
+					<feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G" />
+				</filter>
+			</defs>
+		</svg>
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html>

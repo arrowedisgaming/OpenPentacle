@@ -1,0 +1,1086 @@
+[
+  {
+    "id": "club",
+    "name": "Club",
+    "type": "weapon",
+    "cost": { "amount": 1, "currency": "sp" },
+    "weight": 2,
+    "weapon": {
+      "category": "simple",
+      "damage": "1d4",
+      "damageType": "bludgeoning",
+      "properties": ["light"]
+    }
+  },
+  {
+    "id": "dagger",
+    "name": "Dagger",
+    "type": "weapon",
+    "cost": { "amount": 2, "currency": "gp" },
+    "weight": 1,
+    "weapon": {
+      "category": "simple",
+      "damage": "1d4",
+      "damageType": "piercing",
+      "properties": ["finesse", "light", "thrown"],
+      "range": { "normal": 20, "long": 60 }
+    }
+  },
+  {
+    "id": "greatclub",
+    "name": "Greatclub",
+    "type": "weapon",
+    "cost": { "amount": 2, "currency": "sp" },
+    "weight": 10,
+    "weapon": {
+      "category": "simple",
+      "damage": "1d8",
+      "damageType": "bludgeoning",
+      "properties": ["two-handed"]
+    }
+  },
+  {
+    "id": "handaxe",
+    "name": "Handaxe",
+    "type": "weapon",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 2,
+    "weapon": {
+      "category": "simple",
+      "damage": "1d6",
+      "damageType": "slashing",
+      "properties": ["light", "thrown"],
+      "range": { "normal": 20, "long": 60 }
+    }
+  },
+  {
+    "id": "javelin",
+    "name": "Javelin",
+    "type": "weapon",
+    "cost": { "amount": 5, "currency": "sp" },
+    "weight": 2,
+    "weapon": {
+      "category": "simple",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": ["thrown"],
+      "range": { "normal": 30, "long": 120 }
+    }
+  },
+  {
+    "id": "light-hammer",
+    "name": "Light Hammer",
+    "type": "weapon",
+    "cost": { "amount": 2, "currency": "gp" },
+    "weight": 2,
+    "weapon": {
+      "category": "simple",
+      "damage": "1d4",
+      "damageType": "bludgeoning",
+      "properties": ["light", "thrown"],
+      "range": { "normal": 20, "long": 60 }
+    }
+  },
+  {
+    "id": "mace",
+    "name": "Mace",
+    "type": "weapon",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 4,
+    "weapon": {
+      "category": "simple",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": []
+    }
+  },
+  {
+    "id": "quarterstaff",
+    "name": "Quarterstaff",
+    "type": "weapon",
+    "cost": { "amount": 2, "currency": "sp" },
+    "weight": 4,
+    "weapon": {
+      "category": "simple",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": ["versatile"]
+    }
+  },
+  {
+    "id": "sickle",
+    "name": "Sickle",
+    "type": "weapon",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 2,
+    "weapon": {
+      "category": "simple",
+      "damage": "1d4",
+      "damageType": "slashing",
+      "properties": ["light"]
+    }
+  },
+  {
+    "id": "spear",
+    "name": "Spear",
+    "type": "weapon",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 3,
+    "weapon": {
+      "category": "simple",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": ["thrown", "versatile"],
+      "range": { "normal": 20, "long": 60 }
+    }
+  },
+  {
+    "id": "light-crossbow",
+    "name": "Light Crossbow",
+    "type": "weapon",
+    "cost": { "amount": 25, "currency": "gp" },
+    "weight": 5,
+    "weapon": {
+      "category": "simple",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": ["ammunition", "loading", "two-handed"],
+      "range": { "normal": 80, "long": 320 }
+    }
+  },
+  {
+    "id": "dart",
+    "name": "Dart",
+    "type": "weapon",
+    "cost": { "amount": 5, "currency": "cp" },
+    "weight": 0.25,
+    "weapon": {
+      "category": "simple",
+      "damage": "1d4",
+      "damageType": "piercing",
+      "properties": ["finesse", "thrown"],
+      "range": { "normal": 20, "long": 60 }
+    }
+  },
+  {
+    "id": "shortbow",
+    "name": "Shortbow",
+    "type": "weapon",
+    "cost": { "amount": 25, "currency": "gp" },
+    "weight": 2,
+    "weapon": {
+      "category": "simple",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": ["ammunition", "two-handed"],
+      "range": { "normal": 80, "long": 320 }
+    }
+  },
+  {
+    "id": "sling",
+    "name": "Sling",
+    "type": "weapon",
+    "cost": { "amount": 1, "currency": "sp" },
+    "weight": 0,
+    "weapon": {
+      "category": "simple",
+      "damage": "1d4",
+      "damageType": "bludgeoning",
+      "properties": ["ammunition"],
+      "range": { "normal": 30, "long": 120 }
+    }
+  },
+  {
+    "id": "battleaxe",
+    "name": "Battleaxe",
+    "type": "weapon",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 4,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": ["versatile"]
+    }
+  },
+  {
+    "id": "flail",
+    "name": "Flail",
+    "type": "weapon",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 2,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d8",
+      "damageType": "bludgeoning",
+      "properties": []
+    }
+  },
+  {
+    "id": "glaive",
+    "name": "Glaive",
+    "type": "weapon",
+    "cost": { "amount": 20, "currency": "gp" },
+    "weight": 6,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d10",
+      "damageType": "slashing",
+      "properties": ["heavy", "reach", "two-handed"]
+    }
+  },
+  {
+    "id": "greataxe",
+    "name": "Greataxe",
+    "type": "weapon",
+    "cost": { "amount": 30, "currency": "gp" },
+    "weight": 7,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d12",
+      "damageType": "slashing",
+      "properties": ["heavy", "two-handed"]
+    }
+  },
+  {
+    "id": "greatsword",
+    "name": "Greatsword",
+    "type": "weapon",
+    "cost": { "amount": 50, "currency": "gp" },
+    "weight": 6,
+    "weapon": {
+      "category": "martial",
+      "damage": "2d6",
+      "damageType": "slashing",
+      "properties": ["heavy", "two-handed"]
+    }
+  },
+  {
+    "id": "halberd",
+    "name": "Halberd",
+    "type": "weapon",
+    "cost": { "amount": 20, "currency": "gp" },
+    "weight": 6,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d10",
+      "damageType": "slashing",
+      "properties": ["heavy", "reach", "two-handed"]
+    }
+  },
+  {
+    "id": "lance",
+    "name": "Lance",
+    "type": "weapon",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 6,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d12",
+      "damageType": "piercing",
+      "properties": ["reach", "special"]
+    }
+  },
+  {
+    "id": "longsword",
+    "name": "Longsword",
+    "type": "weapon",
+    "cost": { "amount": 15, "currency": "gp" },
+    "weight": 3,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": ["versatile"]
+    }
+  },
+  {
+    "id": "maul",
+    "name": "Maul",
+    "type": "weapon",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 10,
+    "weapon": {
+      "category": "martial",
+      "damage": "2d6",
+      "damageType": "bludgeoning",
+      "properties": ["heavy", "two-handed"]
+    }
+  },
+  {
+    "id": "morningstar",
+    "name": "Morningstar",
+    "type": "weapon",
+    "cost": { "amount": 15, "currency": "gp" },
+    "weight": 4,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": []
+    }
+  },
+  {
+    "id": "pike",
+    "name": "Pike",
+    "type": "weapon",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 18,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d10",
+      "damageType": "piercing",
+      "properties": ["heavy", "reach", "two-handed"]
+    }
+  },
+  {
+    "id": "rapier",
+    "name": "Rapier",
+    "type": "weapon",
+    "cost": { "amount": 25, "currency": "gp" },
+    "weight": 2,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": ["finesse"]
+    }
+  },
+  {
+    "id": "scimitar",
+    "name": "Scimitar",
+    "type": "weapon",
+    "cost": { "amount": 25, "currency": "gp" },
+    "weight": 3,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d6",
+      "damageType": "slashing",
+      "properties": ["finesse", "light"]
+    }
+  },
+  {
+    "id": "shortsword",
+    "name": "Shortsword",
+    "type": "weapon",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 2,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": ["finesse", "light"]
+    }
+  },
+  {
+    "id": "trident",
+    "name": "Trident",
+    "type": "weapon",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 4,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": ["thrown", "versatile"],
+      "range": { "normal": 20, "long": 60 }
+    }
+  },
+  {
+    "id": "war-pick",
+    "name": "War Pick",
+    "type": "weapon",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 2,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": []
+    }
+  },
+  {
+    "id": "warhammer",
+    "name": "Warhammer",
+    "type": "weapon",
+    "cost": { "amount": 15, "currency": "gp" },
+    "weight": 2,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d8",
+      "damageType": "bludgeoning",
+      "properties": ["versatile"]
+    }
+  },
+  {
+    "id": "whip",
+    "name": "Whip",
+    "type": "weapon",
+    "cost": { "amount": 2, "currency": "gp" },
+    "weight": 3,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d4",
+      "damageType": "slashing",
+      "properties": ["finesse", "reach"]
+    }
+  },
+  {
+    "id": "hand-crossbow",
+    "name": "Hand Crossbow",
+    "type": "weapon",
+    "cost": { "amount": 75, "currency": "gp" },
+    "weight": 3,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": ["ammunition", "light", "loading"],
+      "range": { "normal": 30, "long": 120 }
+    }
+  },
+  {
+    "id": "heavy-crossbow",
+    "name": "Heavy Crossbow",
+    "type": "weapon",
+    "cost": { "amount": 50, "currency": "gp" },
+    "weight": 18,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d10",
+      "damageType": "piercing",
+      "properties": ["ammunition", "heavy", "loading", "two-handed"],
+      "range": { "normal": 100, "long": 400 }
+    }
+  },
+  {
+    "id": "longbow",
+    "name": "Longbow",
+    "type": "weapon",
+    "cost": { "amount": 50, "currency": "gp" },
+    "weight": 2,
+    "weapon": {
+      "category": "martial",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": ["ammunition", "heavy", "two-handed"],
+      "range": { "normal": 150, "long": 600 }
+    }
+  },
+  {
+    "id": "padded-armor",
+    "name": "Padded Armor",
+    "type": "armor",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 8,
+    "armor": {
+      "category": "light",
+      "baseAC": 11,
+      "stealthDisadvantage": true
+    }
+  },
+  {
+    "id": "leather-armor",
+    "name": "Leather Armor",
+    "type": "armor",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 10,
+    "armor": {
+      "category": "light",
+      "baseAC": 11,
+      "stealthDisadvantage": false
+    }
+  },
+  {
+    "id": "studded-leather-armor",
+    "name": "Studded Leather Armor",
+    "type": "armor",
+    "cost": { "amount": 45, "currency": "gp" },
+    "weight": 13,
+    "armor": {
+      "category": "light",
+      "baseAC": 12,
+      "stealthDisadvantage": false
+    }
+  },
+  {
+    "id": "hide-armor",
+    "name": "Hide Armor",
+    "type": "armor",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 12,
+    "armor": {
+      "category": "medium",
+      "baseAC": 12,
+      "maxDexBonus": 2,
+      "stealthDisadvantage": false
+    }
+  },
+  {
+    "id": "chain-shirt",
+    "name": "Chain Shirt",
+    "type": "armor",
+    "cost": { "amount": 50, "currency": "gp" },
+    "weight": 20,
+    "armor": {
+      "category": "medium",
+      "baseAC": 13,
+      "maxDexBonus": 2,
+      "stealthDisadvantage": false
+    }
+  },
+  {
+    "id": "scale-mail",
+    "name": "Scale Mail",
+    "type": "armor",
+    "cost": { "amount": 50, "currency": "gp" },
+    "weight": 45,
+    "armor": {
+      "category": "medium",
+      "baseAC": 14,
+      "maxDexBonus": 2,
+      "stealthDisadvantage": true
+    }
+  },
+  {
+    "id": "breastplate",
+    "name": "Breastplate",
+    "type": "armor",
+    "cost": { "amount": 400, "currency": "gp" },
+    "weight": 20,
+    "armor": {
+      "category": "medium",
+      "baseAC": 14,
+      "maxDexBonus": 2,
+      "stealthDisadvantage": false
+    }
+  },
+  {
+    "id": "half-plate",
+    "name": "Half Plate",
+    "type": "armor",
+    "cost": { "amount": 750, "currency": "gp" },
+    "weight": 40,
+    "armor": {
+      "category": "medium",
+      "baseAC": 15,
+      "maxDexBonus": 2,
+      "stealthDisadvantage": true
+    }
+  },
+  {
+    "id": "ring-mail",
+    "name": "Ring Mail",
+    "type": "armor",
+    "cost": { "amount": 30, "currency": "gp" },
+    "weight": 40,
+    "armor": {
+      "category": "heavy",
+      "baseAC": 14,
+      "maxDexBonus": 0,
+      "stealthDisadvantage": true
+    }
+  },
+  {
+    "id": "chain-mail",
+    "name": "Chain Mail",
+    "type": "armor",
+    "cost": { "amount": 75, "currency": "gp" },
+    "weight": 55,
+    "armor": {
+      "category": "heavy",
+      "baseAC": 16,
+      "maxDexBonus": 0,
+      "stealthDisadvantage": true,
+      "strengthRequirement": 13
+    }
+  },
+  {
+    "id": "splint-armor",
+    "name": "Splint Armor",
+    "type": "armor",
+    "cost": { "amount": 200, "currency": "gp" },
+    "weight": 60,
+    "armor": {
+      "category": "heavy",
+      "baseAC": 17,
+      "maxDexBonus": 0,
+      "stealthDisadvantage": true,
+      "strengthRequirement": 15
+    }
+  },
+  {
+    "id": "plate-armor",
+    "name": "Plate Armor",
+    "type": "armor",
+    "cost": { "amount": 1500, "currency": "gp" },
+    "weight": 65,
+    "armor": {
+      "category": "heavy",
+      "baseAC": 18,
+      "maxDexBonus": 0,
+      "stealthDisadvantage": true,
+      "strengthRequirement": 15
+    }
+  },
+  {
+    "id": "shield",
+    "name": "Shield",
+    "type": "shield",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 6,
+    "armor": {
+      "category": "shield",
+      "baseAC": 2,
+      "stealthDisadvantage": false
+    }
+  },
+  {
+    "id": "abacus",
+    "name": "Abacus",
+    "type": "adventuring-gear",
+    "cost": { "amount": 2, "currency": "gp" },
+    "weight": 2
+  },
+  {
+    "id": "backpack",
+    "name": "Backpack",
+    "type": "adventuring-gear",
+    "cost": { "amount": 2, "currency": "gp" },
+    "weight": 5
+  },
+  {
+    "id": "bedroll",
+    "name": "Bedroll",
+    "type": "adventuring-gear",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 7
+  },
+  {
+    "id": "bell",
+    "name": "Bell",
+    "type": "adventuring-gear",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 0
+  },
+  {
+    "id": "blanket",
+    "name": "Blanket",
+    "type": "adventuring-gear",
+    "cost": { "amount": 5, "currency": "sp" },
+    "weight": 3
+  },
+  {
+    "id": "candle",
+    "name": "Candle",
+    "type": "adventuring-gear",
+    "cost": { "amount": 1, "currency": "cp" },
+    "weight": 0
+  },
+  {
+    "id": "chain-10ft",
+    "name": "Chain (10 feet)",
+    "type": "adventuring-gear",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 10
+  },
+  {
+    "id": "chalk",
+    "name": "Chalk (1 piece)",
+    "type": "adventuring-gear",
+    "cost": { "amount": 1, "currency": "cp" },
+    "weight": 0
+  },
+  {
+    "id": "climbers-kit",
+    "name": "Climber's Kit",
+    "type": "adventuring-gear",
+    "cost": { "amount": 25, "currency": "gp" },
+    "weight": 12
+  },
+  {
+    "id": "component-pouch",
+    "name": "Component Pouch",
+    "type": "adventuring-gear",
+    "cost": { "amount": 25, "currency": "gp" },
+    "weight": 2
+  },
+  {
+    "id": "crowbar",
+    "name": "Crowbar",
+    "type": "adventuring-gear",
+    "cost": { "amount": 2, "currency": "gp" },
+    "weight": 5
+  },
+  {
+    "id": "grappling-hook",
+    "name": "Grappling Hook",
+    "type": "adventuring-gear",
+    "cost": { "amount": 2, "currency": "gp" },
+    "weight": 4
+  },
+  {
+    "id": "hammer",
+    "name": "Hammer",
+    "type": "adventuring-gear",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 3
+  },
+  {
+    "id": "healers-kit",
+    "name": "Healer's Kit",
+    "type": "adventuring-gear",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 3
+  },
+  {
+    "id": "holy-symbol-amulet",
+    "name": "Holy Symbol (Amulet)",
+    "type": "holy-symbol",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 1
+  },
+  {
+    "id": "holy-symbol-emblem",
+    "name": "Holy Symbol (Emblem)",
+    "type": "holy-symbol",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 0
+  },
+  {
+    "id": "holy-symbol-reliquary",
+    "name": "Holy Symbol (Reliquary)",
+    "type": "holy-symbol",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 2
+  },
+  {
+    "id": "arcane-focus-crystal",
+    "name": "Arcane Focus (Crystal)",
+    "type": "arcane-focus",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 1
+  },
+  {
+    "id": "arcane-focus-orb",
+    "name": "Arcane Focus (Orb)",
+    "type": "arcane-focus",
+    "cost": { "amount": 20, "currency": "gp" },
+    "weight": 3
+  },
+  {
+    "id": "arcane-focus-rod",
+    "name": "Arcane Focus (Rod)",
+    "type": "arcane-focus",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 2
+  },
+  {
+    "id": "arcane-focus-staff",
+    "name": "Arcane Focus (Staff)",
+    "type": "arcane-focus",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 4
+  },
+  {
+    "id": "arcane-focus-wand",
+    "name": "Arcane Focus (Wand)",
+    "type": "arcane-focus",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 1
+  },
+  {
+    "id": "druidic-focus-sprig-of-mistletoe",
+    "name": "Druidic Focus (Sprig of Mistletoe)",
+    "type": "druidic-focus",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 0
+  },
+  {
+    "id": "druidic-focus-totem",
+    "name": "Druidic Focus (Totem)",
+    "type": "druidic-focus",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 0
+  },
+  {
+    "id": "druidic-focus-wooden-staff",
+    "name": "Druidic Focus (Wooden Staff)",
+    "type": "druidic-focus",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 4
+  },
+  {
+    "id": "druidic-focus-yew-wand",
+    "name": "Druidic Focus (Yew Wand)",
+    "type": "druidic-focus",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 1
+  },
+  {
+    "id": "ink",
+    "name": "Ink (1 ounce bottle)",
+    "type": "adventuring-gear",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 0
+  },
+  {
+    "id": "ink-pen",
+    "name": "Ink Pen",
+    "type": "adventuring-gear",
+    "cost": { "amount": 2, "currency": "cp" },
+    "weight": 0
+  },
+  {
+    "id": "lamp",
+    "name": "Lamp",
+    "type": "adventuring-gear",
+    "cost": { "amount": 5, "currency": "sp" },
+    "weight": 1
+  },
+  {
+    "id": "lantern-bullseye",
+    "name": "Lantern, Bullseye",
+    "type": "adventuring-gear",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 2
+  },
+  {
+    "id": "lantern-hooded",
+    "name": "Lantern, Hooded",
+    "type": "adventuring-gear",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 2
+  },
+  {
+    "id": "lock",
+    "name": "Lock",
+    "type": "adventuring-gear",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 1
+  },
+  {
+    "id": "manacles",
+    "name": "Manacles",
+    "type": "adventuring-gear",
+    "cost": { "amount": 2, "currency": "gp" },
+    "weight": 6
+  },
+  {
+    "id": "mess-kit",
+    "name": "Mess Kit",
+    "type": "adventuring-gear",
+    "cost": { "amount": 2, "currency": "sp" },
+    "weight": 1
+  },
+  {
+    "id": "mirror-steel",
+    "name": "Mirror, Steel",
+    "type": "adventuring-gear",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 0.5
+  },
+  {
+    "id": "oil-flask",
+    "name": "Oil (flask)",
+    "type": "adventuring-gear",
+    "cost": { "amount": 1, "currency": "sp" },
+    "weight": 1
+  },
+  {
+    "id": "paper",
+    "name": "Paper (one sheet)",
+    "type": "adventuring-gear",
+    "cost": { "amount": 2, "currency": "sp" },
+    "weight": 0
+  },
+  {
+    "id": "parchment",
+    "name": "Parchment (one sheet)",
+    "type": "adventuring-gear",
+    "cost": { "amount": 1, "currency": "sp" },
+    "weight": 0
+  },
+  {
+    "id": "piton",
+    "name": "Piton",
+    "type": "adventuring-gear",
+    "cost": { "amount": 5, "currency": "cp" },
+    "weight": 0.25
+  },
+  {
+    "id": "potion-of-healing",
+    "name": "Potion of Healing",
+    "type": "adventuring-gear",
+    "cost": { "amount": 50, "currency": "gp" },
+    "weight": 0.5
+  },
+  {
+    "id": "rations",
+    "name": "Rations (1 day)",
+    "type": "adventuring-gear",
+    "cost": { "amount": 5, "currency": "sp" },
+    "weight": 2
+  },
+  {
+    "id": "rope-hempen",
+    "name": "Rope, Hempen (50 feet)",
+    "type": "adventuring-gear",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 10
+  },
+  {
+    "id": "rope-silk",
+    "name": "Rope, Silk (50 feet)",
+    "type": "adventuring-gear",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 5
+  },
+  {
+    "id": "sack",
+    "name": "Sack",
+    "type": "adventuring-gear",
+    "cost": { "amount": 1, "currency": "cp" },
+    "weight": 0.5
+  },
+  {
+    "id": "signal-whistle",
+    "name": "Signal Whistle",
+    "type": "adventuring-gear",
+    "cost": { "amount": 5, "currency": "cp" },
+    "weight": 0
+  },
+  {
+    "id": "spellbook",
+    "name": "Spellbook",
+    "type": "adventuring-gear",
+    "cost": { "amount": 50, "currency": "gp" },
+    "weight": 3
+  },
+  {
+    "id": "spikes-iron-10",
+    "name": "Spikes, Iron (10)",
+    "type": "adventuring-gear",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 5
+  },
+  {
+    "id": "tent-two-person",
+    "name": "Tent, Two-Person",
+    "type": "adventuring-gear",
+    "cost": { "amount": 2, "currency": "gp" },
+    "weight": 20
+  },
+  {
+    "id": "tinderbox",
+    "name": "Tinderbox",
+    "type": "adventuring-gear",
+    "cost": { "amount": 5, "currency": "sp" },
+    "weight": 1
+  },
+  {
+    "id": "torch",
+    "name": "Torch",
+    "type": "adventuring-gear",
+    "cost": { "amount": 1, "currency": "cp" },
+    "weight": 1
+  },
+  {
+    "id": "waterskin",
+    "name": "Waterskin",
+    "type": "adventuring-gear",
+    "cost": { "amount": 2, "currency": "sp" },
+    "weight": 5
+  },
+  {
+    "id": "arrows-20",
+    "name": "Arrows (20)",
+    "type": "ammunition",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 1
+  },
+  {
+    "id": "bolts-20",
+    "name": "Crossbow Bolts (20)",
+    "type": "ammunition",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 1.5
+  },
+  {
+    "id": "sling-bullets-20",
+    "name": "Sling Bullets (20)",
+    "type": "ammunition",
+    "cost": { "amount": 4, "currency": "cp" },
+    "weight": 1.5
+  },
+  {
+    "id": "thieves-tools",
+    "name": "Thieves' Tools",
+    "type": "tool",
+    "cost": { "amount": 25, "currency": "gp" },
+    "weight": 1
+  },
+  {
+    "id": "herbalism-kit",
+    "name": "Herbalism Kit",
+    "type": "tool",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 3
+  },
+  {
+    "id": "explorers-pack",
+    "name": "Explorer's Pack",
+    "type": "adventuring-gear",
+    "description": "Includes a backpack, a bedroll, a mess kit, a tinderbox, 10 torches, 10 days of rations, and a waterskin. The pack also has 50 feet of hempen rope strapped to the side of it.",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 59
+  },
+  {
+    "id": "dungeoneers-pack",
+    "name": "Dungeoneer's Pack",
+    "type": "adventuring-gear",
+    "description": "Includes a backpack, a crowbar, a hammer, 10 pitons, 10 torches, a tinderbox, 10 days of rations, and a waterskin. The pack also has 50 feet of hempen rope strapped to the side of it.",
+    "cost": { "amount": 12, "currency": "gp" },
+    "weight": 61.5
+  },
+  {
+    "id": "priests-pack",
+    "name": "Priest's Pack",
+    "type": "adventuring-gear",
+    "description": "Includes a backpack, a blanket, 10 candles, a tinderbox, an alms box, 2 blocks of incense, a censer, vestments, 2 days of rations, and a waterskin.",
+    "cost": { "amount": 19, "currency": "gp" },
+    "weight": 24
+  },
+  {
+    "id": "scholars-pack",
+    "name": "Scholar's Pack",
+    "type": "adventuring-gear",
+    "description": "Includes a backpack, a book of lore, a bottle of ink, an ink pen, 10 sheets of parchment, a little bag of sand, and a small knife.",
+    "cost": { "amount": 40, "currency": "gp" },
+    "weight": 10
+  },
+  {
+    "id": "entertainers-pack",
+    "name": "Entertainer's Pack",
+    "type": "adventuring-gear",
+    "description": "Includes a backpack, a bedroll, 2 costumes, 5 candles, 5 days of rations, a waterskin, and a disguise kit.",
+    "cost": { "amount": 40, "currency": "gp" },
+    "weight": 38
+  },
+  {
+    "id": "burglar-pack",
+    "name": "Burglar's Pack",
+    "type": "adventuring-gear",
+    "description": "Includes a backpack, a bag of 1,000 ball bearings, 10 feet of string, a bell, 5 candles, a crowbar, a hammer, 10 pitons, a hooded lantern, 2 flasks of oil, 5 days rations, a tinderbox, and a waterskin. The pack also has 50 feet of hempen rope strapped to the side of it.",
+    "cost": { "amount": 16, "currency": "gp" },
+    "weight": 44.5
+  },
+  {
+    "id": "diplomats-pack",
+    "name": "Diplomat's Pack",
+    "type": "adventuring-gear",
+    "description": "Includes a chest, 2 cases for maps and scrolls, a set of fine clothes, a bottle of ink, an ink pen, a lamp, 2 flasks of oil, 5 sheets of paper, a vial of perfume, sealing wax, and soap.",
+    "cost": { "amount": 39, "currency": "gp" },
+    "weight": 36
+  }
+]

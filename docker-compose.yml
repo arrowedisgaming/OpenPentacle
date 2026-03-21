@@ -1,0 +1,21 @@
+services:
+  app:
+    build: .
+    ports:
+      - "${PORT:-3000}:3000"
+    volumes:
+      - app-data:/data
+    environment:
+      - DATABASE_URL=/data/free5e.db
+      # AUTH_SECRET is auto-generated if not provided (see docker-entrypoint.sh)
+      - AUTH_SECRET=${AUTH_SECRET:-}
+      # Optional: Google OAuth (https://console.cloud.google.com/apis/credentials)
+      - AUTH_GOOGLE_ID=${AUTH_GOOGLE_ID:-}
+      - AUTH_GOOGLE_SECRET=${AUTH_GOOGLE_SECRET:-}
+      # Optional: Discord OAuth (https://discord.com/developers/applications)
+      - AUTH_DISCORD_ID=${AUTH_DISCORD_ID:-}
+      - AUTH_DISCORD_SECRET=${AUTH_DISCORD_SECRET:-}
+    restart: unless-stopped
+
+volumes:
+  app-data:

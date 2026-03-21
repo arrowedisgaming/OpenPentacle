@@ -1,0 +1,16 @@
+{
+	"name": "OpenPentacle — 5E Character Creator",
+	"short_name": "OpenPentacle",
+	"description": "Create 5th-edition-compatible characters for any open-license rule system",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#0f172a",
+	"theme_color": "#0f172a",
+	"icons": [
+		{
+			"src": "/favicon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml"
+		}
+	]
+}

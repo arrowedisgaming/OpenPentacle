@@ -1,0 +1,91 @@
+[
+  {
+    "id": "acolyte",
+    "name": "Acolyte",
+    "description": "You devoted yourself to service in a temple, either nestled in a town or secluded in a sacred grove. There you performed hallowed rites in honor of a god or pantheon. You served under a priest and studied religion.",
+    "abilityScoreChanges": [
+      { "ability": "int", "value": 0 },
+      { "ability": "wis", "value": 0 },
+      { "ability": "cha", "value": 0 }
+    ],
+    "skillProficiencies": [
+      { "value": "insight" },
+      { "value": "religion" }
+    ],
+    "toolProficiencies": [
+      { "value": "calligrapher-supplies" }
+    ],
+    "languages": [],
+    "equipment": ["Calligrapher's Supplies", "Holy Symbol", "Parchment (10 sheets)", "Robe", "Pouch"],
+    "startingGold": 50,
+    "feat": "magic-initiate-cleric"
+  },
+  {
+    "id": "criminal",
+    "name": "Criminal",
+    "description": "You eked out a living in dark alleyways, cutting purses or burgling shops. Perhaps you were part of a small gang of like-minded criminals who looked out for each other.",
+    "abilityScoreChanges": [
+      { "ability": "dex", "value": 0 },
+      { "ability": "con", "value": 0 },
+      { "ability": "int", "value": 0 }
+    ],
+    "skillProficiencies": [
+      { "value": "sleight-of-hand" },
+      { "value": "stealth" }
+    ],
+    "toolProficiencies": [
+      { "value": "thieves-tools" }
+    ],
+    "languages": [],
+    "equipment": ["Thieves' Tools", "Crowbar", "Dark common clothes including a hood", "Pouch"],
+    "startingGold": 50,
+    "feat": "alert"
+  },
+  {
+    "id": "sage",
+    "name": "Sage",
+    "description": "You spent your formative years traveling between manors and monasteries, learning the lore of the multiverse. You scoured manuscripts, studied scrolls, and listened to the greatest experts on the subjects that interest you.",
+    "abilityScoreChanges": [
+      { "ability": "con", "value": 0 },
+      { "ability": "int", "value": 0 },
+      { "ability": "wis", "value": 0 }
+    ],
+    "skillProficiencies": [
+      { "value": "arcana" },
+      { "value": "history" }
+    ],
+    "toolProficiencies": [
+      { "value": "cartographer-tools" }
+    ],
+    "languages": [],
+    "equipment": ["Cartographer's Tools", "Book (history)", "Ink", "Ink Pen", "Parchment (10 sheets)", "Robe", "Pouch"],
+    "startingGold": 50,
+    "feat": "magic-initiate-wizard"
+  },
+  {
+    "id": "soldier",
+    "name": "Soldier",
+    "description": "You began training for war as a youth, studying the use of weapons and armor, learning basic survival techniques, including how to stay alive on the battlefield.",
+    "abilityScoreChanges": [
+      { "ability": "str", "value": 0 },
+      { "ability": "dex", "value": 0 },
+      { "ability": "con", "value": 0 }
+    ],
+    "skillProficiencies": [
+      { "value": "athletics" },
+      { "value": "intimidation" }
+    ],
+    "toolProficiencies": [
+      {
+        "value": "choice",
+        "isChoice": true,
+        "choices": ["dice-set", "dragonchess-set", "playing-card-set", "three-dragon-ante-set"],
+        "choiceCount": 1
+      }
+    ],
+    "languages": [],
+    "equipment": ["Gaming Set (one of your choice)", "Healer's Kit", "Quiver with 20 Arrows", "Shortbow", "Spear", "Pouch"],
+    "startingGold": 50,
+    "feat": "savage-attacker"
+  }
+]

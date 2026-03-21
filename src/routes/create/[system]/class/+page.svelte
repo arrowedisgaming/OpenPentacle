@@ -1,0 +1,240 @@
+<script lang="ts">
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import { wizardStore } from '$lib/stores/wizard.js';
+	import type { ClassDefinition, SystemId } from '$lib/types/content-pack.js';
+	import { getSubclassLevel, getClassFeaturesUpToLevel, getASILevels } from '$lib/engine/class-progression.js';
+	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
+	import SelectionCard from '$lib/components/ui/selection-card/SelectionCard.svelte';
+	import DetailPanel from '$lib/components/ui/detail-panel/DetailPanel.svelte';
+	import WizardNav from '$lib/components/wizard/WizardNav.svelte';
+	import { Badge } from '$lib/components/ui/badge';
+	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
+	import { Separator } from '$lib/components/ui/separator';
+	import { Sword, Wand2, Shield, Heart, Cross, Flame, Music, Leaf, Skull, BookOpen, Zap, Target, Star, Sparkles } from 'lucide-svelte';
+	import { rovingTabindex } from '$lib/actions/roving-tabindex.js';
+
+	const { pack, systemId } = $derived($page.data as { pack: any; systemId: string });
+	const classes: ClassDefinition[] = $derived(pack?.classes ?? []);
+
+	let selectedClassId = $state(wizardStore.getCharacter()?.classes[0]?.classId ?? '');
+	let selectedLevel = $state(wizardStore.getCharacter()?.classes[0]?.level ?? 1);
+
+	// Map class IDs to icons
+	const classIcons: Record<string, typeof Sword> = {
+		fighter: Sword, wizard: Wand2, paladin: Shield, cleric: Cross,
+		rogue: Target, ranger: Leaf, barbarian: Flame, bard: Music,
+		warlock: Skull, sorcerer: Zap, druid: Leaf, monk: Heart,
+	};
+
+	const selectedClass = $derived(classes.find((c) => c.id === selectedClassId));
+	const subclassTrigger = $derived(selectedClass ? getSubclassLevel(selectedClass) : null);
+	const asiLevels = $derived(selectedClass ? getASILevels(selectedClass) : []);
+	const needsSubclass = $derived(subclassTrigger !== null && selectedLevel >= subclassTrigger);
+
+	// Build level-by-level feature preview for selected class
+	const featurePreview = $derived(() => {
+		if (!selectedClass) return [];
+		const rows: { level: number; features: string[]; isSubclass: boolean; isASI: boolean; active: boolean }[] = [];
+		for (const prog of selectedClass.progression) {
+			if (prog.features.length === 0) continue;
+			const names = prog.features.map((f) => f.name);
+			rows.push({
+				level: prog.level,
+				features: names,
+				isSubclass: prog.level === subclassTrigger,
+				isASI: asiLevels.includes(prog.level),
+				active: prog.level <= selectedLevel
+			});
+		}
+		return rows;
+	});
+
+	function selectClass(classId: string) {
+		selectedClassId = classId;
+	}
+
+	function handleLevelInput(e: Event) {
+		const val = parseInt((e.target as HTMLInputElement).value, 10);
+		if (!isNaN(val)) selectedLevel = Math.max(1, Math.min(20, val));
+	}
+
+	function proceed() {
+		if (!selectedClassId || !selectedClass) return;
+
+		// Initialize wizard if not started
+		const char = wizardStore.getCharacter();
+		if (!char) {
+			wizardStore.start(systemId as SystemId);
+		}
+
+		wizardStore.updateCharacter({
+			level: selectedLevel,
+			classes: [{
+				classId: selectedClassId,
+				level: selectedLevel,
+				hitDie: selectedClass.hitDie,
+				featureChoices: []
+			}],
+			proficiencies: [
+				...selectedClass.savingThrows.map((st) => ({
+					type: 'saving-throw' as const,
+					value: st,
+					source: `class:${selectedClassId}`
+				})),
+				...selectedClass.armorProficiencies.map((a) => ({
+					type: 'armor' as const,
+					value: a,
+					source: `class:${selectedClassId}`
+				})),
+				...selectedClass.weaponProficiencies.map((w) => ({
+					type: 'weapon' as const,
+					value: w,
+					source: `class:${selectedClassId}`
+				}))
+			]
+		});
+		wizardStore.completeStep();
+
+		// If subclass is needed, go to subclass step; otherwise skip to origin
+		if (needsSubclass) {
+			goto(`/create/${systemId}/subclass`);
+		} else {
+			goto(`/create/${systemId}/origin`);
+		}
+	}
+
+	const nextLabel = $derived(needsSubclass ? 'Next: Subclass' : 'Next: Origin');
+</script>
+
+<svelte:head>
+	<title>Choose Class - OpenPentacle</title>
+</svelte:head>
+
+<div>
+	<PageHeader
+		as="h1"
+		title="Choose Your Class"
+		description="Your class defines your character's abilities, skills, and role in the party."
+	/>
+
+	<WizardNav
+		nextLabel={nextLabel}
+		onNext={proceed}
+		nextDisabled={!selectedClassId}
+		compact
+	/>
+
+	<div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" role="listbox" aria-label="Character classes" use:rovingTabindex>
+		{#each classes as classDef}
+			{@const Icon = classIcons[classDef.id] ?? BookOpen}
+			<SelectionCard
+				selected={selectedClassId === classDef.id}
+				onclick={() => selectClass(classDef.id)}
+			>
+				<div class="flex items-start justify-between pr-6">
+					<div class="flex items-center gap-2">
+						<Icon class="size-4 text-muted-foreground" />
+						<h3 class="font-semibold">{classDef.name}</h3>
+					</div>
+					<Badge variant="outline" class="text-xs">{classDef.hitDie}</Badge>
+				</div>
+				<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
+					{classDef.description}
+				</p>
+				<div class="mt-2 flex flex-wrap gap-1">
+					{#each classDef.primaryAbility as ability}
+						<Badge variant="secondary" class="text-xs">
+							{ability.toUpperCase()}
+						</Badge>
+					{/each}
+					{#if classDef.spellcasting}
+						<Badge class="bg-primary/10 text-primary text-xs hover:bg-primary/10">
+							Spellcaster
+						</Badge>
+					{/if}
+				</div>
+			</SelectionCard>
+		{/each}
+	</div>
+
+	<!-- Selected class details + level picker -->
+	{#if selectedClass}
+		<div class="mt-6">
+			<DetailPanel title={selectedClass.name}>
+				<p class="text-sm text-muted-foreground">{selectedClass.description}</p>
+
+				<div class="mt-4 grid gap-4 text-sm sm:grid-cols-2">
+					<div>
+						<span class="font-medium">Hit Die:</span>
+						<span class="text-muted-foreground"> {selectedClass.hitDie}</span>
+					</div>
+					<div>
+						<span class="font-medium">Primary Ability:</span>
+						<span class="text-muted-foreground"> {selectedClass.primaryAbility.map(a => a.toUpperCase()).join(', ')}</span>
+					</div>
+					<div>
+						<span class="font-medium">Saving Throws:</span>
+						<span class="text-muted-foreground"> {selectedClass.savingThrows.map(a => a.toUpperCase()).join(', ')}</span>
+					</div>
+					<div>
+						<span class="font-medium">Armor:</span>
+						<span class="text-muted-foreground"> {selectedClass.armorProficiencies.join(', ') || 'None'}</span>
+					</div>
+				</div>
+
+				<Separator class="my-4" />
+
+				<!-- Level Picker -->
+				<div class="flex items-center gap-4">
+					<Label for="level-input" class="text-sm font-medium">Character Level</Label>
+					<Input
+						id="level-input"
+						type="number"
+						min={1}
+						max={20}
+						value={selectedLevel}
+						oninput={handleLevelInput}
+						class="w-20"
+					/>
+					<span class="text-xs text-muted-foreground">1–20</span>
+				</div>
+
+				<!-- Level features preview -->
+				{#if featurePreview().length > 0}
+					<Separator class="my-4" />
+					<h4 class="mb-2 text-sm font-medium">Features by Level</h4>
+					<div class="max-h-60 space-y-1 overflow-y-auto text-sm">
+						{#each featurePreview() as row}
+							<div class="flex gap-2 {row.active ? '' : 'opacity-40'}">
+								<span class="w-16 shrink-0 font-mono text-xs text-muted-foreground">
+									Level {row.level}
+								</span>
+								<span class="flex flex-wrap items-center gap-1">
+									{#if row.isSubclass}
+										<Star class="inline size-3 text-amber-500" />
+									{/if}
+									{#if row.isASI}
+										<Sparkles class="inline size-3 text-blue-500" />
+									{/if}
+									{row.features.join(', ')}
+								</span>
+							</div>
+						{/each}
+					</div>
+					<div class="mt-2 flex gap-4 text-xs text-muted-foreground">
+						<span class="flex items-center gap-1"><Star class="size-3 text-amber-500" /> Subclass</span>
+						<span class="flex items-center gap-1"><Sparkles class="size-3 text-blue-500" /> ASI</span>
+					</div>
+				{/if}
+			</DetailPanel>
+		</div>
+	{/if}
+
+	<WizardNav
+		nextLabel={nextLabel}
+		onNext={proceed}
+		nextDisabled={!selectedClassId}
+	/>
+</div>

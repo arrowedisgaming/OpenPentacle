@@ -1,0 +1,188 @@
+[
+  {
+    "id": "alert",
+    "name": "Alert",
+    "description": "Always on the lookout for danger, you gain the following benefits.",
+    "category": "general",
+    "prerequisites": [],
+    "effects": [
+      {
+        "id": "alert-initiative",
+        "name": "Initiative Bonus",
+        "description": "You gain a +5 bonus to initiative.",
+        "mechanicalEffect": "initiative:+5"
+      },
+      {
+        "id": "alert-no-surprise",
+        "name": "Can't Be Surprised",
+        "description": "You can't be surprised while you are conscious."
+      },
+      {
+        "id": "alert-hidden-attackers",
+        "name": "Hidden Attackers",
+        "description": "Other creatures don't gain advantage on attack rolls against you as a result of being unseen by you."
+      }
+    ],
+    "repeatable": false
+  },
+  {
+    "id": "great-weapon-master",
+    "name": "Great Weapon Master",
+    "description": "You've learned to put the weight of a weapon to your advantage, letting its momentum empower your strikes.",
+    "category": "general",
+    "prerequisites": [
+      { "type": "proficiency", "value": "martial-weapons" }
+    ],
+    "effects": [
+      {
+        "id": "gwm-bonus-attack",
+        "name": "Bonus Attack on Critical/Kill",
+        "description": "On your turn, when you score a critical hit with a melee weapon or reduce a creature to 0 hit points with one, you can make one melee weapon attack as a bonus action."
+      },
+      {
+        "id": "gwm-power-attack",
+        "name": "Power Attack",
+        "description": "Before you make a melee attack with a heavy weapon that you are proficient with, you can choose to take a -5 penalty to the attack roll. If the attack hits, you add +10 to the attack's damage.",
+        "mechanicalEffect": "optional:attack:-5,damage:+10:heavy-melee"
+      }
+    ],
+    "repeatable": false
+  },
+  {
+    "id": "sentinel",
+    "name": "Sentinel",
+    "description": "You have mastered techniques to take advantage of every drop in any enemy's guard.",
+    "category": "general",
+    "prerequisites": [],
+    "effects": [
+      {
+        "id": "sentinel-stop",
+        "name": "Stop Movement",
+        "description": "When you hit a creature with an opportunity attack, the creature's speed becomes 0 for the rest of the turn."
+      },
+      {
+        "id": "sentinel-disengage",
+        "name": "Ignore Disengage",
+        "description": "Creatures provoke opportunity attacks from you even if they take the Disengage action before leaving your reach."
+      },
+      {
+        "id": "sentinel-reaction-attack",
+        "name": "Reaction Attack",
+        "description": "When a creature within 5 feet of you makes an attack against a target other than you (and that target doesn't have this feat), you can use your reaction to make a melee weapon attack against the attacking creature."
+      }
+    ],
+    "repeatable": false
+  },
+  {
+    "id": "sharpshooter",
+    "name": "Sharpshooter",
+    "description": "You have mastered ranged weapons and can make shots that others find impossible.",
+    "category": "general",
+    "prerequisites": [],
+    "effects": [
+      {
+        "id": "sharpshooter-no-range-disadvantage",
+        "name": "Extended Range",
+        "description": "Attacking at long range doesn't impose disadvantage on your ranged weapon attack rolls."
+      },
+      {
+        "id": "sharpshooter-ignore-cover",
+        "name": "Ignore Cover",
+        "description": "Your ranged weapon attacks ignore half cover and three-quarters cover."
+      },
+      {
+        "id": "sharpshooter-power-shot",
+        "name": "Power Shot",
+        "description": "Before you make an attack with a ranged weapon that you are proficient with, you can choose to take a -5 penalty to the attack roll. If the attack hits, you add +10 to the attack's damage.",
+        "mechanicalEffect": "optional:attack:-5,damage:+10:ranged"
+      }
+    ],
+    "repeatable": false
+  },
+  {
+    "id": "war-caster",
+    "name": "War Caster",
+    "description": "You have practiced casting spells in the midst of combat, granting you the following benefits.",
+    "category": "general",
+    "prerequisites": [
+      { "type": "spellcasting", "value": "any" }
+    ],
+    "effects": [
+      {
+        "id": "war-caster-concentration",
+        "name": "Concentration Advantage",
+        "description": "You have advantage on Constitution saving throws that you make to maintain your concentration on a spell when you take damage.",
+        "mechanicalEffect": "advantage:saving-throw:concentration"
+      },
+      {
+        "id": "war-caster-somatic",
+        "name": "Somatic Components",
+        "description": "You can perform the somatic components of spells even when you have weapons or a shield in one or both hands."
+      },
+      {
+        "id": "war-caster-opportunity-spell",
+        "name": "Opportunity Spell",
+        "description": "When a hostile creature's movement provokes an opportunity attack from you, you can use your reaction to cast a spell at the creature, rather than making an opportunity attack. The spell must have a casting time of 1 action and must target only that creature."
+      }
+    ],
+    "repeatable": false
+  },
+  {
+    "id": "lucky",
+    "name": "Lucky",
+    "description": "You have inexplicable luck that seems to kick in at just the right moment.",
+    "category": "general",
+    "prerequisites": [],
+    "effects": [
+      {
+        "id": "lucky-points",
+        "name": "Luck Points",
+        "description": "You have 3 luck points. Whenever you make an attack roll, an ability check, or a saving throw, you can spend one luck point to roll an additional d20. You can choose to spend one of your luck points after you roll the die, but before the outcome is determined. You choose which of the d20s is used for the attack roll, ability check, or saving throw. You can also spend one luck point when an attack roll is made against you. Roll a d20, and then choose whether the attack uses the attacker's roll or yours. If more than one creature spends a luck point to influence the outcome of a roll, the points cancel each other out; no additional dice are rolled. You regain your expended luck points when you finish a long rest.",
+        "mechanicalEffect": "luck_points:3:long-rest"
+      }
+    ],
+    "repeatable": false
+  },
+  {
+    "id": "tough",
+    "name": "Tough",
+    "description": "Your hit point maximum increases by an amount equal to twice your level when you gain this feat. Whenever you gain a level thereafter, your hit point maximum increases by an additional 2 hit points.",
+    "category": "general",
+    "prerequisites": [],
+    "effects": [
+      {
+        "id": "tough-hp",
+        "name": "Extra Hit Points",
+        "description": "Your hit point maximum increases by an amount equal to twice your level when you gain this feat. Whenever you gain a level thereafter, your hit point maximum increases by an additional 2 hit points.",
+        "mechanicalEffect": "hp_per_level:2"
+      }
+    ],
+    "repeatable": false
+  },
+  {
+    "id": "observant",
+    "name": "Observant",
+    "description": "Quick to notice details of your environment, you gain the following benefits.",
+    "category": "general",
+    "prerequisites": [],
+    "effects": [
+      {
+        "id": "observant-lip-reading",
+        "name": "Lip Reading",
+        "description": "If you can see a creature's mouth while it is speaking a language you understand, you can interpret what it's saying by reading its lips."
+      },
+      {
+        "id": "observant-passive-bonus",
+        "name": "Passive Perception & Investigation",
+        "description": "You have a +5 bonus to your passive Wisdom (Perception) and passive Intelligence (Investigation) scores.",
+        "mechanicalEffect": "passive_perception:+5;passive_investigation:+5"
+      }
+    ],
+    "abilityScoreIncrease": {
+      "abilities": ["int", "wis"],
+      "count": 1,
+      "value": 1
+    },
+    "repeatable": false
+  }
+]

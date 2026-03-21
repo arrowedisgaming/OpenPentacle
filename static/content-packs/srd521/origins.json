@@ -1,0 +1,328 @@
+[
+  {
+    "id": "species",
+    "name": "Species",
+    "description": "Choose your character's species. Your species determines physical traits, natural abilities, and cultural tendencies.",
+    "order": 0,
+    "options": [
+      {
+        "id": "human",
+        "name": "Human",
+        "description": "Humans are the most adaptable and ambitious people among the common species. Whatever drives them, humans are the innovators, the achievers, and the pioneers of the worlds.",
+        "size": "Medium",
+        "speed": 30,
+        "abilityScoreChanges": [
+          { "ability": "choice", "value": 2, "choiceCount": 1 },
+          { "ability": "choice", "value": 1, "choiceCount": 1 }
+        ],
+        "traits": [
+          {
+            "id": "human-resourceful",
+            "name": "Resourceful",
+            "description": "You gain Heroic Inspiration whenever you finish a Long Rest."
+          },
+          {
+            "id": "human-skillful",
+            "name": "Skillful",
+            "description": "You gain proficiency in one skill of your choice.",
+            "mechanicalEffect": "skill_proficiency_choice:1"
+          },
+          {
+            "id": "human-versatile",
+            "name": "Versatile",
+            "description": "You gain an Origin feat of your choice."
+          }
+        ],
+        "proficiencies": [
+          {
+            "type": "skill",
+            "value": "choice",
+            "isChoice": true,
+            "choices": [
+              "acrobatics", "animal-handling", "arcana", "athletics",
+              "deception", "history", "insight", "intimidation",
+              "investigation", "medicine", "nature", "perception",
+              "performance", "persuasion", "religion", "sleight-of-hand",
+              "stealth", "survival"
+            ],
+            "choiceCount": 1
+          }
+        ],
+        "languages": ["Common", "Choice"]
+      },
+      {
+        "id": "elf",
+        "name": "Elf",
+        "description": "Elves are a magical people of otherworldly grace, living in places of ethereal beauty, in the midst of ancient forests or in silvery spires glittering with faerie light.",
+        "size": "Medium",
+        "speed": 30,
+        "abilityScoreChanges": [
+          { "ability": "choice", "value": 2, "choiceCount": 1 },
+          { "ability": "choice", "value": 1, "choiceCount": 1 }
+        ],
+        "darkvision": 60,
+        "traits": [
+          {
+            "id": "elf-darkvision",
+            "name": "Darkvision",
+            "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
+            "mechanicalEffect": "darkvision:60"
+          },
+          {
+            "id": "elf-keen-senses",
+            "name": "Keen Senses",
+            "description": "You have proficiency in the Perception skill.",
+            "mechanicalEffect": "skill_proficiency:perception"
+          },
+          {
+            "id": "elf-fey-ancestry",
+            "name": "Fey Ancestry",
+            "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
+            "mechanicalEffect": "advantage:saving-throw:charmed;immunity:magical-sleep"
+          },
+          {
+            "id": "elf-trance",
+            "name": "Trance",
+            "description": "Elves do not sleep. Instead they meditate deeply, remaining semi-conscious, for 4 hours a day. While meditating, you dream after a fashion; such dreams are actually mental exercises that have become reflexive after years of practice. After resting in this way, you gain the same benefit a human does from 8 hours of sleep."
+          }
+        ],
+        "proficiencies": [
+          {
+            "type": "skill",
+            "value": "perception"
+          }
+        ],
+        "languages": ["Common", "Elvish"],
+        "subOptions": [
+          {
+            "id": "high-elf",
+            "name": "High Elf",
+            "description": "As a high elf, you have a keen mind and a mastery of at least the basics of magic.",
+            "traits": [
+              {
+                "id": "high-elf-cantrip",
+                "name": "Cantrip",
+                "description": "You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it."
+              },
+              {
+                "id": "high-elf-extra-language",
+                "name": "Extra Language",
+                "description": "You can speak, read, and write one extra language of your choice."
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": [
+              {
+                "type": "weapon",
+                "value": "longsword"
+              },
+              {
+                "type": "weapon",
+                "value": "shortsword"
+              },
+              {
+                "type": "weapon",
+                "value": "shortbow"
+              },
+              {
+                "type": "weapon",
+                "value": "longbow"
+              }
+            ],
+            "spells": [
+              {
+                "spellId": "choice-wizard-cantrip",
+                "level": 1,
+                "spellcastingAbility": "int"
+              }
+            ]
+          },
+          {
+            "id": "wood-elf",
+            "name": "Wood Elf",
+            "description": "As a wood elf, you have keen senses and intuition, and your fleet feet carry you quickly and stealthily through your native forests.",
+            "traits": [
+              {
+                "id": "wood-elf-fleet-of-foot",
+                "name": "Fleet of Foot",
+                "description": "Your base walking speed increases to 35 feet.",
+                "mechanicalEffect": "speed:35"
+              },
+              {
+                "id": "wood-elf-mask-of-the-wild",
+                "name": "Mask of the Wild",
+                "description": "You can attempt to hide even when you are only lightly obscured by foliage, heavy rain, falling snow, mist, and other natural phenomena."
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": [
+              {
+                "type": "weapon",
+                "value": "longsword"
+              },
+              {
+                "type": "weapon",
+                "value": "shortsword"
+              },
+              {
+                "type": "weapon",
+                "value": "shortbow"
+              },
+              {
+                "type": "weapon",
+                "value": "longbow"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "dwarf",
+        "name": "Dwarf",
+        "description": "Bold and hardy, dwarves are known as skilled warriors, miners, and workers of stone and metal. Though they stand well under 5 feet tall, dwarves are so broad and compact that they can weigh as much as a human standing nearly two feet taller.",
+        "size": "Medium",
+        "speed": 25,
+        "abilityScoreChanges": [
+          { "ability": "choice", "value": 2, "choiceCount": 1 },
+          { "ability": "choice", "value": 1, "choiceCount": 1 }
+        ],
+        "darkvision": 60,
+        "traits": [
+          {
+            "id": "dwarf-darkvision",
+            "name": "Darkvision",
+            "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
+            "mechanicalEffect": "darkvision:60"
+          },
+          {
+            "id": "dwarf-dwarven-resilience",
+            "name": "Dwarven Resilience",
+            "description": "You have advantage on saving throws against poison, and you have resistance against poison damage.",
+            "mechanicalEffect": "advantage:saving-throw:poison;resistance:poison"
+          },
+          {
+            "id": "dwarf-stonecunning",
+            "name": "Stonecunning",
+            "description": "Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check."
+          },
+          {
+            "id": "dwarf-dwarven-combat-training",
+            "name": "Dwarven Combat Training",
+            "description": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer."
+          }
+        ],
+        "proficiencies": [
+          { "type": "weapon", "value": "battleaxe" },
+          { "type": "weapon", "value": "handaxe" },
+          { "type": "weapon", "value": "light-hammer" },
+          { "type": "weapon", "value": "warhammer" },
+          {
+            "type": "tool",
+            "value": "choice",
+            "isChoice": true,
+            "choices": ["smith-tools", "brewer-supplies", "mason-tools"],
+            "choiceCount": 1
+          }
+        ],
+        "languages": ["Common", "Dwarvish"],
+        "subOptions": [
+          {
+            "id": "hill-dwarf",
+            "name": "Hill Dwarf",
+            "description": "As a hill dwarf, you have keen senses, deep intuition, and a resilience that few other folk can match.",
+            "traits": [
+              {
+                "id": "hill-dwarf-dwarven-toughness",
+                "name": "Dwarven Toughness",
+                "description": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level.",
+                "mechanicalEffect": "hp_per_level:1"
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": []
+          },
+          {
+            "id": "mountain-dwarf",
+            "name": "Mountain Dwarf",
+            "description": "As a mountain dwarf, you are strong and hardy, accustomed to a difficult life in rugged terrain.",
+            "traits": [
+              {
+                "id": "mountain-dwarf-dwarven-armor-training",
+                "name": "Dwarven Armor Training",
+                "description": "You have proficiency with light and medium armor."
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": [
+              { "type": "armor", "value": "light" },
+              { "type": "armor", "value": "medium" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "halfling",
+        "name": "Halfling",
+        "description": "The comforts of home are the goals of most halflings' lives: a place to settle in peace and quiet, far from marauding monsters and clashing armies. Others form nomadic bands that travel constantly, lured by the open road and the wide horizon.",
+        "size": "Small",
+        "speed": 25,
+        "abilityScoreChanges": [
+          { "ability": "choice", "value": 2, "choiceCount": 1 },
+          { "ability": "choice", "value": 1, "choiceCount": 1 }
+        ],
+        "traits": [
+          {
+            "id": "halfling-lucky",
+            "name": "Lucky",
+            "description": "When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll.",
+            "mechanicalEffect": "reroll:1:attack,ability-check,saving-throw"
+          },
+          {
+            "id": "halfling-brave",
+            "name": "Brave",
+            "description": "You have advantage on saving throws against being frightened.",
+            "mechanicalEffect": "advantage:saving-throw:frightened"
+          },
+          {
+            "id": "halfling-nimble",
+            "name": "Halfling Nimbleness",
+            "description": "You can move through the space of any creature that is of a size larger than yours."
+          }
+        ],
+        "proficiencies": [],
+        "languages": ["Common", "Halfling"],
+        "subOptions": [
+          {
+            "id": "lightfoot-halfling",
+            "name": "Lightfoot Halfling",
+            "description": "As a lightfoot halfling, you can easily hide from notice, even using other people as cover. Lightfoots are inclined to get along with others and prone to fits of wanderlust.",
+            "traits": [
+              {
+                "id": "lightfoot-naturally-stealthy",
+                "name": "Naturally Stealthy",
+                "description": "You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you."
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": []
+          },
+          {
+            "id": "stout-halfling",
+            "name": "Stout Halfling",
+            "description": "As a stout halfling, you are hardier than average and have some resistance to poison. Some say that stouts have dwarven blood.",
+            "traits": [
+              {
+                "id": "stout-resilience",
+                "name": "Stout Resilience",
+                "description": "You have advantage on saving throws against poison, and you have resistance against poison damage.",
+                "mechanicalEffect": "advantage:saving-throw:poison;resistance:poison"
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": []
+          }
+        ]
+      }
+    ]
+  }
+]

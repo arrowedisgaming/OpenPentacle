@@ -1,0 +1,70 @@
+/* ── YOUR_THEME_NAME Theme ───────────────────────
+   Copy this file, rename it, and fill in your colors.
+   See THEMING.md for the full walkthrough.
+   ────────────────────────────────────────────────── */
+
+.your-theme-class {
+	/* ─── Core surfaces ─────────────────────────────
+	   background/foreground: page body
+	   card:                  Card, dialog, sheet backgrounds
+	   popover:               dropdown menus, tooltips        */
+	--color-background:              hsl(0 0% 100%);
+	--color-foreground:              hsl(222 84% 5%);
+	--color-card:                    hsl(0 0% 100%);
+	--color-card-foreground:         hsl(222 84% 5%);
+	--color-popover:                 hsl(0 0% 100%);
+	--color-popover-foreground:      hsl(222 84% 5%);
+
+	/* ─── Interactive colors ────────────────────────
+	   primary:    main CTA buttons, active nav links
+	   secondary:  softer buttons, secondary actions
+	   accent:     hover highlights, selection states     */
+	--color-primary:                 hsl(222 47% 11%);
+	--color-primary-foreground:      hsl(210 40% 98%);
+	--color-secondary:               hsl(210 40% 96%);
+	--color-secondary-foreground:    hsl(222 47% 11%);
+	--color-accent:                  hsl(210 40% 96%);
+	--color-accent-foreground:       hsl(222 47% 11%);
+
+	/* ─── Muted & borders ──────────────────────────
+	   muted:      disabled text, placeholder backgrounds
+	   border:     default border color on all elements
+	   input:      form input borders
+	   ring:       focus ring (keyboard navigation)        */
+	--color-muted:                   hsl(210 40% 96%);
+	--color-muted-foreground:        hsl(215 16% 47%);
+	--color-border:                  hsl(214 32% 91%);
+	--color-input:                   hsl(214 32% 91%);
+	--color-ring:                    hsl(222 84% 5%);
+
+	/* ─── Semantic feedback ────────────────────────
+	   destructive: delete buttons, error states
+	   success:     save confirmations, valid inputs
+	   warning:     caution alerts, limits approaching
+	   info:        informational badges, help text        */
+	--color-destructive:             hsl(0 84% 60%);
+	--color-destructive-foreground:  hsl(210 40% 98%);
+	--color-success:                 hsl(142 76% 36%);
+	--color-success-foreground:      hsl(356 100% 97%);
+	--color-warning:                 hsl(48 96% 53%);
+	--color-warning-foreground:      hsl(26 83% 14%);
+	--color-info:                    hsl(221 83% 53%);
+	--color-info-foreground:         hsl(210 40% 98%);
+
+	/* ─── Sidebar ──────────────────────────────────
+	   Used by the sidebar component (if enabled).
+	   Can usually mirror your core surface tokens.        */
+	--color-sidebar:                         hsl(0 0% 98%);
+	--color-sidebar-foreground:              hsl(240 5% 26%);
+	--color-sidebar-primary:                 hsl(240 6% 10%);
+	--color-sidebar-primary-foreground:      hsl(0 0% 98%);
+	--color-sidebar-accent:                  hsl(240 5% 96%);
+	--color-sidebar-accent-foreground:       hsl(240 6% 10%);
+	--color-sidebar-border:                  hsl(220 13% 91%);
+	--color-sidebar-ring:                    hsl(217 91% 60%);
+
+	/* ─── Border radius ────────────────────────────
+	   Controls all rounded corners via Tailwind.
+	   0.5rem = default, 2px = sharp (notebook), etc.      */
+	--radius: 0.5rem;
+}
