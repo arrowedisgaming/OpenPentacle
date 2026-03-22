@@ -76,8 +76,12 @@
 	}
 
 	let decisions = $state<ASIChoice[]>(initDecisions());
-	let backgroundFeatId = $state(
+	// Background feat is auto-assigned on the background step — just read it
+	const backgroundFeatId = $derived(
 		character?.feats?.find((f) => f.source === 'background')?.featId ?? ''
+	);
+	const backgroundFeatDef = $derived(
+		backgroundFeatId ? feats.find((f) => f.id === backgroundFeatId) : null
 	);
 
 	// Recompute when reached ASI levels change (e.g. back-nav changed level)
@@ -135,12 +139,9 @@
 	function proceed() {
 		// Build levelUpBonuses from ASI decisions
 		const levelUpBonuses: AbilityBonus[] = [];
-		const featSelections: FeatSelection[] = [];
-
-		// Background feat
-		if (backgroundFeatId) {
-			featSelections.push({ featId: backgroundFeatId, source: 'background', choices: [] });
-		}
+		// Preserve the background feat (auto-assigned on background step)
+		const featSelections: FeatSelection[] = (character?.feats ?? [])
+			.filter((f) => f.source === 'background');
 
 		for (const d of decisions) {
 			if (d.type === 'asi-2' && d.ability1) {
@@ -200,25 +201,18 @@
 		description="At certain levels, you can increase your ability scores or take a feat."
 	/>
 
-	<!-- Background Feat (if applicable) -->
-	{#if backgroundGrantsFeat}
+	<!-- Background Feat (read-only — auto-assigned on background step) -->
+	{#if backgroundFeatDef}
 		<Card.Root class="mt-6">
 			<Card.Header>
 				<Card.Title class="text-base">Background Feat</Card.Title>
-				<p class="text-sm text-muted-foreground">Your background grants a feat.</p>
+				<p class="text-sm text-muted-foreground">Granted by your background.</p>
 			</Card.Header>
 			<Card.Content>
-				<div class="grid gap-2 sm:grid-cols-2">
-					{#each feats as feat}
-						<SelectionCard
-							selected={backgroundFeatId === feat.id}
-							onclick={() => (backgroundFeatId = backgroundFeatId === feat.id ? '' : feat.id)}
-							compact
-						>
-							<h4 class="pr-6 font-medium text-sm">{feat.name}</h4>
-							<p class="mt-0.5 text-xs text-muted-foreground line-clamp-2">{feat.description}</p>
-						</SelectionCard>
-					{/each}
+				<div class="rounded-md border border-primary/20 bg-accent p-3">
+					<h4 class="font-medium text-sm">{backgroundFeatDef.name}</h4>
+					<p class="mt-0.5 text-xs text-muted-foreground">{backgroundFeatDef.description}</p>
+					<Badge variant="secondary" class="mt-1 text-xs capitalize">{backgroundFeatDef.category}</Badge>
 				</div>
 			</Card.Content>
 		</Card.Root>

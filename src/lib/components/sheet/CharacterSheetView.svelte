@@ -5,14 +5,14 @@
 	import { getClassFeaturesUpToLevel, getSubclassFeaturesUpToLevel } from '$lib/engine/class-progression.js';
 	import type { ComputedSheet } from '$lib/engine/character-sheet.js';
 	import type { CharacterData } from '$lib/types/character.js';
-	import type { ContentPack } from '$lib/types/content-pack.js';
+	import type { ContentPack, ClassFeature } from '$lib/types/content-pack.js';
 	import type { SpellDefinition } from '$lib/types/content-pack.js';
 	import StatBlock from './StatBlock.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Shield, Heart, Zap, Footprints, CircleDot, Circle, Diamond, ChevronDown } from 'lucide-svelte';
+	import { Shield, Heart, Zap, Footprints, CircleDot, Circle, Diamond, ChevronDown, Swords } from 'lucide-svelte';
 
 	type Props = {
 		sheet: ComputedSheet;
@@ -40,7 +40,132 @@
 	const subclassFeatures = $derived(
 		subclassDef && data ? getSubclassFeaturesUpToLevel(subclassDef, data.level) : []
 	);
-	const allFeatures = $derived([...classFeatures, ...subclassFeatures]);
+	const allFeatures = $derived(
+		[...classFeatures, ...subclassFeatures].sort((a, b) => a.level - b.level)
+	);
+
+	// Bug 2: Resolved feats list
+	const featsList = $derived.by(() => {
+		if (!data || !pack) return null;
+		const resolved = data.feats.map((sel) => {
+			const def = pack.feats?.find((f) => f.id === sel.featId);
+			return def ? { ...def, source: sel.source } : null;
+		}).filter((f): f is NonNullable<typeof f> => f !== null);
+		return resolved.length > 0 ? resolved : null;
+	});
+
+	// Bug 7: Get selected choice labels for a feature
+	function getFeatureChoiceLabels(feature: ClassFeature): string[] {
+		if (!data || !feature.choices) return [];
+		const selections = data.classes[0]?.featureChoices ?? [];
+		const labels: string[] = [];
+		for (const choice of feature.choices) {
+			const sel = selections.find((s) => s.featureId === feature.id && s.choiceId === choice.id);
+			if (sel && sel.selectedOptionIds.length > 0) {
+				const names = sel.selectedOptionIds
+					.map((oid) => choice.options.find((o) => o.id === oid)?.name)
+					.filter(Boolean);
+				if (names.length > 0) {
+					labels.push(`${choice.name}: ${names.join(', ')}`);
+				}
+			}
+		}
+		return labels;
+	}
+
+	// Bug 2: Format feat source for display
+	function formatFeatSource(source: string): string {
+		if (source === 'background') return 'Background';
+		if (source === 'bonus') return 'Bonus';
+		const classMatch = source.match(/^class:([^:]+):(\d+)$/);
+		if (classMatch) return `Lv ${classMatch[2]}`;
+		return kebabToTitle(source);
+	}
+
+	// Bug 3: Get what was chosen for an ASI/Epic Boon feature
+	function getASIChoiceLabel(feature: ClassFeature): string | null {
+		if (!data || !pack) return null;
+		const classId = data.classes[0]?.classId;
+		if (!classId) return null;
+		const sourcePrefix = `class:${classId}:${feature.level}`;
+
+		// Check if a feat was taken at this level
+		const feat = data.feats.find((f) => f.source === sourcePrefix);
+		if (feat) {
+			const def = pack.feats?.find((f) => f.id === feat.featId);
+			return def ? `Feat: ${def.name}` : null;
+		}
+
+		// Check for ASI bonuses at this level
+		const bonuses = data.abilityScores.levelUpBonuses.filter((b) => b.source === sourcePrefix);
+		if (bonuses.length > 0) {
+			const parts = bonuses.map((b) => `+${b.value} ${ABILITY_NAMES[b.ability]?.slice(0, 3).toUpperCase() ?? b.ability}`);
+			return `ASI: ${parts.join(', ')}`;
+		}
+
+		return null;
+	}
+
+	// Bug 4: Get display name for subclass features
+	function getFeatureDisplayName(feature: ClassFeature): string {
+		if (!data || !subclassDef) return feature.name;
+		if (feature.name.endsWith('Subclass') && feature.description?.includes('subclass')) {
+			return `${feature.name}: ${subclassDef.name}`;
+		}
+		return feature.name;
+	}
+
+	// Bug 5: Weapons with computed attack/damage
+	const weaponsList = $derived.by(() => {
+		if (!data || !pack) return null;
+		const weapons = data.equipment
+			.map((eq) => {
+				const def = pack.equipment.find((e) => e.id === eq.equipmentId);
+				if (!def?.weapon) return null;
+				const w = def.weapon;
+				const isFinesse = w.properties.includes('finesse');
+				const isRanged = w.range != null && !w.properties.includes('thrown');
+				const strMod = sheet.abilityModifiers.str;
+				const dexMod = sheet.abilityModifiers.dex;
+				let abilityMod: number;
+				if (isFinesse) {
+					abilityMod = Math.max(strMod, dexMod);
+				} else if (isRanged) {
+					abilityMod = dexMod;
+				} else {
+					abilityMod = strMod;
+				}
+				const attackBonus = sheet.proficiencyBonus + abilityMod;
+				const damageBonus = abilityMod;
+				return {
+					name: def.name,
+					attackBonus,
+					damage: w.damage,
+					damageBonus,
+					damageType: w.damageType,
+					properties: w.properties,
+					range: w.range,
+					equipped: eq.equipped
+				};
+			})
+			.filter((w): w is NonNullable<typeof w> => w !== null);
+		return weapons.length > 0 ? weapons : null;
+	});
+
+	// Bug 5: Non-weapon equipment (to avoid duplication)
+	const nonWeaponEquipment = $derived.by(() => {
+		if (!data || !pack) return null;
+		const items = data.equipment
+			.filter((eq) => {
+				const def = pack.equipment.find((e) => e.id === eq.equipmentId);
+				return !def?.weapon;
+			})
+			.map((eq) => {
+				const def = pack.equipment.find((e) => e.id === eq.equipmentId);
+				return { name: def?.name ?? kebabToTitle(eq.equipmentId), quantity: eq.quantity, equipped: eq.equipped };
+			});
+		return items.length > 0 ? items : null;
+	});
 
 	// Proficiency categories
 	const proficiencyGroups = $derived.by(() => {
@@ -53,16 +178,6 @@
 			groups[label].push(kebabToTitle(p.value));
 		}
 		return Object.keys(groups).length > 0 ? groups : null;
-	});
-
-	// Equipment list
-	const equipmentList = $derived.by(() => {
-		if (!data || !pack) return null;
-		const items = data.equipment.map((eq) => {
-			const def = pack.equipment.find((e) => e.id === eq.equipmentId);
-			return { name: def?.name ?? kebabToTitle(eq.equipmentId), quantity: eq.quantity, equipped: eq.equipped };
-		});
-		return items.length > 0 ? items : null;
 	});
 
 	// Known spells grouped by level (keep full definition for expandable details)
@@ -196,6 +311,38 @@
 			</Card.Root>
 		{/if}
 
+		<!-- Feats -->
+		{#if featsList}
+			<Card.Root>
+				<Card.Header class="pb-2">
+					<Card.Title class="text-sm">Feats</Card.Title>
+				</Card.Header>
+				<Card.Content class="space-y-1">
+					{#each featsList as feat}
+						<Collapsible.Root>
+							<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
+								<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
+								<span class="text-sm font-medium">{feat.name}</span>
+								<Badge variant="outline" class="text-[10px] px-1.5 py-0">{formatFeatSource(feat.source)}</Badge>
+							</Collapsible.Trigger>
+							<Collapsible.Content>
+								<div class="mt-1 mb-2 ml-5.5 text-xs text-muted-foreground space-y-1">
+									<p class="whitespace-pre-line">{feat.description}</p>
+									{#if feat.effects.length > 0}
+										<ul class="list-disc pl-4">
+											{#each feat.effects as effect}
+												<li>{effect.description}</li>
+											{/each}
+										</ul>
+									{/if}
+								</div>
+							</Collapsible.Content>
+						</Collapsible.Root>
+					{/each}
+				</Card.Content>
+			</Card.Root>
+		{/if}
+
 		<!-- Class Features -->
 		{#if allFeatures.length > 0}
 			<Card.Root>
@@ -208,16 +355,28 @@
 							<Collapsible.Root>
 								<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
 									<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
-									<span class="text-sm font-medium">{feature.name}</span>
+									<span class="text-sm font-medium">{getFeatureDisplayName(feature)}</span>
 									<Badge variant="outline" class="text-[10px] px-1.5 py-0">Lv{feature.level}</Badge>
 								</Collapsible.Trigger>
 								<Collapsible.Content>
+									{#if feature.name === 'Ability Score Improvement' || feature.name === 'Epic Boon'}
+										{@const choiceLabel = getASIChoiceLabel(feature)}
+										{#if choiceLabel}
+											<p class="mt-1 ml-5.5 text-xs font-medium text-primary">{choiceLabel}</p>
+										{/if}
+									{/if}
+									{@const choiceLabels = getFeatureChoiceLabels(feature)}
+									{#if choiceLabels.length > 0}
+										{#each choiceLabels as label}
+											<p class="mt-1 ml-5.5 text-xs font-medium text-primary">{label}</p>
+										{/each}
+									{/if}
 									<p class="mt-1 mb-2 ml-5.5 text-xs text-muted-foreground whitespace-pre-line">{feature.description}</p>
 								</Collapsible.Content>
 							</Collapsible.Root>
 						{:else}
 							<div class="flex items-center gap-2 px-1 py-1">
-								<span class="ml-5.5 text-sm font-medium">{feature.name}</span>
+								<span class="ml-5.5 text-sm font-medium">{getFeatureDisplayName(feature)}</span>
 								<Badge variant="outline" class="text-[10px] px-1.5 py-0">Lv{feature.level}</Badge>
 							</div>
 						{/if}
@@ -226,15 +385,43 @@
 			</Card.Root>
 		{/if}
 
+		<!-- Weapons -->
+		{#if weaponsList}
+			<Card.Root>
+				<Card.Header class="pb-2">
+					<Card.Title class="flex items-center gap-1.5 text-sm"><Swords class="size-3.5" /> Weapons</Card.Title>
+				</Card.Header>
+				<Card.Content class="space-y-2">
+					{#each weaponsList as weapon}
+						<div class="rounded-md border border-border p-2 {weapon.equipped ? '' : 'opacity-60'}">
+							<div class="flex items-center justify-between">
+								<span class="text-sm font-medium">{weapon.name}</span>
+								<span class="text-sm font-mono">{formatModifier(weapon.attackBonus)} to hit</span>
+							</div>
+							<div class="mt-0.5 flex flex-wrap gap-x-3 text-xs text-muted-foreground">
+								<span>{weapon.damage}{weapon.damageBonus !== 0 ? ` ${formatModifier(weapon.damageBonus)}` : ''} {weapon.damageType}</span>
+								{#if weapon.range}
+									<span>{weapon.range.normal}/{weapon.range.long} ft</span>
+								{/if}
+								{#if weapon.properties.length > 0}
+									<span>{weapon.properties.map(kebabToTitle).join(', ')}</span>
+								{/if}
+							</div>
+						</div>
+					{/each}
+				</Card.Content>
+			</Card.Root>
+		{/if}
+
 		<!-- Equipment -->
-		{#if equipmentList}
+		{#if nonWeaponEquipment}
 			<Card.Root>
 				<Card.Header class="pb-2">
 					<Card.Title class="text-sm">Equipment</Card.Title>
 				</Card.Header>
 				<Card.Content>
 					<ul class="space-y-0.5 text-sm">
-						{#each equipmentList as item}
+						{#each nonWeaponEquipment as item}
 							<li class="flex items-center gap-1.5">
 								<span class="{item.equipped ? '' : 'text-muted-foreground'}">{item.name}</span>
 								{#if item.quantity > 1}

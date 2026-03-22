@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.5.0] - 2026-03-22
+
+### Added
+- Inline ability score preview in background ASI card — shows live totals + modifiers directly below the +2/+1 choices, updating instantly as bonuses are distributed
+- Skill bonus preview on skills step — each skill card shows expected modifier, updates live as proficiencies are toggled
+- SRD example uses for all 18 skills shown on skill selection cards
+- Stats preview grid on skills page showing current ability scores
+- Feats section on character sheet — displays all feats with source badges (Background, Lv 4, etc.) and collapsible descriptions with effects
+- Weapons section on character sheet — shows attack bonus, damage dice + modifier, damage type, properties, and range for each weapon
+- ASI/Feat distinction in Features & Traits — "Ability Score Improvement" and "Epic Boon" features now show what was actually chosen (e.g., "Feat: Alert" or "ASI: +2 STR")
+- Subclass display enhancement — subclass selection features now show the chosen subclass name (e.g., "Fighter Subclass: Champion")
+- Feature choice data in content pack — 18 features across 10 classes now have `choices` arrays: Fighting Style (Fighter/Paladin/Ranger), Weapon Mastery (Fighter/Barbarian/Paladin/Ranger/Rogue), Expertise (Bard/Ranger/Rogue), Metamagic (Sorcerer), Eldritch Invocations (Warlock)
+- Feature choice UI in wizard class step — players can select Fighting Style, Weapon Mastery, Expertise, etc. during character creation
+- Feature choice UI in level-up — new features with choices at the gained level prompt for selections
+- Feature choice display on character sheet — selected choices shown next to features (e.g., "Fighting Style: Defense")
+- Character edit page (`/sheet/[id]/edit`) — edit name, HP, equipment, currency, and flavor text (personality, ideals, bonds, flaws, appearance, backstory) without affecting mechanical choices
+- Edit button on character sheet actions bar
+
+### Fixed
+- Features & Traits ordering — class and subclass features now sorted by level (was: all class features then all subclass features)
+- Equipment section split — weapons shown in dedicated Weapons card with attack/damage details; non-weapon equipment in separate Equipment card
+- Background detail panel shows proper names for tools ("Calligrapher Supplies" not "calligrapher-supplies"), skills, and origin feats ("Magic Initiate: Cleric" not "magic-initiate-cleric")
+- Background feat is now auto-assigned (not a player choice) — backgrounds grant a specific feat per SRD 5.2.1
+- ASI & Feats wizard step hidden at level 1 — no longer shown when there are no ASI levels to handle
+- Removed confusing "overlap" badge from skills step — overlap handling still works correctly under the hood
+- SelectionCard checkmark vertically centered with first content row
+
 ## [0.4.1] - 2026-03-22
 
 ### Added

@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { getContext } from 'svelte';
+	import { getContext, onDestroy } from 'svelte';
 	import { wizardStore } from '$lib/stores/wizard.js';
 	import type { ClassDefinition, BackgroundDefinition } from '$lib/types/content-pack.js';
 	import type { SkillSelection } from '$lib/types/character.js';
-	import type { SkillId } from '$lib/types/common.js';
-	import { SKILL_ABILITIES } from '$lib/types/common.js';
+	import type { AbilityId, SkillId } from '$lib/types/common.js';
+	import { SKILL_ABILITIES, ABILITY_NAMES } from '$lib/types/common.js';
 	import { computeSkillChoiceContext, getSelectableSkills } from '$lib/engine/skills.js';
-	import { kebabToTitle } from '$lib/utils/format.js';
+	import { allAbilityTotals, allAbilityModifiers } from '$lib/engine/ability-scores.js';
+	import { kebabToTitle, formatModifier } from '$lib/utils/format.js';
+	import { Separator } from '$lib/components/ui/separator';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
 	import SelectionCard from '$lib/components/ui/selection-card/SelectionCard.svelte';
 	import WizardNav from '$lib/components/wizard/WizardNav.svelte';
@@ -93,6 +95,50 @@
 	function abilityAbbr(skillId: SkillId): string {
 		return SKILL_ABILITIES[skillId].toUpperCase();
 	}
+
+	const SKILL_EXAMPLES: Record<SkillId, string> = {
+		acrobatics: 'Stay on your feet in a tricky situation, or perform an acrobatic stunt.',
+		'animal-handling': 'Calm or train an animal, or get an animal to behave in a certain way.',
+		arcana: 'Recall lore about spells, magic items, and the planes of existence.',
+		athletics: 'Jump farther than normal, stay afloat in rough water, or break something.',
+		deception: 'Tell a convincing lie, or wear a disguise convincingly.',
+		history: 'Recall lore about historical events, people, nations, and cultures.',
+		insight: "Discern a person's mood and intentions.",
+		intimidation: 'Awe or threaten someone into doing what you want.',
+		investigation: 'Find obscure information in books, or deduce how something works.',
+		medicine: 'Diagnose an illness, or determine what killed the recently slain.',
+		nature: 'Recall lore about terrain, plants, animals, and weather.',
+		perception: "Using a combination of senses, notice something that's easy to miss.",
+		performance: 'Act, tell a story, perform music, or dance.',
+		persuasion: 'Honestly and graciously convince someone of something.',
+		religion: 'Recall lore about gods, religious rituals, and holy symbols.',
+		'sleight-of-hand': 'Pick a pocket, conceal a handheld object, or perform legerdemain.',
+		stealth: 'Escape notice by moving quietly and hiding behind things.',
+		survival: 'Follow tracks, forage, find a trail, or avoid natural hazards.'
+	};
+
+	// Reactive store for ability score preview
+	let wizChar = $state(wizardStore.getCharacter());
+	const unsubWiz = wizardStore.subscribe((s) => { wizChar = s.character; });
+	onDestroy(unsubWiz);
+
+	const abilityMods = $derived(
+		wizChar?.abilityScores?.method ? allAbilityModifiers(wizChar.abilityScores) : null
+	);
+	const abilityTotals = $derived(
+		wizChar?.abilityScores?.method ? allAbilityTotals(wizChar.abilityScores) : null
+	);
+	const profBonus = $derived(wizChar?.level ? Math.ceil(wizChar.level / 4) + 1 : 2);
+	const previewAbilities: AbilityId[] = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+
+	// Expected skill bonus: ability mod + proficiency bonus if proficient
+	function skillBonus(skillId: SkillId, proficient: boolean): string {
+		if (!abilityMods) return '';
+		const ability = SKILL_ABILITIES[skillId];
+		const mod = abilityMods[ability];
+		const total = proficient ? mod + profBonus : mod;
+		return formatModifier(total);
+	}
 </script>
 
 <svelte:head>
@@ -126,13 +172,23 @@
 					Background: {skillCtx.backgroundSkills.length} auto-granted
 				</Badge>
 			{/if}
-			{#if skillCtx && skillCtx.overlapSkills.length > 0}
-				<Badge variant="outline" class="text-amber-600 dark:text-amber-400">
-					{skillCtx.overlapSkills.length} overlap — choose replacements from expanded list
-				</Badge>
-			{/if}
-		</Card.Content>
+			</Card.Content>
 	</Card.Root>
+
+	<!-- Stats Preview -->
+	{#if abilityTotals && abilityMods}
+		<div class="mt-4 rounded-lg border border-border bg-card p-3">
+			<div class="grid grid-cols-6 gap-1.5 text-center">
+				{#each previewAbilities as ability}
+					<div class="flex flex-col items-center">
+						<span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{ability}</span>
+						<span class="text-lg font-bold leading-tight">{formatModifier(abilityMods[ability])}</span>
+						<span class="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[10px] font-medium">{abilityTotals[ability]}</span>
+					</div>
+				{/each}
+			</div>
+		</div>
+	{/if}
 
 	<!-- Background skills (read-only) -->
 	{#if skillCtx && skillCtx.backgroundSkills.length > 0}
@@ -143,6 +199,9 @@
 					<Badge variant="secondary" class="px-3 py-1.5 text-sm">
 						{kebabToTitle(skillId)}
 						<span class="ml-1 text-xs opacity-60">({abilityAbbr(skillId)})</span>
+						{#if abilityMods}
+							<span class="ml-1 font-mono text-xs font-bold">{skillBonus(skillId, true)}</span>
+						{/if}
 					</Badge>
 				{/each}
 			</div>
@@ -158,20 +217,20 @@
 			<div class="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="listbox" aria-label="Skill choices" use:rovingTabindex>
 				{#each selectableSkills as skillId}
 					{@const isClassPool = skillCtx?.classChoicePool.includes(skillId)}
+					{@const isProficient = selectedSkillIds.has(skillId)}
 					<SelectionCard
-						selected={selectedSkillIds.has(skillId)}
+						selected={isProficient}
 						onclick={() => toggleSkill(skillId)}
 						compact
 					>
 						<div class="flex items-center gap-2 pr-6">
 							<span class="font-medium text-sm">{kebabToTitle(skillId)}</span>
 							<span class="text-xs text-muted-foreground">({abilityAbbr(skillId)})</span>
+							{#if abilityMods}
+								<span class="ml-auto font-mono text-sm font-bold {isProficient ? 'text-primary' : 'text-muted-foreground'}">{skillBonus(skillId, isProficient)}</span>
+							{/if}
 						</div>
-						{#if !isClassPool}
-							<Badge variant="outline" class="mt-1 text-xs text-amber-600 dark:text-amber-400">
-								Replacement
-							</Badge>
-						{/if}
+						<p class="mt-0.5 text-xs text-muted-foreground leading-relaxed">{SKILL_EXAMPLES[skillId]}</p>
 					</SelectionCard>
 				{/each}
 			</div>

@@ -79,7 +79,192 @@
             "id": "weapon-mastery-barbarian",
             "name": "Weapon Mastery",
             "description": "Your training with weapons allows you to use the mastery properties of two kinds of weapons of your choice with which you have proficiency.",
-            "level": 1
+            "level": 1,
+            "choices": [
+              {
+                "id": "weapon-mastery",
+                "name": "Weapon Mastery",
+                "description": "Choose 2 weapons you have proficiency with.",
+                "options": [
+                  {
+                    "id": "club",
+                    "name": "Club",
+                    "description": "1d4 bludgeoning (light)"
+                  },
+                  {
+                    "id": "dagger",
+                    "name": "Dagger",
+                    "description": "1d4 piercing (finesse, light, thrown)"
+                  },
+                  {
+                    "id": "greatclub",
+                    "name": "Greatclub",
+                    "description": "1d8 bludgeoning (two-handed)"
+                  },
+                  {
+                    "id": "handaxe",
+                    "name": "Handaxe",
+                    "description": "1d6 slashing (light, thrown)"
+                  },
+                  {
+                    "id": "javelin",
+                    "name": "Javelin",
+                    "description": "1d6 piercing (thrown)"
+                  },
+                  {
+                    "id": "light-hammer",
+                    "name": "Light Hammer",
+                    "description": "1d4 bludgeoning (light, thrown)"
+                  },
+                  {
+                    "id": "mace",
+                    "name": "Mace",
+                    "description": "1d6 bludgeoning"
+                  },
+                  {
+                    "id": "quarterstaff",
+                    "name": "Quarterstaff",
+                    "description": "1d6 bludgeoning (versatile)"
+                  },
+                  {
+                    "id": "sickle",
+                    "name": "Sickle",
+                    "description": "1d4 slashing (light)"
+                  },
+                  {
+                    "id": "spear",
+                    "name": "Spear",
+                    "description": "1d6 piercing (thrown, versatile)"
+                  },
+                  {
+                    "id": "light-crossbow",
+                    "name": "Light Crossbow",
+                    "description": "1d8 piercing (ammunition, loading, two-handed)"
+                  },
+                  {
+                    "id": "dart",
+                    "name": "Dart",
+                    "description": "1d4 piercing (finesse, thrown)"
+                  },
+                  {
+                    "id": "shortbow",
+                    "name": "Shortbow",
+                    "description": "1d6 piercing (ammunition, two-handed)"
+                  },
+                  {
+                    "id": "sling",
+                    "name": "Sling",
+                    "description": "1d4 bludgeoning (ammunition)"
+                  },
+                  {
+                    "id": "battleaxe",
+                    "name": "Battleaxe",
+                    "description": "1d8 slashing (versatile)"
+                  },
+                  {
+                    "id": "flail",
+                    "name": "Flail",
+                    "description": "1d8 bludgeoning"
+                  },
+                  {
+                    "id": "glaive",
+                    "name": "Glaive",
+                    "description": "1d10 slashing (heavy, reach, two-handed)"
+                  },
+                  {
+                    "id": "greataxe",
+                    "name": "Greataxe",
+                    "description": "1d12 slashing (heavy, two-handed)"
+                  },
+                  {
+                    "id": "greatsword",
+                    "name": "Greatsword",
+                    "description": "2d6 slashing (heavy, two-handed)"
+                  },
+                  {
+                    "id": "halberd",
+                    "name": "Halberd",
+                    "description": "1d10 slashing (heavy, reach, two-handed)"
+                  },
+                  {
+                    "id": "lance",
+                    "name": "Lance",
+                    "description": "1d12 piercing (reach, special)"
+                  },
+                  {
+                    "id": "longsword",
+                    "name": "Longsword",
+                    "description": "1d8 slashing (versatile)"
+                  },
+                  {
+                    "id": "maul",
+                    "name": "Maul",
+                    "description": "2d6 bludgeoning (heavy, two-handed)"
+                  },
+                  {
+                    "id": "morningstar",
+                    "name": "Morningstar",
+                    "description": "1d8 piercing"
+                  },
+                  {
+                    "id": "pike",
+                    "name": "Pike",
+                    "description": "1d10 piercing (heavy, reach, two-handed)"
+                  },
+                  {
+                    "id": "rapier",
+                    "name": "Rapier",
+                    "description": "1d8 piercing (finesse)"
+                  },
+                  {
+                    "id": "scimitar",
+                    "name": "Scimitar",
+                    "description": "1d6 slashing (finesse, light)"
+                  },
+                  {
+                    "id": "shortsword",
+                    "name": "Shortsword",
+                    "description": "1d6 piercing (finesse, light)"
+                  },
+                  {
+                    "id": "trident",
+                    "name": "Trident",
+                    "description": "1d6 piercing (thrown, versatile)"
+                  },
+                  {
+                    "id": "war-pick",
+                    "name": "War Pick",
+                    "description": "1d8 piercing"
+                  },
+                  {
+                    "id": "warhammer",
+                    "name": "Warhammer",
+                    "description": "1d8 bludgeoning (versatile)"
+                  },
+                  {
+                    "id": "whip",
+                    "name": "Whip",
+                    "description": "1d4 slashing (finesse, reach)"
+                  },
+                  {
+                    "id": "hand-crossbow",
+                    "name": "Hand Crossbow",
+                    "description": "1d6 piercing (ammunition, light, loading)"
+                  },
+                  {
+                    "id": "heavy-crossbow",
+                    "name": "Heavy Crossbow",
+                    "description": "1d10 piercing (ammunition, heavy, loading, two-handed)"
+                  },
+                  {
+                    "id": "longbow",
+                    "name": "Longbow",
+                    "description": "1d8 piercing (ammunition, heavy, two-handed)"
+                  }
+                ],
+                "count": 2
+              }
+            ]
           }
         ],
         "classSpecific": {
@@ -559,7 +744,107 @@
             "id": "expertise-bard-2",
             "name": "Expertise",
             "description": "You gain Expertise in two of your skill proficiencies of your choice.",
-            "level": 2
+            "level": 2,
+            "choices": [
+              {
+                "id": "expertise",
+                "name": "Expertise",
+                "description": "Choose 2 skill proficiencies to gain expertise in.",
+                "options": [
+                  {
+                    "id": "acrobatics",
+                    "name": "Acrobatics",
+                    "description": "Dexterity-based skill"
+                  },
+                  {
+                    "id": "animal-handling",
+                    "name": "Animal Handling",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "arcana",
+                    "name": "Arcana",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "athletics",
+                    "name": "Athletics",
+                    "description": "Strength-based skill"
+                  },
+                  {
+                    "id": "deception",
+                    "name": "Deception",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "history",
+                    "name": "History",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "insight",
+                    "name": "Insight",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "intimidation",
+                    "name": "Intimidation",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "investigation",
+                    "name": "Investigation",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "medicine",
+                    "name": "Medicine",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "nature",
+                    "name": "Nature",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "perception",
+                    "name": "Perception",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "performance",
+                    "name": "Performance",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "persuasion",
+                    "name": "Persuasion",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "religion",
+                    "name": "Religion",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "sleight-of-hand",
+                    "name": "Sleight of Hand",
+                    "description": "Dexterity-based skill"
+                  },
+                  {
+                    "id": "stealth",
+                    "name": "Stealth",
+                    "description": "Dexterity-based skill"
+                  },
+                  {
+                    "id": "survival",
+                    "name": "Survival",
+                    "description": "Wisdom-based skill"
+                  }
+                ],
+                "count": 2
+              }
+            ]
           },
           {
             "id": "jack-of-all-trades",
@@ -689,7 +974,107 @@
             "id": "expertise-bard-9",
             "name": "Expertise",
             "description": "You gain Expertise in two more of your skill proficiencies of your choice.",
-            "level": 9
+            "level": 9,
+            "choices": [
+              {
+                "id": "expertise",
+                "name": "Expertise",
+                "description": "Choose 2 skill proficiencies to gain expertise in.",
+                "options": [
+                  {
+                    "id": "acrobatics",
+                    "name": "Acrobatics",
+                    "description": "Dexterity-based skill"
+                  },
+                  {
+                    "id": "animal-handling",
+                    "name": "Animal Handling",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "arcana",
+                    "name": "Arcana",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "athletics",
+                    "name": "Athletics",
+                    "description": "Strength-based skill"
+                  },
+                  {
+                    "id": "deception",
+                    "name": "Deception",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "history",
+                    "name": "History",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "insight",
+                    "name": "Insight",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "intimidation",
+                    "name": "Intimidation",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "investigation",
+                    "name": "Investigation",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "medicine",
+                    "name": "Medicine",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "nature",
+                    "name": "Nature",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "perception",
+                    "name": "Perception",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "performance",
+                    "name": "Performance",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "persuasion",
+                    "name": "Persuasion",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "religion",
+                    "name": "Religion",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "sleight-of-hand",
+                    "name": "Sleight of Hand",
+                    "description": "Dexterity-based skill"
+                  },
+                  {
+                    "id": "stealth",
+                    "name": "Stealth",
+                    "description": "Dexterity-based skill"
+                  },
+                  {
+                    "id": "survival",
+                    "name": "Survival",
+                    "description": "Wisdom-based skill"
+                  }
+                ],
+                "count": 2
+              }
+            ]
           }
         ],
         "cantripsKnown": 3,
@@ -2047,7 +2432,47 @@
             "id": "fighting-style-fighter",
             "name": "Fighting Style",
             "description": "You adopt a particular style of fighting as your specialty. Choose one Fighting Style feat.",
-            "level": 1
+            "level": 1,
+            "choices": [
+              {
+                "id": "fighting-style",
+                "name": "Fighting Style",
+                "description": "Choose a Fighting Style feat.",
+                "options": [
+                  {
+                    "id": "archery",
+                    "name": "Archery",
+                    "description": "You gain a +2 bonus to attack rolls you make with Ranged weapons."
+                  },
+                  {
+                    "id": "defense",
+                    "name": "Defense",
+                    "description": "While you are wearing armor, you gain a +1 bonus to Armor Class."
+                  },
+                  {
+                    "id": "dueling",
+                    "name": "Dueling",
+                    "description": "When you are wielding a Melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon."
+                  },
+                  {
+                    "id": "great-weapon-fighting",
+                    "name": "Great Weapon Fighting",
+                    "description": "When you roll damage for an attack you make with a Melee weapon that you are holding with two hands, you can treat any 1 or 2 on a damage die as a 3. The weapon must have the Two-Handed or Versatile property to gain this benefit."
+                  },
+                  {
+                    "id": "protection",
+                    "name": "Protection",
+                    "description": "When a creature you can see attacks a target other than you that is within 5 feet of you, you can take a Reaction to interpose your Shield. You impose Disadvantage on the attack roll."
+                  },
+                  {
+                    "id": "two-weapon-fighting",
+                    "name": "Two-Weapon Fighting",
+                    "description": "When you make an extra attack as a result of using a weapon that has the Light property, you can add your ability modifier to the damage of that attack."
+                  }
+                ],
+                "count": 1
+              }
+            ]
           },
           {
             "id": "second-wind",
@@ -2059,7 +2484,192 @@
             "id": "weapon-mastery-fighter",
             "name": "Weapon Mastery",
             "description": "Your training with weapons allows you to use the mastery properties of three kinds of weapons of your choice with which you have proficiency.",
-            "level": 1
+            "level": 1,
+            "choices": [
+              {
+                "id": "weapon-mastery",
+                "name": "Weapon Mastery",
+                "description": "Choose 3 weapons you have proficiency with.",
+                "options": [
+                  {
+                    "id": "club",
+                    "name": "Club",
+                    "description": "1d4 bludgeoning (light)"
+                  },
+                  {
+                    "id": "dagger",
+                    "name": "Dagger",
+                    "description": "1d4 piercing (finesse, light, thrown)"
+                  },
+                  {
+                    "id": "greatclub",
+                    "name": "Greatclub",
+                    "description": "1d8 bludgeoning (two-handed)"
+                  },
+                  {
+                    "id": "handaxe",
+                    "name": "Handaxe",
+                    "description": "1d6 slashing (light, thrown)"
+                  },
+                  {
+                    "id": "javelin",
+                    "name": "Javelin",
+                    "description": "1d6 piercing (thrown)"
+                  },
+                  {
+                    "id": "light-hammer",
+                    "name": "Light Hammer",
+                    "description": "1d4 bludgeoning (light, thrown)"
+                  },
+                  {
+                    "id": "mace",
+                    "name": "Mace",
+                    "description": "1d6 bludgeoning"
+                  },
+                  {
+                    "id": "quarterstaff",
+                    "name": "Quarterstaff",
+                    "description": "1d6 bludgeoning (versatile)"
+                  },
+                  {
+                    "id": "sickle",
+                    "name": "Sickle",
+                    "description": "1d4 slashing (light)"
+                  },
+                  {
+                    "id": "spear",
+                    "name": "Spear",
+                    "description": "1d6 piercing (thrown, versatile)"
+                  },
+                  {
+                    "id": "light-crossbow",
+                    "name": "Light Crossbow",
+                    "description": "1d8 piercing (ammunition, loading, two-handed)"
+                  },
+                  {
+                    "id": "dart",
+                    "name": "Dart",
+                    "description": "1d4 piercing (finesse, thrown)"
+                  },
+                  {
+                    "id": "shortbow",
+                    "name": "Shortbow",
+                    "description": "1d6 piercing (ammunition, two-handed)"
+                  },
+                  {
+                    "id": "sling",
+                    "name": "Sling",
+                    "description": "1d4 bludgeoning (ammunition)"
+                  },
+                  {
+                    "id": "battleaxe",
+                    "name": "Battleaxe",
+                    "description": "1d8 slashing (versatile)"
+                  },
+                  {
+                    "id": "flail",
+                    "name": "Flail",
+                    "description": "1d8 bludgeoning"
+                  },
+                  {
+                    "id": "glaive",
+                    "name": "Glaive",
+                    "description": "1d10 slashing (heavy, reach, two-handed)"
+                  },
+                  {
+                    "id": "greataxe",
+                    "name": "Greataxe",
+                    "description": "1d12 slashing (heavy, two-handed)"
+                  },
+                  {
+                    "id": "greatsword",
+                    "name": "Greatsword",
+                    "description": "2d6 slashing (heavy, two-handed)"
+                  },
+                  {
+                    "id": "halberd",
+                    "name": "Halberd",
+                    "description": "1d10 slashing (heavy, reach, two-handed)"
+                  },
+                  {
+                    "id": "lance",
+                    "name": "Lance",
+                    "description": "1d12 piercing (reach, special)"
+                  },
+                  {
+                    "id": "longsword",
+                    "name": "Longsword",
+                    "description": "1d8 slashing (versatile)"
+                  },
+                  {
+                    "id": "maul",
+                    "name": "Maul",
+                    "description": "2d6 bludgeoning (heavy, two-handed)"
+                  },
+                  {
+                    "id": "morningstar",
+                    "name": "Morningstar",
+                    "description": "1d8 piercing"
+                  },
+                  {
+                    "id": "pike",
+                    "name": "Pike",
+                    "description": "1d10 piercing (heavy, reach, two-handed)"
+                  },
+                  {
+                    "id": "rapier",
+                    "name": "Rapier",
+                    "description": "1d8 piercing (finesse)"
+                  },
+                  {
+                    "id": "scimitar",
+                    "name": "Scimitar",
+                    "description": "1d6 slashing (finesse, light)"
+                  },
+                  {
+                    "id": "shortsword",
+                    "name": "Shortsword",
+                    "description": "1d6 piercing (finesse, light)"
+                  },
+                  {
+                    "id": "trident",
+                    "name": "Trident",
+                    "description": "1d6 piercing (thrown, versatile)"
+                  },
+                  {
+                    "id": "war-pick",
+                    "name": "War Pick",
+                    "description": "1d8 piercing"
+                  },
+                  {
+                    "id": "warhammer",
+                    "name": "Warhammer",
+                    "description": "1d8 bludgeoning (versatile)"
+                  },
+                  {
+                    "id": "whip",
+                    "name": "Whip",
+                    "description": "1d4 slashing (finesse, reach)"
+                  },
+                  {
+                    "id": "hand-crossbow",
+                    "name": "Hand Crossbow",
+                    "description": "1d6 piercing (ammunition, light, loading)"
+                  },
+                  {
+                    "id": "heavy-crossbow",
+                    "name": "Heavy Crossbow",
+                    "description": "1d10 piercing (ammunition, heavy, loading, two-handed)"
+                  },
+                  {
+                    "id": "longbow",
+                    "name": "Longbow",
+                    "description": "1d8 piercing (ammunition, heavy, two-handed)"
+                  }
+                ],
+                "count": 3
+              }
+            ]
           }
         ]
       },
@@ -2310,7 +2920,47 @@
             "id": "additional-fighting-style",
             "name": "Additional Fighting Style",
             "description": "You gain another Fighting Style feat of your choice.",
-            "level": 7
+            "level": 7,
+            "choices": [
+              {
+                "id": "additional-fighting-style",
+                "name": "Additional Fighting Style",
+                "description": "Choose a Fighting Style feat.",
+                "options": [
+                  {
+                    "id": "archery",
+                    "name": "Archery",
+                    "description": "You gain a +2 bonus to attack rolls you make with Ranged weapons."
+                  },
+                  {
+                    "id": "defense",
+                    "name": "Defense",
+                    "description": "While you are wearing armor, you gain a +1 bonus to Armor Class."
+                  },
+                  {
+                    "id": "dueling",
+                    "name": "Dueling",
+                    "description": "When you are wielding a Melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon."
+                  },
+                  {
+                    "id": "great-weapon-fighting",
+                    "name": "Great Weapon Fighting",
+                    "description": "When you roll damage for an attack you make with a Melee weapon that you are holding with two hands, you can treat any 1 or 2 on a damage die as a 3. The weapon must have the Two-Handed or Versatile property to gain this benefit."
+                  },
+                  {
+                    "id": "protection",
+                    "name": "Protection",
+                    "description": "When a creature you can see attacks a target other than you that is within 5 feet of you, you can take a Reaction to interpose your Shield. You impose Disadvantage on the attack roll."
+                  },
+                  {
+                    "id": "two-weapon-fighting",
+                    "name": "Two-Weapon Fighting",
+                    "description": "When you make an extra attack as a result of using a weapon that has the Light property, you can add your ability modifier to the damage of that attack."
+                  }
+                ],
+                "count": 1
+              }
+            ]
           },
           {
             "id": "heroic-warrior",
@@ -2932,7 +3582,192 @@
             "id": "weapon-mastery-paladin",
             "name": "Weapon Mastery",
             "description": "Your training with weapons allows you to use the mastery properties of two kinds of weapons of your choice with which you have proficiency.",
-            "level": 1
+            "level": 1,
+            "choices": [
+              {
+                "id": "weapon-mastery",
+                "name": "Weapon Mastery",
+                "description": "Choose 2 weapons you have proficiency with.",
+                "options": [
+                  {
+                    "id": "club",
+                    "name": "Club",
+                    "description": "1d4 bludgeoning (light)"
+                  },
+                  {
+                    "id": "dagger",
+                    "name": "Dagger",
+                    "description": "1d4 piercing (finesse, light, thrown)"
+                  },
+                  {
+                    "id": "greatclub",
+                    "name": "Greatclub",
+                    "description": "1d8 bludgeoning (two-handed)"
+                  },
+                  {
+                    "id": "handaxe",
+                    "name": "Handaxe",
+                    "description": "1d6 slashing (light, thrown)"
+                  },
+                  {
+                    "id": "javelin",
+                    "name": "Javelin",
+                    "description": "1d6 piercing (thrown)"
+                  },
+                  {
+                    "id": "light-hammer",
+                    "name": "Light Hammer",
+                    "description": "1d4 bludgeoning (light, thrown)"
+                  },
+                  {
+                    "id": "mace",
+                    "name": "Mace",
+                    "description": "1d6 bludgeoning"
+                  },
+                  {
+                    "id": "quarterstaff",
+                    "name": "Quarterstaff",
+                    "description": "1d6 bludgeoning (versatile)"
+                  },
+                  {
+                    "id": "sickle",
+                    "name": "Sickle",
+                    "description": "1d4 slashing (light)"
+                  },
+                  {
+                    "id": "spear",
+                    "name": "Spear",
+                    "description": "1d6 piercing (thrown, versatile)"
+                  },
+                  {
+                    "id": "light-crossbow",
+                    "name": "Light Crossbow",
+                    "description": "1d8 piercing (ammunition, loading, two-handed)"
+                  },
+                  {
+                    "id": "dart",
+                    "name": "Dart",
+                    "description": "1d4 piercing (finesse, thrown)"
+                  },
+                  {
+                    "id": "shortbow",
+                    "name": "Shortbow",
+                    "description": "1d6 piercing (ammunition, two-handed)"
+                  },
+                  {
+                    "id": "sling",
+                    "name": "Sling",
+                    "description": "1d4 bludgeoning (ammunition)"
+                  },
+                  {
+                    "id": "battleaxe",
+                    "name": "Battleaxe",
+                    "description": "1d8 slashing (versatile)"
+                  },
+                  {
+                    "id": "flail",
+                    "name": "Flail",
+                    "description": "1d8 bludgeoning"
+                  },
+                  {
+                    "id": "glaive",
+                    "name": "Glaive",
+                    "description": "1d10 slashing (heavy, reach, two-handed)"
+                  },
+                  {
+                    "id": "greataxe",
+                    "name": "Greataxe",
+                    "description": "1d12 slashing (heavy, two-handed)"
+                  },
+                  {
+                    "id": "greatsword",
+                    "name": "Greatsword",
+                    "description": "2d6 slashing (heavy, two-handed)"
+                  },
+                  {
+                    "id": "halberd",
+                    "name": "Halberd",
+                    "description": "1d10 slashing (heavy, reach, two-handed)"
+                  },
+                  {
+                    "id": "lance",
+                    "name": "Lance",
+                    "description": "1d12 piercing (reach, special)"
+                  },
+                  {
+                    "id": "longsword",
+                    "name": "Longsword",
+                    "description": "1d8 slashing (versatile)"
+                  },
+                  {
+                    "id": "maul",
+                    "name": "Maul",
+                    "description": "2d6 bludgeoning (heavy, two-handed)"
+                  },
+                  {
+                    "id": "morningstar",
+                    "name": "Morningstar",
+                    "description": "1d8 piercing"
+                  },
+                  {
+                    "id": "pike",
+                    "name": "Pike",
+                    "description": "1d10 piercing (heavy, reach, two-handed)"
+                  },
+                  {
+                    "id": "rapier",
+                    "name": "Rapier",
+                    "description": "1d8 piercing (finesse)"
+                  },
+                  {
+                    "id": "scimitar",
+                    "name": "Scimitar",
+                    "description": "1d6 slashing (finesse, light)"
+                  },
+                  {
+                    "id": "shortsword",
+                    "name": "Shortsword",
+                    "description": "1d6 piercing (finesse, light)"
+                  },
+                  {
+                    "id": "trident",
+                    "name": "Trident",
+                    "description": "1d6 piercing (thrown, versatile)"
+                  },
+                  {
+                    "id": "war-pick",
+                    "name": "War Pick",
+                    "description": "1d8 piercing"
+                  },
+                  {
+                    "id": "warhammer",
+                    "name": "Warhammer",
+                    "description": "1d8 bludgeoning (versatile)"
+                  },
+                  {
+                    "id": "whip",
+                    "name": "Whip",
+                    "description": "1d4 slashing (finesse, reach)"
+                  },
+                  {
+                    "id": "hand-crossbow",
+                    "name": "Hand Crossbow",
+                    "description": "1d6 piercing (ammunition, light, loading)"
+                  },
+                  {
+                    "id": "heavy-crossbow",
+                    "name": "Heavy Crossbow",
+                    "description": "1d10 piercing (ammunition, heavy, loading, two-handed)"
+                  },
+                  {
+                    "id": "longbow",
+                    "name": "Longbow",
+                    "description": "1d8 piercing (ammunition, heavy, two-handed)"
+                  }
+                ],
+                "count": 2
+              }
+            ]
           }
         ]
       },
@@ -2944,7 +3779,47 @@
             "id": "fighting-style-paladin",
             "name": "Fighting Style",
             "description": "You adopt a particular style of fighting as your specialty. Choose one Fighting Style feat.",
-            "level": 2
+            "level": 2,
+            "choices": [
+              {
+                "id": "fighting-style",
+                "name": "Fighting Style",
+                "description": "Choose a Fighting Style feat.",
+                "options": [
+                  {
+                    "id": "archery",
+                    "name": "Archery",
+                    "description": "You gain a +2 bonus to attack rolls you make with Ranged weapons."
+                  },
+                  {
+                    "id": "defense",
+                    "name": "Defense",
+                    "description": "While you are wearing armor, you gain a +1 bonus to Armor Class."
+                  },
+                  {
+                    "id": "dueling",
+                    "name": "Dueling",
+                    "description": "When you are wielding a Melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon."
+                  },
+                  {
+                    "id": "great-weapon-fighting",
+                    "name": "Great Weapon Fighting",
+                    "description": "When you roll damage for an attack you make with a Melee weapon that you are holding with two hands, you can treat any 1 or 2 on a damage die as a 3. The weapon must have the Two-Handed or Versatile property to gain this benefit."
+                  },
+                  {
+                    "id": "protection",
+                    "name": "Protection",
+                    "description": "When a creature you can see attacks a target other than you that is within 5 feet of you, you can take a Reaction to interpose your Shield. You impose Disadvantage on the attack roll."
+                  },
+                  {
+                    "id": "two-weapon-fighting",
+                    "name": "Two-Weapon Fighting",
+                    "description": "When you make an extra attack as a result of using a weapon that has the Light property, you can add your ability modifier to the damage of that attack."
+                  }
+                ],
+                "count": 1
+              }
+            ]
           },
           {
             "id": "paladins-smite",
@@ -3400,7 +4275,192 @@
             "id": "weapon-mastery-ranger",
             "name": "Weapon Mastery",
             "description": "Your training with weapons allows you to use the mastery properties of two kinds of weapons of your choice with which you have proficiency.",
-            "level": 1
+            "level": 1,
+            "choices": [
+              {
+                "id": "weapon-mastery",
+                "name": "Weapon Mastery",
+                "description": "Choose 2 weapons you have proficiency with.",
+                "options": [
+                  {
+                    "id": "club",
+                    "name": "Club",
+                    "description": "1d4 bludgeoning (light)"
+                  },
+                  {
+                    "id": "dagger",
+                    "name": "Dagger",
+                    "description": "1d4 piercing (finesse, light, thrown)"
+                  },
+                  {
+                    "id": "greatclub",
+                    "name": "Greatclub",
+                    "description": "1d8 bludgeoning (two-handed)"
+                  },
+                  {
+                    "id": "handaxe",
+                    "name": "Handaxe",
+                    "description": "1d6 slashing (light, thrown)"
+                  },
+                  {
+                    "id": "javelin",
+                    "name": "Javelin",
+                    "description": "1d6 piercing (thrown)"
+                  },
+                  {
+                    "id": "light-hammer",
+                    "name": "Light Hammer",
+                    "description": "1d4 bludgeoning (light, thrown)"
+                  },
+                  {
+                    "id": "mace",
+                    "name": "Mace",
+                    "description": "1d6 bludgeoning"
+                  },
+                  {
+                    "id": "quarterstaff",
+                    "name": "Quarterstaff",
+                    "description": "1d6 bludgeoning (versatile)"
+                  },
+                  {
+                    "id": "sickle",
+                    "name": "Sickle",
+                    "description": "1d4 slashing (light)"
+                  },
+                  {
+                    "id": "spear",
+                    "name": "Spear",
+                    "description": "1d6 piercing (thrown, versatile)"
+                  },
+                  {
+                    "id": "light-crossbow",
+                    "name": "Light Crossbow",
+                    "description": "1d8 piercing (ammunition, loading, two-handed)"
+                  },
+                  {
+                    "id": "dart",
+                    "name": "Dart",
+                    "description": "1d4 piercing (finesse, thrown)"
+                  },
+                  {
+                    "id": "shortbow",
+                    "name": "Shortbow",
+                    "description": "1d6 piercing (ammunition, two-handed)"
+                  },
+                  {
+                    "id": "sling",
+                    "name": "Sling",
+                    "description": "1d4 bludgeoning (ammunition)"
+                  },
+                  {
+                    "id": "battleaxe",
+                    "name": "Battleaxe",
+                    "description": "1d8 slashing (versatile)"
+                  },
+                  {
+                    "id": "flail",
+                    "name": "Flail",
+                    "description": "1d8 bludgeoning"
+                  },
+                  {
+                    "id": "glaive",
+                    "name": "Glaive",
+                    "description": "1d10 slashing (heavy, reach, two-handed)"
+                  },
+                  {
+                    "id": "greataxe",
+                    "name": "Greataxe",
+                    "description": "1d12 slashing (heavy, two-handed)"
+                  },
+                  {
+                    "id": "greatsword",
+                    "name": "Greatsword",
+                    "description": "2d6 slashing (heavy, two-handed)"
+                  },
+                  {
+                    "id": "halberd",
+                    "name": "Halberd",
+                    "description": "1d10 slashing (heavy, reach, two-handed)"
+                  },
+                  {
+                    "id": "lance",
+                    "name": "Lance",
+                    "description": "1d12 piercing (reach, special)"
+                  },
+                  {
+                    "id": "longsword",
+                    "name": "Longsword",
+                    "description": "1d8 slashing (versatile)"
+                  },
+                  {
+                    "id": "maul",
+                    "name": "Maul",
+                    "description": "2d6 bludgeoning (heavy, two-handed)"
+                  },
+                  {
+                    "id": "morningstar",
+                    "name": "Morningstar",
+                    "description": "1d8 piercing"
+                  },
+                  {
+                    "id": "pike",
+                    "name": "Pike",
+                    "description": "1d10 piercing (heavy, reach, two-handed)"
+                  },
+                  {
+                    "id": "rapier",
+                    "name": "Rapier",
+                    "description": "1d8 piercing (finesse)"
+                  },
+                  {
+                    "id": "scimitar",
+                    "name": "Scimitar",
+                    "description": "1d6 slashing (finesse, light)"
+                  },
+                  {
+                    "id": "shortsword",
+                    "name": "Shortsword",
+                    "description": "1d6 piercing (finesse, light)"
+                  },
+                  {
+                    "id": "trident",
+                    "name": "Trident",
+                    "description": "1d6 piercing (thrown, versatile)"
+                  },
+                  {
+                    "id": "war-pick",
+                    "name": "War Pick",
+                    "description": "1d8 piercing"
+                  },
+                  {
+                    "id": "warhammer",
+                    "name": "Warhammer",
+                    "description": "1d8 bludgeoning (versatile)"
+                  },
+                  {
+                    "id": "whip",
+                    "name": "Whip",
+                    "description": "1d4 slashing (finesse, reach)"
+                  },
+                  {
+                    "id": "hand-crossbow",
+                    "name": "Hand Crossbow",
+                    "description": "1d6 piercing (ammunition, light, loading)"
+                  },
+                  {
+                    "id": "heavy-crossbow",
+                    "name": "Heavy Crossbow",
+                    "description": "1d10 piercing (ammunition, heavy, loading, two-handed)"
+                  },
+                  {
+                    "id": "longbow",
+                    "name": "Longbow",
+                    "description": "1d8 piercing (ammunition, heavy, two-handed)"
+                  }
+                ],
+                "count": 2
+              }
+            ]
           }
         ]
       },
@@ -3418,7 +4478,47 @@
             "id": "fighting-style-ranger",
             "name": "Fighting Style",
             "description": "You adopt a particular style of fighting as your specialty. Choose one Fighting Style feat.",
-            "level": 2
+            "level": 2,
+            "choices": [
+              {
+                "id": "fighting-style",
+                "name": "Fighting Style",
+                "description": "Choose a Fighting Style feat.",
+                "options": [
+                  {
+                    "id": "archery",
+                    "name": "Archery",
+                    "description": "You gain a +2 bonus to attack rolls you make with Ranged weapons."
+                  },
+                  {
+                    "id": "defense",
+                    "name": "Defense",
+                    "description": "While you are wearing armor, you gain a +1 bonus to Armor Class."
+                  },
+                  {
+                    "id": "dueling",
+                    "name": "Dueling",
+                    "description": "When you are wielding a Melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon."
+                  },
+                  {
+                    "id": "great-weapon-fighting",
+                    "name": "Great Weapon Fighting",
+                    "description": "When you roll damage for an attack you make with a Melee weapon that you are holding with two hands, you can treat any 1 or 2 on a damage die as a 3. The weapon must have the Two-Handed or Versatile property to gain this benefit."
+                  },
+                  {
+                    "id": "protection",
+                    "name": "Protection",
+                    "description": "When a creature you can see attacks a target other than you that is within 5 feet of you, you can take a Reaction to interpose your Shield. You impose Disadvantage on the attack roll."
+                  },
+                  {
+                    "id": "two-weapon-fighting",
+                    "name": "Two-Weapon Fighting",
+                    "description": "When you make an extra attack as a result of using a weapon that has the Light property, you can add your ability modifier to the damage of that attack."
+                  }
+                ],
+                "count": 1
+              }
+            ]
           }
         ],
         "spellsKnown": 2,
@@ -3527,7 +4627,107 @@
             "id": "expertise-ranger",
             "name": "Expertise",
             "description": "You gain Expertise in one of your skill proficiencies of your choice.",
-            "level": 9
+            "level": 9,
+            "choices": [
+              {
+                "id": "expertise",
+                "name": "Expertise",
+                "description": "Choose 1 skill proficiency to gain expertise in.",
+                "options": [
+                  {
+                    "id": "acrobatics",
+                    "name": "Acrobatics",
+                    "description": "Dexterity-based skill"
+                  },
+                  {
+                    "id": "animal-handling",
+                    "name": "Animal Handling",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "arcana",
+                    "name": "Arcana",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "athletics",
+                    "name": "Athletics",
+                    "description": "Strength-based skill"
+                  },
+                  {
+                    "id": "deception",
+                    "name": "Deception",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "history",
+                    "name": "History",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "insight",
+                    "name": "Insight",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "intimidation",
+                    "name": "Intimidation",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "investigation",
+                    "name": "Investigation",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "medicine",
+                    "name": "Medicine",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "nature",
+                    "name": "Nature",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "perception",
+                    "name": "Perception",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "performance",
+                    "name": "Performance",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "persuasion",
+                    "name": "Persuasion",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "religion",
+                    "name": "Religion",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "sleight-of-hand",
+                    "name": "Sleight of Hand",
+                    "description": "Dexterity-based skill"
+                  },
+                  {
+                    "id": "stealth",
+                    "name": "Stealth",
+                    "description": "Dexterity-based skill"
+                  },
+                  {
+                    "id": "survival",
+                    "name": "Survival",
+                    "description": "Wisdom-based skill"
+                  }
+                ],
+                "count": 1
+              }
+            ]
           }
         ],
         "spellsKnown": 6,
@@ -3876,7 +5076,107 @@
             "id": "expertise-rogue-1",
             "name": "Expertise",
             "description": "You gain Expertise in two of your skill proficiencies of your choice.",
-            "level": 1
+            "level": 1,
+            "choices": [
+              {
+                "id": "expertise",
+                "name": "Expertise",
+                "description": "Choose 2 skill proficiencies to gain expertise in.",
+                "options": [
+                  {
+                    "id": "acrobatics",
+                    "name": "Acrobatics",
+                    "description": "Dexterity-based skill"
+                  },
+                  {
+                    "id": "animal-handling",
+                    "name": "Animal Handling",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "arcana",
+                    "name": "Arcana",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "athletics",
+                    "name": "Athletics",
+                    "description": "Strength-based skill"
+                  },
+                  {
+                    "id": "deception",
+                    "name": "Deception",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "history",
+                    "name": "History",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "insight",
+                    "name": "Insight",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "intimidation",
+                    "name": "Intimidation",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "investigation",
+                    "name": "Investigation",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "medicine",
+                    "name": "Medicine",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "nature",
+                    "name": "Nature",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "perception",
+                    "name": "Perception",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "performance",
+                    "name": "Performance",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "persuasion",
+                    "name": "Persuasion",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "religion",
+                    "name": "Religion",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "sleight-of-hand",
+                    "name": "Sleight of Hand",
+                    "description": "Dexterity-based skill"
+                  },
+                  {
+                    "id": "stealth",
+                    "name": "Stealth",
+                    "description": "Dexterity-based skill"
+                  },
+                  {
+                    "id": "survival",
+                    "name": "Survival",
+                    "description": "Wisdom-based skill"
+                  }
+                ],
+                "count": 2
+              }
+            ]
           },
           {
             "id": "sneak-attack",
@@ -3894,7 +5194,192 @@
             "id": "weapon-mastery-rogue",
             "name": "Weapon Mastery",
             "description": "Your training with weapons allows you to use the mastery properties of two kinds of weapons of your choice with which you have proficiency.",
-            "level": 1
+            "level": 1,
+            "choices": [
+              {
+                "id": "weapon-mastery",
+                "name": "Weapon Mastery",
+                "description": "Choose 2 weapons you have proficiency with.",
+                "options": [
+                  {
+                    "id": "club",
+                    "name": "Club",
+                    "description": "1d4 bludgeoning (light)"
+                  },
+                  {
+                    "id": "dagger",
+                    "name": "Dagger",
+                    "description": "1d4 piercing (finesse, light, thrown)"
+                  },
+                  {
+                    "id": "greatclub",
+                    "name": "Greatclub",
+                    "description": "1d8 bludgeoning (two-handed)"
+                  },
+                  {
+                    "id": "handaxe",
+                    "name": "Handaxe",
+                    "description": "1d6 slashing (light, thrown)"
+                  },
+                  {
+                    "id": "javelin",
+                    "name": "Javelin",
+                    "description": "1d6 piercing (thrown)"
+                  },
+                  {
+                    "id": "light-hammer",
+                    "name": "Light Hammer",
+                    "description": "1d4 bludgeoning (light, thrown)"
+                  },
+                  {
+                    "id": "mace",
+                    "name": "Mace",
+                    "description": "1d6 bludgeoning"
+                  },
+                  {
+                    "id": "quarterstaff",
+                    "name": "Quarterstaff",
+                    "description": "1d6 bludgeoning (versatile)"
+                  },
+                  {
+                    "id": "sickle",
+                    "name": "Sickle",
+                    "description": "1d4 slashing (light)"
+                  },
+                  {
+                    "id": "spear",
+                    "name": "Spear",
+                    "description": "1d6 piercing (thrown, versatile)"
+                  },
+                  {
+                    "id": "light-crossbow",
+                    "name": "Light Crossbow",
+                    "description": "1d8 piercing (ammunition, loading, two-handed)"
+                  },
+                  {
+                    "id": "dart",
+                    "name": "Dart",
+                    "description": "1d4 piercing (finesse, thrown)"
+                  },
+                  {
+                    "id": "shortbow",
+                    "name": "Shortbow",
+                    "description": "1d6 piercing (ammunition, two-handed)"
+                  },
+                  {
+                    "id": "sling",
+                    "name": "Sling",
+                    "description": "1d4 bludgeoning (ammunition)"
+                  },
+                  {
+                    "id": "battleaxe",
+                    "name": "Battleaxe",
+                    "description": "1d8 slashing (versatile)"
+                  },
+                  {
+                    "id": "flail",
+                    "name": "Flail",
+                    "description": "1d8 bludgeoning"
+                  },
+                  {
+                    "id": "glaive",
+                    "name": "Glaive",
+                    "description": "1d10 slashing (heavy, reach, two-handed)"
+                  },
+                  {
+                    "id": "greataxe",
+                    "name": "Greataxe",
+                    "description": "1d12 slashing (heavy, two-handed)"
+                  },
+                  {
+                    "id": "greatsword",
+                    "name": "Greatsword",
+                    "description": "2d6 slashing (heavy, two-handed)"
+                  },
+                  {
+                    "id": "halberd",
+                    "name": "Halberd",
+                    "description": "1d10 slashing (heavy, reach, two-handed)"
+                  },
+                  {
+                    "id": "lance",
+                    "name": "Lance",
+                    "description": "1d12 piercing (reach, special)"
+                  },
+                  {
+                    "id": "longsword",
+                    "name": "Longsword",
+                    "description": "1d8 slashing (versatile)"
+                  },
+                  {
+                    "id": "maul",
+                    "name": "Maul",
+                    "description": "2d6 bludgeoning (heavy, two-handed)"
+                  },
+                  {
+                    "id": "morningstar",
+                    "name": "Morningstar",
+                    "description": "1d8 piercing"
+                  },
+                  {
+                    "id": "pike",
+                    "name": "Pike",
+                    "description": "1d10 piercing (heavy, reach, two-handed)"
+                  },
+                  {
+                    "id": "rapier",
+                    "name": "Rapier",
+                    "description": "1d8 piercing (finesse)"
+                  },
+                  {
+                    "id": "scimitar",
+                    "name": "Scimitar",
+                    "description": "1d6 slashing (finesse, light)"
+                  },
+                  {
+                    "id": "shortsword",
+                    "name": "Shortsword",
+                    "description": "1d6 piercing (finesse, light)"
+                  },
+                  {
+                    "id": "trident",
+                    "name": "Trident",
+                    "description": "1d6 piercing (thrown, versatile)"
+                  },
+                  {
+                    "id": "war-pick",
+                    "name": "War Pick",
+                    "description": "1d8 piercing"
+                  },
+                  {
+                    "id": "warhammer",
+                    "name": "Warhammer",
+                    "description": "1d8 bludgeoning (versatile)"
+                  },
+                  {
+                    "id": "whip",
+                    "name": "Whip",
+                    "description": "1d4 slashing (finesse, reach)"
+                  },
+                  {
+                    "id": "hand-crossbow",
+                    "name": "Hand Crossbow",
+                    "description": "1d6 piercing (ammunition, light, loading)"
+                  },
+                  {
+                    "id": "heavy-crossbow",
+                    "name": "Heavy Crossbow",
+                    "description": "1d10 piercing (ammunition, heavy, loading, two-handed)"
+                  },
+                  {
+                    "id": "longbow",
+                    "name": "Longbow",
+                    "description": "1d8 piercing (ammunition, heavy, two-handed)"
+                  }
+                ],
+                "count": 2
+              }
+            ]
           }
         ],
         "classSpecific": {
@@ -3981,7 +5466,107 @@
             "id": "expertise-rogue-6",
             "name": "Expertise",
             "description": "You gain Expertise in two more of your skill proficiencies of your choice.",
-            "level": 6
+            "level": 6,
+            "choices": [
+              {
+                "id": "expertise",
+                "name": "Expertise",
+                "description": "Choose 2 skill proficiencies to gain expertise in.",
+                "options": [
+                  {
+                    "id": "acrobatics",
+                    "name": "Acrobatics",
+                    "description": "Dexterity-based skill"
+                  },
+                  {
+                    "id": "animal-handling",
+                    "name": "Animal Handling",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "arcana",
+                    "name": "Arcana",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "athletics",
+                    "name": "Athletics",
+                    "description": "Strength-based skill"
+                  },
+                  {
+                    "id": "deception",
+                    "name": "Deception",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "history",
+                    "name": "History",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "insight",
+                    "name": "Insight",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "intimidation",
+                    "name": "Intimidation",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "investigation",
+                    "name": "Investigation",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "medicine",
+                    "name": "Medicine",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "nature",
+                    "name": "Nature",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "perception",
+                    "name": "Perception",
+                    "description": "Wisdom-based skill"
+                  },
+                  {
+                    "id": "performance",
+                    "name": "Performance",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "persuasion",
+                    "name": "Persuasion",
+                    "description": "Charisma-based skill"
+                  },
+                  {
+                    "id": "religion",
+                    "name": "Religion",
+                    "description": "Intelligence-based skill"
+                  },
+                  {
+                    "id": "sleight-of-hand",
+                    "name": "Sleight of Hand",
+                    "description": "Dexterity-based skill"
+                  },
+                  {
+                    "id": "stealth",
+                    "name": "Stealth",
+                    "description": "Dexterity-based skill"
+                  },
+                  {
+                    "id": "survival",
+                    "name": "Survival",
+                    "description": "Wisdom-based skill"
+                  }
+                ],
+                "count": 2
+              }
+            ]
           }
         ],
         "classSpecific": {
@@ -4334,7 +5919,67 @@
             "id": "metamagic",
             "name": "Metamagic",
             "description": "You gain the ability to twist your spells to suit your needs. You learn two Metamagic options of your choice. You learn additional options at levels 10 and 17. When you cast a spell, you can use one Metamagic option, expending the Sorcery Points it requires.",
-            "level": 2
+            "level": 2,
+            "choices": [
+              {
+                "id": "metamagic-options",
+                "name": "Metamagic",
+                "description": "Choose 2 Metamagic options.",
+                "options": [
+                  {
+                    "id": "careful-spell",
+                    "name": "Careful Spell",
+                    "description": "When you cast a spell that forces other creatures to make a saving throw, choose a number of those creatures up to your Charisma modifier (minimum 1). Each chosen creature automatically succeeds on its saving throw. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "distant-spell",
+                    "name": "Distant Spell",
+                    "description": "When you cast a spell with a range of 5 feet or greater, you can double the range. When you cast a spell with a range of Touch, you can change the range to 30 feet. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "empowered-spell",
+                    "name": "Empowered Spell",
+                    "description": "When you roll damage for a spell, you can reroll a number of damage dice up to your Charisma modifier (minimum 1). You must use the new rolls. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "extended-spell",
+                    "name": "Extended Spell",
+                    "description": "When you cast a spell with a duration of 1 minute or longer, you can double its duration to a maximum of 24 hours. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "heightened-spell",
+                    "name": "Heightened Spell",
+                    "description": "When you cast a spell that forces a creature to make a saving throw, you can give one target of the spell Disadvantage on saves against the spell. Cost: 3 Sorcery Points."
+                  },
+                  {
+                    "id": "quickened-spell",
+                    "name": "Quickened Spell",
+                    "description": "When you cast a spell with a casting time of an Action, you can change the casting time to a Bonus Action. Cost: 2 Sorcery Points."
+                  },
+                  {
+                    "id": "seeking-spell",
+                    "name": "Seeking Spell",
+                    "description": "When you make an attack roll for a spell and miss, you can reroll the d20 and must use the new roll. Cost: 2 Sorcery Points."
+                  },
+                  {
+                    "id": "subtle-spell",
+                    "name": "Subtle Spell",
+                    "description": "When you cast a spell, you can cast it without any Verbal or Somatic components. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "transmuted-spell",
+                    "name": "Transmuted Spell",
+                    "description": "When you cast a spell that deals a type of damage from the following list, you can change that damage type to one of the other listed types: Acid, Cold, Fire, Lightning, Poison, Thunder. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "twinned-spell",
+                    "name": "Twinned Spell",
+                    "description": "When you cast a spell that targets only one creature and doesn't have a range of Self, you can target a second creature in range with the same spell. Cost: 1 Sorcery Point per spell level (1 for cantrips)."
+                  }
+                ],
+                "count": 2
+              }
+            ]
           }
         ],
         "cantripsKnown": 4,
@@ -4496,7 +6141,67 @@
             "id": "metamagic-10",
             "name": "Metamagic",
             "description": "You learn an additional Metamagic option.",
-            "level": 10
+            "level": 10,
+            "choices": [
+              {
+                "id": "metamagic-options",
+                "name": "Metamagic",
+                "description": "Choose 1 Metamagic option.",
+                "options": [
+                  {
+                    "id": "careful-spell",
+                    "name": "Careful Spell",
+                    "description": "When you cast a spell that forces other creatures to make a saving throw, choose a number of those creatures up to your Charisma modifier (minimum 1). Each chosen creature automatically succeeds on its saving throw. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "distant-spell",
+                    "name": "Distant Spell",
+                    "description": "When you cast a spell with a range of 5 feet or greater, you can double the range. When you cast a spell with a range of Touch, you can change the range to 30 feet. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "empowered-spell",
+                    "name": "Empowered Spell",
+                    "description": "When you roll damage for a spell, you can reroll a number of damage dice up to your Charisma modifier (minimum 1). You must use the new rolls. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "extended-spell",
+                    "name": "Extended Spell",
+                    "description": "When you cast a spell with a duration of 1 minute or longer, you can double its duration to a maximum of 24 hours. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "heightened-spell",
+                    "name": "Heightened Spell",
+                    "description": "When you cast a spell that forces a creature to make a saving throw, you can give one target of the spell Disadvantage on saves against the spell. Cost: 3 Sorcery Points."
+                  },
+                  {
+                    "id": "quickened-spell",
+                    "name": "Quickened Spell",
+                    "description": "When you cast a spell with a casting time of an Action, you can change the casting time to a Bonus Action. Cost: 2 Sorcery Points."
+                  },
+                  {
+                    "id": "seeking-spell",
+                    "name": "Seeking Spell",
+                    "description": "When you make an attack roll for a spell and miss, you can reroll the d20 and must use the new roll. Cost: 2 Sorcery Points."
+                  },
+                  {
+                    "id": "subtle-spell",
+                    "name": "Subtle Spell",
+                    "description": "When you cast a spell, you can cast it without any Verbal or Somatic components. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "transmuted-spell",
+                    "name": "Transmuted Spell",
+                    "description": "When you cast a spell that deals a type of damage from the following list, you can change that damage type to one of the other listed types: Acid, Cold, Fire, Lightning, Poison, Thunder. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "twinned-spell",
+                    "name": "Twinned Spell",
+                    "description": "When you cast a spell that targets only one creature and doesn't have a range of Self, you can target a second creature in range with the same spell. Cost: 1 Sorcery Point per spell level (1 for cantrips)."
+                  }
+                ],
+                "count": 1
+              }
+            ]
           }
         ],
         "cantripsKnown": 6,
@@ -4648,7 +6353,67 @@
             "id": "metamagic-17",
             "name": "Metamagic",
             "description": "You learn an additional Metamagic option.",
-            "level": 17
+            "level": 17,
+            "choices": [
+              {
+                "id": "metamagic-options",
+                "name": "Metamagic",
+                "description": "Choose 1 Metamagic option.",
+                "options": [
+                  {
+                    "id": "careful-spell",
+                    "name": "Careful Spell",
+                    "description": "When you cast a spell that forces other creatures to make a saving throw, choose a number of those creatures up to your Charisma modifier (minimum 1). Each chosen creature automatically succeeds on its saving throw. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "distant-spell",
+                    "name": "Distant Spell",
+                    "description": "When you cast a spell with a range of 5 feet or greater, you can double the range. When you cast a spell with a range of Touch, you can change the range to 30 feet. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "empowered-spell",
+                    "name": "Empowered Spell",
+                    "description": "When you roll damage for a spell, you can reroll a number of damage dice up to your Charisma modifier (minimum 1). You must use the new rolls. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "extended-spell",
+                    "name": "Extended Spell",
+                    "description": "When you cast a spell with a duration of 1 minute or longer, you can double its duration to a maximum of 24 hours. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "heightened-spell",
+                    "name": "Heightened Spell",
+                    "description": "When you cast a spell that forces a creature to make a saving throw, you can give one target of the spell Disadvantage on saves against the spell. Cost: 3 Sorcery Points."
+                  },
+                  {
+                    "id": "quickened-spell",
+                    "name": "Quickened Spell",
+                    "description": "When you cast a spell with a casting time of an Action, you can change the casting time to a Bonus Action. Cost: 2 Sorcery Points."
+                  },
+                  {
+                    "id": "seeking-spell",
+                    "name": "Seeking Spell",
+                    "description": "When you make an attack roll for a spell and miss, you can reroll the d20 and must use the new roll. Cost: 2 Sorcery Points."
+                  },
+                  {
+                    "id": "subtle-spell",
+                    "name": "Subtle Spell",
+                    "description": "When you cast a spell, you can cast it without any Verbal or Somatic components. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "transmuted-spell",
+                    "name": "Transmuted Spell",
+                    "description": "When you cast a spell that deals a type of damage from the following list, you can change that damage type to one of the other listed types: Acid, Cold, Fire, Lightning, Poison, Thunder. Cost: 1 Sorcery Point."
+                  },
+                  {
+                    "id": "twinned-spell",
+                    "name": "Twinned Spell",
+                    "description": "When you cast a spell that targets only one creature and doesn't have a range of Self, you can target a second creature in range with the same spell. Cost: 1 Sorcery Point per spell level (1 for cantrips)."
+                  }
+                ],
+                "count": 1
+              }
+            ]
           }
         ],
         "cantripsKnown": 6,
@@ -4872,7 +6637,142 @@
             "id": "eldritch-invocations",
             "name": "Eldritch Invocations",
             "description": "You have unearthed Eldritch Invocations, pieces of forbidden knowledge that imbue you with an abiding magical ability. You gain one invocation of your choice, such as Pact of the Tome. When you gain certain Warlock levels, you gain more invocations as shown in the Warlock Features table.",
-            "level": 1
+            "level": 1,
+            "choices": [
+              {
+                "id": "eldritch-invocations",
+                "name": "Eldritch Invocations",
+                "description": "Choose 1 Eldritch Invocation.",
+                "options": [
+                  {
+                    "id": "agonizing-blast",
+                    "name": "Agonizing Blast",
+                    "description": "When you cast Eldritch Blast, add your Charisma modifier to the damage it deals on a hit."
+                  },
+                  {
+                    "id": "armor-of-shadows",
+                    "name": "Armor of Shadows",
+                    "description": "You can cast Mage Armor on yourself without expending a spell slot."
+                  },
+                  {
+                    "id": "ascendant-step",
+                    "name": "Ascendant Step",
+                    "description": "You can cast Levitate on yourself without expending a spell slot."
+                  },
+                  {
+                    "id": "beast-speech",
+                    "name": "Beast Speech",
+                    "description": "You can cast Speak with Animals at will, without expending a spell slot."
+                  },
+                  {
+                    "id": "beguiling-influence",
+                    "name": "Beguiling Influence",
+                    "description": "You gain proficiency in Deception and Persuasion."
+                  },
+                  {
+                    "id": "devils-sight",
+                    "name": "Devil's Sight",
+                    "description": "You have Darkvision with a range of 120 feet. You can see normally in magical and nonmagical Darkness."
+                  },
+                  {
+                    "id": "eldritch-mind",
+                    "name": "Eldritch Mind",
+                    "description": "You have Advantage on Constitution saving throws to maintain Concentration."
+                  },
+                  {
+                    "id": "eldritch-spear",
+                    "name": "Eldritch Spear",
+                    "description": "When you cast Eldritch Blast, its range is 300 feet."
+                  },
+                  {
+                    "id": "fiendish-vigor",
+                    "name": "Fiendish Vigor",
+                    "description": "You can cast False Life on yourself without expending a spell slot. When you do so, you gain the spell's maximum number of Temporary Hit Points."
+                  },
+                  {
+                    "id": "gaze-of-two-minds",
+                    "name": "Gaze of Two Minds",
+                    "description": "You can use a Bonus Action to touch a willing Humanoid and perceive through their senses."
+                  },
+                  {
+                    "id": "gift-of-the-depths",
+                    "name": "Gift of the Depths",
+                    "description": "You can breathe underwater, and you have a Swim Speed equal to your Speed."
+                  },
+                  {
+                    "id": "investment-of-the-chain-master",
+                    "name": "Investment of the Chain Master",
+                    "description": "Your familiar gains additional benefits when you have the Pact of the Chain."
+                  },
+                  {
+                    "id": "lessons-of-the-first-ones",
+                    "name": "Lessons of the First Ones",
+                    "description": "You gain one feat of your choice that lacks prerequisites."
+                  },
+                  {
+                    "id": "mask-of-many-faces",
+                    "name": "Mask of Many Faces",
+                    "description": "You can cast Disguise Self at will, without expending a spell slot."
+                  },
+                  {
+                    "id": "master-of-myriad-forms",
+                    "name": "Master of Myriad Forms",
+                    "description": "You can cast Alter Self at will, without expending a spell slot."
+                  },
+                  {
+                    "id": "misty-visions",
+                    "name": "Misty Visions",
+                    "description": "You can cast Silent Image at will, without expending a spell slot."
+                  },
+                  {
+                    "id": "one-with-shadows",
+                    "name": "One with Shadows",
+                    "description": "When you are in an area of Dim Light or Darkness, you can take a Magic action to become Invisible until you move, take an action, or take a reaction."
+                  },
+                  {
+                    "id": "otherworldly-leap",
+                    "name": "Otherworldly Leap",
+                    "description": "You can cast Jump on yourself without expending a spell slot."
+                  },
+                  {
+                    "id": "pact-of-the-blade",
+                    "name": "Pact of the Blade",
+                    "description": "As a Bonus Action, you can conjure a pact weapon in your empty hand or bond with a magic weapon. You can use your Charisma modifier for attack and damage rolls with this weapon."
+                  },
+                  {
+                    "id": "pact-of-the-chain",
+                    "name": "Pact of the Chain",
+                    "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot."
+                  },
+                  {
+                    "id": "pact-of-the-tome",
+                    "name": "Pact of the Tome",
+                    "description": "Your patron gives you a Book of Shadows. Choose three cantrips from any spell list. While the book is on your person, you can cast those cantrips at will."
+                  },
+                  {
+                    "id": "repelling-blast",
+                    "name": "Repelling Blast",
+                    "description": "When you hit a creature with Eldritch Blast, you can push the creature up to 10 feet straight away from you."
+                  },
+                  {
+                    "id": "thirsting-blade",
+                    "name": "Thirsting Blade",
+                    "description": "You can attack with your pact weapon twice instead of once when you take the Attack action on your turn."
+                  },
+                  {
+                    "id": "whispers-of-the-grave",
+                    "name": "Whispers of the Grave",
+                    "description": "You can cast Speak with Dead at will, without expending a spell slot."
+                  },
+                  {
+                    "id": "witch-sight",
+                    "name": "Witch Sight",
+                    "description": "You have Truesight with a range of 30 feet."
+                  }
+                ],
+                "count": 1
+              }
+            ]
           },
           {
             "id": "pact-magic",

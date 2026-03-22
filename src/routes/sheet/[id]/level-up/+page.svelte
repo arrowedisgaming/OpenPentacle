@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import type { ContentPack, ClassDefinition, SubclassDefinition, FeatDefinition, SpellDefinition } from '$lib/types/content-pack.js';
-	import type { CharacterData, AbilityBonus, FeatSelection, SpellKnown } from '$lib/types/character.js';
+	import type { CharacterData, AbilityBonus, FeatSelection, SpellKnown, FeatureChoiceSelection } from '$lib/types/character.js';
 	import type { AbilityId, SkillId } from '$lib/types/common.js';
 	import { ABILITY_IDS, ABILITY_NAMES } from '$lib/types/common.js';
 	import { computeLevelUpChoices } from '$lib/engine/level-up.js';
@@ -142,6 +142,46 @@
 		newCantripIds = newSet;
 	}
 
+	// ─── Feature Choices ────────────────────────────────────
+	const newFeaturesWithChoices = $derived(
+		(levelUp?.newFeatures ?? []).filter((f) => f.choices && f.choices.length > 0)
+	);
+
+	let featureSelections = $state<Record<string, Record<string, string[]>>>({});
+
+	function toggleFeatureOption(featureId: string, choiceId: string, optionId: string, maxCount: number) {
+		const current = featureSelections[featureId]?.[choiceId] ?? [];
+		const idx = current.indexOf(optionId);
+		let updated: string[];
+		if (idx >= 0) {
+			updated = current.filter((id) => id !== optionId);
+		} else if (current.length < maxCount) {
+			updated = [...current, optionId];
+		} else {
+			updated = [...current.slice(1), optionId];
+		}
+		featureSelections = {
+			...featureSelections,
+			[featureId]: { ...featureSelections[featureId], [choiceId]: updated }
+		};
+	}
+
+	function getSelectedOptions(featureId: string, choiceId: string): string[] {
+		return featureSelections[featureId]?.[choiceId] ?? [];
+	}
+
+	function buildNewFeatureChoices(): FeatureChoiceSelection[] {
+		const result: FeatureChoiceSelection[] = [];
+		for (const [featureId, choices] of Object.entries(featureSelections)) {
+			for (const [choiceId, selectedOptionIds] of Object.entries(choices)) {
+				if (selectedOptionIds.length > 0) {
+					result.push({ featureId, choiceId, selectedOptionIds });
+				}
+			}
+		}
+		return result;
+	}
+
 	// ─── Validation ─────────────────────────────────────────
 	const isValid = $derived(() => {
 		if (!levelUp) return false;
@@ -167,13 +207,15 @@
 
 		const newLevel = levelUp.newLevel;
 
-		// Update class
+		// Update class (merge new feature choices)
+		const newFeatureChoices = buildNewFeatureChoices();
 		const updatedClasses = data.classes.map((c, i) => {
 			if (i !== 0) return c;
 			return {
 				...c,
 				level: newLevel,
-				subclassId: selectedSubclassId || c.subclassId
+				subclassId: selectedSubclassId || c.subclassId,
+				featureChoices: [...(c.featureChoices ?? []), ...newFeatureChoices]
 			};
 		});
 
@@ -309,6 +351,48 @@
 					{/if}
 				</Card.Content>
 			</Card.Root>
+
+			<!-- 1b. Feature Choices (for new features that have them) -->
+			{#if newFeaturesWithChoices.length > 0}
+				<Card.Root>
+					<Card.Header>
+						<Card.Title class="flex items-center gap-2 text-base">
+							<Star class="size-4" />
+							Feature Choices
+						</Card.Title>
+					</Card.Header>
+					<Card.Content class="space-y-4">
+						{#each newFeaturesWithChoices as feature}
+							{#each feature.choices ?? [] as choice}
+								<div>
+									<div class="mb-1.5 flex items-center gap-2">
+										<span class="text-sm font-medium">{feature.name}: {choice.name}</span>
+										<Badge variant="outline" class="text-xs">
+											{getSelectedOptions(feature.id, choice.id).length}/{choice.count}
+										</Badge>
+									</div>
+									<p class="mb-2 text-xs text-muted-foreground">{choice.description}</p>
+									<div class="grid gap-1.5 sm:grid-cols-2">
+										{#each choice.options as option}
+											{@const isSelected = getSelectedOptions(feature.id, choice.id).includes(option.id)}
+											<button
+												class="rounded-md border px-2.5 py-1.5 text-left text-xs transition-colors
+													{isSelected ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:border-muted-foreground/50'}"
+												onclick={() => toggleFeatureOption(feature.id, choice.id, option.id, choice.count)}
+											>
+												<span class="font-medium">{option.name}</span>
+												{#if option.description}
+													<p class="mt-0.5 text-muted-foreground leading-relaxed">{option.description}</p>
+												{/if}
+											</button>
+										{/each}
+									</div>
+								</div>
+							{/each}
+						{/each}
+					</Card.Content>
+				</Card.Root>
+			{/if}
 
 			<!-- 2. Hit Points -->
 			<Card.Root>

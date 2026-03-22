@@ -42,7 +42,7 @@
 	)}
 >
 	{#if selected}
-		<div class="absolute right-2 top-2 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+		<div class="absolute right-3 top-3 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
 			<Check class="size-3" />
 		</div>
 	{/if}

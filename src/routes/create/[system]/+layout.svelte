@@ -30,7 +30,7 @@
 	const asiLevels = $derived(classDef ? getASILevels(classDef) : []);
 	const hasSpellcasting = $derived(!!classDef?.spellcasting);
 	const hasASIOrFeats = $derived(
-		asiLevels.some((l) => l <= charLevel) || !!character?.background?.backgroundId
+		asiLevels.some((l) => l <= charLevel)
 	);
 
 	// Full step definitions with visibility predicates

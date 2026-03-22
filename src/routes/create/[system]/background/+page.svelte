@@ -1,11 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { onDestroy } from 'svelte';
 	import { wizardStore } from '$lib/stores/wizard.js';
 	import type { BackgroundDefinition } from '$lib/types/content-pack.js';
 	import type { AbilityBonus } from '$lib/types/character.js';
 	import type { AbilityId } from '$lib/types/common.js';
 	import { ABILITY_NAMES } from '$lib/types/common.js';
+	import { kebabToTitle } from '$lib/utils/format.js';
+	import { allAbilityTotals, allAbilityModifiers } from '$lib/engine/ability-scores.js';
+	import { formatModifier } from '$lib/utils/format.js';
+	import type { ContentPack } from '$lib/types/content-pack.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
 	import SelectionCard from '$lib/components/ui/selection-card/SelectionCard.svelte';
 	import DetailPanel from '$lib/components/ui/detail-panel/DetailPanel.svelte';
@@ -93,6 +98,53 @@
 		return bonuses;
 	}
 
+	// Subscribe to wizard store reactively for live preview
+	let wizChar = $state(wizardStore.getCharacter());
+	const unsubWiz = wizardStore.subscribe((s) => { wizChar = s.character; });
+	onDestroy(unsubWiz);
+
+	// Non-background origin bonuses (from species etc — stable on this page)
+	const nonBgOriginBonuses = $derived(
+		(wizChar?.abilityScores?.originBonuses ?? []).filter((b) => b.sourceType !== 'background')
+	);
+
+	// Live preview: recompute ability scores whenever ASI choices change
+	const previewAbilityScores = $derived.by(() => {
+		const base = wizChar?.abilityScores;
+		if (!base?.method) return null;
+
+		// Build bonuses inline so Svelte tracks the reactive deps
+		let bgBonuses: AbilityBonus[] = [];
+		if (eligibleAbilities.length === 3 && selectedId) {
+			const source = `background:${selectedId}`;
+			if (asiMode === '+1+1+1') {
+				bgBonuses = eligibleAbilities.map((ab) => ({
+					ability: ab, value: 1, source, sourceType: 'background' as const
+				}));
+			} else {
+				if (plus2Ability) bgBonuses.push({ ability: plus2Ability as AbilityId, value: 2, source, sourceType: 'background' });
+				if (plus1Ability) bgBonuses.push({ ability: plus1Ability as AbilityId, value: 1, source, sourceType: 'background' });
+			}
+		}
+
+		return {
+			...base,
+			originBonuses: [...nonBgOriginBonuses, ...bgBonuses]
+		};
+	});
+
+	const previewTotals = $derived(previewAbilityScores ? allAbilityTotals(previewAbilityScores) : null);
+	const previewModifiers = $derived(previewAbilityScores ? allAbilityModifiers(previewAbilityScores) : null);
+	const previewAbilities: AbilityId[] = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+
+	// Resolve feat name from pack
+	const resolvedFeatName = $derived.by(() => {
+		if (!selectedBg?.feat || !pack) return null;
+		const p = pack as ContentPack;
+		const feat = p.feats?.find((f: any) => f.id === selectedBg.feat);
+		return feat?.name ?? kebabToTitle(selectedBg.feat);
+	});
+
 	function proceed() {
 		if (!selectedId || !asiComplete()) return;
 
@@ -100,6 +152,12 @@
 		const existingOriginBonuses = (wizardStore.getCharacter()?.abilityScores?.originBonuses ?? [])
 			.filter((b) => b.sourceType !== 'background');
 		const bgBonuses = buildBackgroundBonuses();
+
+		// Auto-assign background feat (not a choice — backgrounds grant a specific feat)
+		const bgDef = backgrounds.find((b) => b.id === selectedId);
+		const feats = bgDef?.feat
+			? [{ featId: bgDef.feat, source: 'background', choices: [] as { choiceId: string; selectedValue: string }[] }]
+			: [];
 
 		wizardStore.updateCharacter({
 			background: {
@@ -109,7 +167,8 @@
 			abilityScores: {
 				...wizardStore.getCharacter()!.abilityScores,
 				originBonuses: [...existingOriginBonuses, ...bgBonuses]
-			}
+			},
+			feats
 		});
 		wizardStore.completeStep();
 		goto(`/create/${systemId}/skills`);
@@ -146,7 +205,7 @@
 				<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">{bg.description}</p>
 				<div class="mt-2 flex flex-wrap gap-1">
 					{#each bg.skillProficiencies as prof}
-						<Badge variant="secondary" class="text-xs">{prof.value}</Badge>
+						<Badge variant="secondary" class="text-xs">{kebabToTitle(prof.value)}</Badge>
 					{/each}
 					{#if bg.abilityScoreChanges}
 						{#each bg.abilityScoreChanges as asc}
@@ -165,18 +224,18 @@
 			<DetailPanel title={selectedBg.name}>
 				<p class="text-sm text-muted-foreground">{selectedBg.description}</p>
 				<div class="mt-4 space-y-2 text-sm">
-					<p><span class="font-medium">Skills:</span> {selectedBg.skillProficiencies.map(p => p.value).join(', ')}</p>
+					<p><span class="font-medium">Skills:</span> {selectedBg.skillProficiencies.map(p => kebabToTitle(p.value)).join(', ')}</p>
 					{#if selectedBg.toolProficiencies.length > 0}
-						<p><span class="font-medium">Tools:</span> {selectedBg.toolProficiencies.map(p => p.value).join(', ')}</p>
+						<p><span class="font-medium">Tools:</span> {selectedBg.toolProficiencies.map(p => kebabToTitle(p.value)).join(', ')}</p>
 					{/if}
 					{#if selectedBg.languages.length > 0}
-						<p><span class="font-medium">Languages:</span> {selectedBg.languages.map(l => l.value).join(', ')}</p>
+						<p><span class="font-medium">Languages:</span> {selectedBg.languages.map(l => kebabToTitle(l.value)).join(', ')}</p>
 					{/if}
 					{#if selectedBg.feature}
 						<p><span class="font-medium">Feature:</span> {selectedBg.feature.name} - {selectedBg.feature.description}</p>
 					{/if}
 					{#if selectedBg.feat}
-						<p><span class="font-medium">Origin Feat:</span> {selectedBg.feat}</p>
+						<p><span class="font-medium">Origin Feat:</span> {resolvedFeatName}</p>
 					{/if}
 				</div>
 			</DetailPanel>
@@ -257,6 +316,19 @@
 								<Badge variant="secondary" class="text-sm">
 									{ABILITY_NAMES[ab]} +1
 								</Badge>
+							{/each}
+						</div>
+					{/if}
+					<!-- Inline stats preview -->
+					{#if previewTotals && previewModifiers}
+						<Separator class="my-3" />
+						<div class="grid grid-cols-6 gap-1.5 text-center">
+							{#each previewAbilities as ability}
+								<div class="flex flex-col items-center">
+									<span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{ability}</span>
+									<span class="text-lg font-bold leading-tight">{formatModifier(previewModifiers[ability])}</span>
+									<span class="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[10px] font-medium">{previewTotals[ability]}</span>
+								</div>
 							{/each}
 						</div>
 					{/if}
