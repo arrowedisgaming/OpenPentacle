@@ -3,6 +3,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+ENV ADAPTER=node
 RUN npm run build
 
 FROM node:22-alpine

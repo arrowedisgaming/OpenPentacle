@@ -1,11 +1,14 @@
-import adapter from '@sveltejs/adapter-node';
+import adapterCloudflare from '@sveltejs/adapter-cloudflare';
+import adapterNode from '@sveltejs/adapter-node';
+
+const useNode = process.env.ADAPTER === 'node';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	kit: {
-		adapter: adapter({
-			out: 'build'
-		})
+		adapter: useNode
+			? adapterNode({ out: 'build' })
+			: adapterCloudflare()
 	}
 };
 

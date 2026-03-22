@@ -80,7 +80,7 @@ export const PUT: RequestHandler = async (event) => {
 			classSummary,
 			level: data.level,
 			data: JSON.stringify(data),
-			updatedAt: new Date()
+			updatedAt: Math.floor(Date.now() / 1000)
 		})
 		.where(and(eq(schema.characters.id, event.params.id), eq(schema.characters.userId, session.user.id)));
 

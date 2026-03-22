@@ -2,6 +2,35 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { json } from '@sveltejs/kit';
 import type { Handle, HandleServerError } from '@sveltejs/kit';
 import { handle as authHandle } from '$lib/server/auth.js';
+import { setDatabase, createD1Database, getDb, schema } from '$lib/server/db/index.js';
+
+// ─── Database Initialization ───────────────────────────────
+
+let nodeDbInitialized = false;
+
+const initDatabase: Handle = async ({ event, resolve }) => {
+	const platformEnv = event.platform?.env as Record<string, any> | undefined;
+	const d1 = platformEnv?.DB;
+
+	if (d1) {
+		// Cloudflare: set D1 database per-request
+		setDatabase(createD1Database(d1));
+
+		// Expose Cloudflare secrets to process.env so Auth.js can find them
+		for (const key of ['AUTH_SECRET', 'AUTH_GOOGLE_ID', 'AUTH_GOOGLE_SECRET', 'AUTH_DISCORD_ID', 'AUTH_DISCORD_SECRET']) {
+			if (platformEnv[key] && !process.env[key]) {
+				process.env[key] = platformEnv[key];
+			}
+		}
+	} else if (!nodeDbInitialized) {
+		// Node.js: dynamically import to avoid bundling native deps on Cloudflare
+		const { initNodeDatabase } = await import('$lib/server/db/node.js');
+		await initNodeDatabase();
+		nodeDbInitialized = true;
+	}
+
+	return resolve(event);
+};
 
 // ─── Security Headers ──────────────────────────────────────
 
@@ -13,7 +42,7 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 	response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 	response.headers.set(
 		'Content-Security-Policy',
-		"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'"
+		"default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://lh3.googleusercontent.com https://cdn.discordapp.com; connect-src 'self' https://cloudflareinsights.com"
 	);
 	return response;
 };
@@ -27,8 +56,6 @@ const csrfProtection: Handle = async ({ event, resolve }) => {
 		const origin = event.request.headers.get('origin');
 		const host = event.url.origin;
 
-		// Allow requests with no Origin header (same-origin non-CORS requests)
-		// but reject mismatched origins
 		if (origin && origin !== host) {
 			return json(
 				{ message: 'Forbidden: cross-origin request' },
@@ -42,19 +69,24 @@ const csrfProtection: Handle = async ({ event, resolve }) => {
 // ─── Rate Limiting (unauthenticated endpoints) ─────────────
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
-const RATE_LIMIT_MAX = 60; // requests per window
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 60;
 
-// Clean up stale entries periodically
-setInterval(() => {
-	const now = Date.now();
-	for (const [key, entry] of rateLimitMap) {
-		if (entry.resetAt <= now) rateLimitMap.delete(key);
+// Periodic cleanup (only runs on Node.js — Workers don't have persistent timers)
+if (typeof globalThis.setInterval === 'function') {
+	try {
+		setInterval(() => {
+			const now = Date.now();
+			for (const [key, entry] of rateLimitMap) {
+				if (entry.resetAt <= now) rateLimitMap.delete(key);
+			}
+		}, 60_000);
+	} catch {
+		// Workers may throw on setInterval — that's fine, map resets between invocations
 	}
-}, 60_000);
+}
 
 const rateLimiting: Handle = async ({ event, resolve }) => {
-	// Only rate-limit unauthenticated API endpoints
 	if (!event.url.pathname.startsWith('/api/')) return resolve(event);
 
 	const ip = event.getClientAddress();
@@ -82,9 +114,58 @@ const rateLimiting: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-// ─── Compose ───────────────────────────────────────────────
+// ─── Ensure User Exists in DB ──────────────────────────────
+// Without DrizzleAdapter, Auth.js JWT doesn't create user rows.
+// This hook creates the D1 user row on first authenticated request.
 
-export const handle = sequence(securityHeaders, csrfProtection, rateLimiting, authHandle);
+import { eq } from 'drizzle-orm';
+import { nanoid } from 'nanoid';
+
+const ensuredEmails = new Set<string>();
+
+const ensureUser: Handle = async ({ event, resolve }) => {
+	const session = await event.locals.auth?.();
+	const email = session?.user?.email;
+	const userId = session?.user?.id;
+
+	if (email && userId && !ensuredEmails.has(email)) {
+		try {
+			const db = getDb();
+			const existing = await db
+				.select({ id: schema.users.id })
+				.from(schema.users)
+				.where(eq(schema.users.email, email))
+				.get();
+
+			if (existing) {
+				// User exists but JWT may have a different ID — update DB to match
+				if (existing.id !== userId) {
+					await db.update(schema.users)
+						.set({ id: userId })
+						.where(eq(schema.users.email, email));
+				}
+			} else {
+				await db.insert(schema.users).values({
+					id: userId,
+					name: session.user?.name ?? null,
+					email,
+					image: session.user?.image ?? null,
+				});
+			}
+			ensuredEmails.add(email);
+		} catch {
+			// Non-fatal
+		}
+	}
+
+	return resolve(event);
+};
+
+// ─── Compose ───────────────────────────────────────────────
+// initDatabase MUST run before authHandle (auth needs the DB)
+// ensureUser MUST run after authHandle (needs the session)
+
+export const handle = sequence(initDatabase, securityHeaders, csrfProtection, rateLimiting, authHandle, ensureUser);
 
 // ─── Global Error Handler ──────────────────────────────────
 

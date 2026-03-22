@@ -42,25 +42,30 @@ export const POST: RequestHandler = async (event) => {
 
 	const data = result.data;
 	const id = nanoid(10);
-	const now = new Date();
+	const nowUnix = Math.floor(Date.now() / 1000);
 
 	// Build class summary
 	const classSummary = data.classes
 		.map((c) => `${c.classId} ${c.level}`)
 		.join(' / ');
 
-	const db = getDb();
-	await db.insert(schema.characters).values({
-		id,
-		userId: session.user.id,
-		name: data.name,
-		systemId: data.systemId,
-		classSummary,
-		level: data.level,
-		data: JSON.stringify(data),
-		createdAt: now,
-		updatedAt: now
-	});
+	try {
+		const db = getDb();
+		await db.insert(schema.characters).values({
+			id,
+			userId: session.user.id,
+			name: data.name,
+			systemId: data.systemId,
+			classSummary,
+			level: data.level,
+			data: JSON.stringify(data),
+			createdAt: nowUnix as any,
+			updatedAt: nowUnix as any
+		});
 
-	return json({ id }, { status: 201 });
+		return json({ id }, { status: 201 });
+	} catch (err: any) {
+		console.error('Character save error:', err);
+		throw error(500, `Save failed: ${err.message}`);
+	}
 };

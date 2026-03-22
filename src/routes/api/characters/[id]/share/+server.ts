@@ -31,7 +31,7 @@ export const POST: RequestHandler = async (event) => {
 
 	await db
 		.update(schema.characters)
-		.set({ shareId, isPublic: true, updatedAt: new Date() })
+		.set({ shareId, isPublic: true, updatedAt: Math.floor(Date.now() / 1000) })
 		.where(eq(schema.characters.id, event.params.id));
 
 	return json({ shareId, url: `/share/${shareId}` });
@@ -47,7 +47,7 @@ export const DELETE: RequestHandler = async (event) => {
 
 	await db
 		.update(schema.characters)
-		.set({ shareId: null, isPublic: false, updatedAt: new Date() })
+		.set({ shareId: null, isPublic: false, updatedAt: Math.floor(Date.now() / 1000) })
 		.where(
 			and(
 				eq(schema.characters.id, event.params.id),

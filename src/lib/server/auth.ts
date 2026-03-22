@@ -7,78 +7,109 @@ import { eq } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import { getDb, schema } from './db/index.js';
 
-const isDev = process.env.NODE_ENV === 'development';
-
-// Only include providers that have credentials configured
-const providers: any[] = [];
-
-if (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET) {
-	providers.push(Google);
+// Use async callback so config is resolved per-request.
+// This is required because:
+// 1. On Cloudflare, env vars (secrets) are in platform.env, not process.env
+// 2. The DB is initialized per-request via hooks
+/** Read an env var from platform.env (Cloudflare) or process.env (Node.js) */
+function getEnv(event: any, key: string): string | undefined {
+	try {
+		const platformVal = (event?.platform?.env as any)?.[key];
+		if (platformVal) return platformVal;
+	} catch {}
+	try {
+		return process.env[key];
+	} catch {}
+	return undefined;
 }
-if (process.env.AUTH_DISCORD_ID && process.env.AUTH_DISCORD_SECRET) {
-	providers.push(Discord);
-}
 
-// Dev-only credentials provider — sign in with just email + name
-if (isDev) {
-	providers.push(
-		Credentials({
-			id: 'credentials',
-			name: 'Dev Login',
-			credentials: {
-				email: { label: 'Email', type: 'email' },
-				name: { label: 'Name', type: 'text' }
-			},
-			async authorize(credentials) {
-				// Defense-in-depth: refuse to run in production
-				if (process.env.NODE_ENV === 'production') return null;
+export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
+	const env = {
+		AUTH_GOOGLE_ID: getEnv(event, 'AUTH_GOOGLE_ID'),
+		AUTH_GOOGLE_SECRET: getEnv(event, 'AUTH_GOOGLE_SECRET'),
+		AUTH_DISCORD_ID: getEnv(event, 'AUTH_DISCORD_ID'),
+		AUTH_DISCORD_SECRET: getEnv(event, 'AUTH_DISCORD_SECRET'),
+		AUTH_SECRET: getEnv(event, 'AUTH_SECRET'),
+		NODE_ENV: getEnv(event, 'NODE_ENV') ?? 'production',
+	};
 
-				const email = credentials.email as string;
-				const name = credentials.name as string;
-				if (!email) return null;
+	const providers: any[] = [];
 
-				const db = getDb();
+	if (env.AUTH_GOOGLE_ID && env.AUTH_GOOGLE_SECRET) {
+		providers.push(Google({
+			clientId: env.AUTH_GOOGLE_ID,
+			clientSecret: env.AUTH_GOOGLE_SECRET,
+		}));
+	}
+	if (env.AUTH_DISCORD_ID && env.AUTH_DISCORD_SECRET) {
+		providers.push(Discord({
+			clientId: env.AUTH_DISCORD_ID,
+			clientSecret: env.AUTH_DISCORD_SECRET,
+		}));
+	}
 
-				// Find existing user by email, or create one
-				const existing = await db
-					.select()
-					.from(schema.users)
-					.where(eq(schema.users.email, email))
-					.get();
+	// Dev-only credentials provider
+	if (env.NODE_ENV === 'development') {
+		providers.push(
+			Credentials({
+				id: 'credentials',
+				name: 'Dev Login',
+				credentials: {
+					email: { label: 'Email', type: 'email' },
+					name: { label: 'Name', type: 'text' }
+				},
+				async authorize(credentials) {
+					if (env.NODE_ENV !== 'development') return null;
 
-				if (existing) {
-					return { id: existing.id, name: existing.name, email: existing.email };
+					const email = credentials.email as string;
+					const name = credentials.name as string;
+					if (!email) return null;
+
+					const db = getDb();
+
+					const existing = await db
+						.select()
+						.from(schema.users)
+						.where(eq(schema.users.email, email))
+						.get();
+
+					if (existing) {
+						return { id: existing.id, name: existing.name, email: existing.email };
+					}
+
+					const id = nanoid(21);
+					await db.insert(schema.users).values({ id, name: name || 'Dev User', email });
+					return { id, name: name || 'Dev User', email };
 				}
+			})
+		);
+	}
 
-				const id = nanoid(21);
-				await db.insert(schema.users).values({ id, name: name || 'Dev User', email });
-				return { id, name: name || 'Dev User', email };
-			}
-		})
-	);
-}
-
-export const { handle, signIn, signOut } = SvelteKitAuth({
-	adapter: DrizzleAdapter(getDb() as any),
-	providers,
-	session: { strategy: 'jwt' },
-	pages: {
-		signIn: '/login'
-	},
-	callbacks: {
-		jwt({ token, user }) {
-			// On sign-in, persist the user's DB id into the JWT
-			if (user?.id) {
-				token.id = user.id;
-			}
-			return token;
+	return {
+		providers,
+		secret: env.AUTH_SECRET,
+		session: { strategy: 'jwt' as const },
+		pages: {
+			signIn: '/login'
 		},
-		session({ session, token }) {
-			if (session.user && token.id) {
-				session.user.id = token.id as string;
+		callbacks: {
+			jwt({ token, user, account }: { token: any; user: any; account: any }) {
+				// Use the OAuth provider's stable subject ID as the user ID
+				// This is consistent across sessions (unlike the random UUID without DrizzleAdapter)
+				if (account?.providerAccountId) {
+					token.id = account.providerAccountId;
+				} else if (user?.id) {
+					token.id = user.id;
+				}
+				return token;
+			},
+			session({ session, token }: { session: any; token: any }) {
+				if (session.user && token.id) {
+					session.user.id = token.id as string;
+				}
+				return session;
 			}
-			return session;
-		}
-	},
-	trustHost: true
+		},
+		trustHost: true
+	};
 });
