@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.4.1] - 2026-03-22
+
+### Added
+- Toast notifications (svelte-sonner) for share, unshare, copy link, and error feedback
+- Expandable class features on character sheet — click any feature to see full description
+- Expandable spell details on character sheet — click any spell to see casting time, range, components, duration, and full description
+- Unsaved character recovery after login — characters created while logged out are auto-saved on sign-in
+- Enhanced "Almost there!" sign-in prompt when redirected from wizard with an unsaved character
+
+### Changed
+- Share link now persists across page refreshes (initialized from server data on mount)
+- Sharing auto-copies link to clipboard (single click to share + copy)
+- Unshare preserves the share ID — resharing restores the same URL instead of generating a new one
+- Share button shows "Sharing..."/"Unsharing..." text during loading state
+- Collapsible chevron animations respect `prefers-reduced-motion`
+- Spell C/R indicators have tooltips ("Requires concentration" / "Can be cast as a ritual")
+- Long spell descriptions capped at 192px with scroll overflow
+- Toast positioned top-right near action buttons
+
+### Fixed
+- Share link lost on page refresh — "Copy Link" button disappeared after reload for already-shared characters
+- No clipboard feedback — copying share link was silent with no user confirmation
+- No error handling on share/unshare — network failures were silently swallowed
+- Unshare destroyed share ID — resharing generated a new URL, breaking previously distributed links
+- Unsaved character data lost after login — localStorage recovery was written but never read back
+- Character list not refreshing after auto-save of recovered character
+
 ## [0.4.0] - 2026-03-22
 
 ### Added

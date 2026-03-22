@@ -2,6 +2,7 @@
 	import '../app.css';
 	import AppHeader from '$lib/components/layout/AppHeader.svelte';
 	import AppFooter from '$lib/components/layout/AppFooter.svelte';
+	import { Toaster } from '$lib/components/ui/sonner';
 
 	let { children } = $props();
 </script>
@@ -21,3 +22,4 @@
 	</main>
 	<AppFooter />
 </div>
+<Toaster richColors position="top-right" />

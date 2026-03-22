@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { SYSTEM_NAMES, type SystemId } from '$lib/types/content-pack.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
 	import LoadingState from '$lib/components/ui/loading-state/LoadingState.svelte';
@@ -7,7 +8,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Plus, Trash2, Users, LogIn } from 'lucide-svelte';
+	import { Plus, Trash2, Users, LogIn, Sparkles } from 'lucide-svelte';
+	import { toast } from 'svelte-sonner';
 
 	interface CharacterSummary {
 		id: string;
@@ -23,6 +25,7 @@
 	let deleteTarget = $state<string | null>(null);
 
 	const session = $derived($page.data.session);
+	const hasPendingCharacter = $derived($page.url.searchParams.get('saved') === 'local');
 
 	async function loadCharacters() {
 		try {
@@ -35,9 +38,43 @@
 		}
 	}
 
+	async function recoverUnsavedCharacter() {
+		const raw = localStorage.getItem('unsaved-character');
+		if (!raw) return;
+
+		try {
+			const characterData = JSON.parse(raw);
+			const res = await fetch('/api/characters', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: raw
+			});
+			if (res.ok) {
+				const { id } = await res.json();
+				localStorage.removeItem('unsaved-character');
+				const name = characterData.name || 'Your character';
+				toast.success(`"${name}" saved!`, {
+					action: { label: 'View', onClick: () => goto(`/sheet/${id}`) }
+				});
+				await loadCharacters();
+			} else {
+				toast.error('Failed to save your character — please try again');
+			}
+		} catch {
+			toast.error('Failed to save your character — please try again');
+		}
+
+		// Clean up the query param
+		if (hasPendingCharacter) {
+			const url = new URL($page.url);
+			url.searchParams.delete('saved');
+			history.replaceState({}, '', url.pathname);
+		}
+	}
+
 	$effect(() => {
 		if (session?.user) {
-			loadCharacters();
+			loadCharacters().then(() => recoverUnsavedCharacter());
 		} else {
 			loading = false;
 		}
@@ -66,13 +103,23 @@
 
 	{#if !session?.user}
 		<div class="mt-8">
-			<EmptyState
-				icon={LogIn}
-				title="Sign in to get started"
-				description="Sign in to save and manage your characters."
-				actionLabel="Sign In"
-				actionHref="/login"
-			/>
+			{#if hasPendingCharacter}
+				<EmptyState
+					icon={Sparkles}
+					title="Almost there!"
+					description="Your character is ready to save. Sign in to keep it forever."
+					actionLabel="Sign In"
+					actionHref="/login"
+				/>
+			{:else}
+				<EmptyState
+					icon={LogIn}
+					title="Sign in to get started"
+					description="Sign in to save and manage your characters."
+					actionLabel="Sign In"
+					actionHref="/login"
+				/>
+			{/if}
 		</div>
 	{:else if loading}
 		<div class="mt-8">

@@ -47,7 +47,7 @@ export const DELETE: RequestHandler = async (event) => {
 
 	await db
 		.update(schema.characters)
-		.set({ shareId: null, isPublic: false, updatedAt: Math.floor(Date.now() / 1000) })
+		.set({ isPublic: false, updatedAt: Math.floor(Date.now() / 1000) })
 		.where(
 			and(
 				eq(schema.characters.id, event.params.id),

@@ -7,6 +7,7 @@
 	import CharacterSheetView from '$lib/components/sheet/CharacterSheetView.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Share2, Copy, EyeOff, Loader2, ArrowUp } from 'lucide-svelte';
+	import { toast } from 'svelte-sonner';
 
 	const { character, pack } = $derived($page.data as {
 		character: { id: string; data: CharacterData; shareId: string | null; isPublic: boolean };
@@ -25,30 +26,58 @@
 		} catch { /* graceful degradation */ }
 	});
 
+	// Initialize shareUrl from existing server data so Copy Link persists across refreshes
 	let shareUrl = $state('');
 	let sharing = $state(false);
 
+	onMount(() => {
+		if (character.isPublic && character.shareId) {
+			shareUrl = `${window.location.origin}/share/${character.shareId}`;
+		}
+	});
+
+	async function copyToClipboard(url: string) {
+		try {
+			await navigator.clipboard.writeText(url);
+			return true;
+		} catch {
+			toast.error('Failed to copy — try copying the link manually');
+			return false;
+		}
+	}
+
 	async function toggleShare() {
 		sharing = true;
-		if (character.isPublic && character.shareId) {
-			await fetch(`/api/characters/${character.id}/share`, { method: 'DELETE' });
-			character.isPublic = false;
-			character.shareId = null;
-			shareUrl = '';
-		} else {
-			const res = await fetch(`/api/characters/${character.id}/share`, { method: 'POST' });
-			if (res.ok) {
+		try {
+			if (character.isPublic) {
+				const res = await fetch(`/api/characters/${character.id}/share`, { method: 'DELETE' });
+				if (!res.ok) throw new Error();
+				character.isPublic = false;
+				shareUrl = '';
+				toast.success('Character unshared');
+			} else {
+				const res = await fetch(`/api/characters/${character.id}/share`, { method: 'POST' });
+				if (!res.ok) throw new Error();
 				const data = await res.json();
 				character.shareId = data.shareId;
 				character.isPublic = true;
 				shareUrl = `${window.location.origin}/share/${data.shareId}`;
+				if (await copyToClipboard(shareUrl)) {
+					toast.success('Share link copied to clipboard!');
+				}
 			}
+		} catch {
+			toast.error('Something went wrong — please try again');
+		} finally {
+			sharing = false;
 		}
-		sharing = false;
 	}
 
-	function copyShareUrl() {
-		if (shareUrl) navigator.clipboard.writeText(shareUrl);
+	async function copyShareUrl() {
+		if (!shareUrl) return;
+		if (await copyToClipboard(shareUrl)) {
+			toast.success('Link copied!');
+		}
 	}
 </script>
 
@@ -79,6 +108,7 @@
 		>
 			{#if sharing}
 				<Loader2 class="size-4 animate-spin" />
+				{character.isPublic ? 'Unsharing...' : 'Sharing...'}
 			{:else if character.isPublic}
 				<EyeOff class="size-4" />
 				Unshare

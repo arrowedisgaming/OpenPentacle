@@ -6,11 +6,13 @@
 	import type { ComputedSheet } from '$lib/engine/character-sheet.js';
 	import type { CharacterData } from '$lib/types/character.js';
 	import type { ContentPack } from '$lib/types/content-pack.js';
+	import type { SpellDefinition } from '$lib/types/content-pack.js';
 	import StatBlock from './StatBlock.svelte';
 	import * as Card from '$lib/components/ui/card';
+	import * as Collapsible from '$lib/components/ui/collapsible';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Shield, Heart, Zap, Footprints, CircleDot, Circle, Diamond } from 'lucide-svelte';
+	import { Shield, Heart, Zap, Footprints, CircleDot, Circle, Diamond, ChevronDown } from 'lucide-svelte';
 
 	type Props = {
 		sheet: ComputedSheet;
@@ -63,16 +65,16 @@
 		return items.length > 0 ? items : null;
 	});
 
-	// Known spells grouped by level
+	// Known spells grouped by level (keep full definition for expandable details)
 	const spellGroups = $derived.by(() => {
 		if (!data || !pack || data.spells.knownSpells.length === 0) return null;
-		const groups = new Map<number, { name: string; school: string; concentration: boolean }[]>();
+		const groups = new Map<number, SpellDefinition[]>();
 		for (const known of data.spells.knownSpells) {
 			const spell = pack.spells.find((s) => s.id === known.spellId)
 				?? additionalSpells.find((s) => s.id === known.spellId);
 			if (!spell) continue;
 			const list = groups.get(spell.level) ?? [];
-			list.push({ name: spell.name, school: spell.school, concentration: spell.concentration });
+			list.push(spell);
 			groups.set(spell.level, list);
 		}
 		return groups.size > 0 ? new Map([...groups.entries()].sort(([a], [b]) => a - b)) : null;
@@ -200,17 +202,25 @@
 				<Card.Header class="pb-2">
 					<Card.Title class="text-sm">Features & Traits</Card.Title>
 				</Card.Header>
-				<Card.Content class="space-y-2">
+				<Card.Content class="space-y-1">
 					{#each allFeatures as feature}
-						<div>
-							<div class="flex items-center gap-2">
-								<span class="text-sm font-medium">{feature.name}</span>
+						{#if feature.description}
+							<Collapsible.Root>
+								<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
+									<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
+									<span class="text-sm font-medium">{feature.name}</span>
+									<Badge variant="outline" class="text-[10px] px-1.5 py-0">Lv{feature.level}</Badge>
+								</Collapsible.Trigger>
+								<Collapsible.Content>
+									<p class="mt-1 mb-2 ml-5.5 text-xs text-muted-foreground whitespace-pre-line">{feature.description}</p>
+								</Collapsible.Content>
+							</Collapsible.Root>
+						{:else}
+							<div class="flex items-center gap-2 px-1 py-1">
+								<span class="ml-5.5 text-sm font-medium">{feature.name}</span>
 								<Badge variant="outline" class="text-[10px] px-1.5 py-0">Lv{feature.level}</Badge>
 							</div>
-							{#if feature.description}
-								<p class="mt-0.5 text-xs text-muted-foreground line-clamp-2">{feature.description}</p>
-							{/if}
-						</div>
+						{/if}
 					{/each}
 				</Card.Content>
 			</Card.Root>
@@ -272,14 +282,35 @@
 					<h4 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
 						{level === 0 ? 'Cantrips' : formatSpellLevel(level) + ' Level'}
 					</h4>
-					<div class="mt-1 flex flex-wrap gap-1">
+					<div class="mt-1 space-y-0.5">
 						{#each spells as spell}
-							<Badge variant={level === 0 ? 'outline' : 'secondary'} class="text-xs">
-								{spell.name}
-								{#if spell.concentration}
-									<span class="ml-0.5 opacity-60">C</span>
-								{/if}
-							</Badge>
+							<Collapsible.Root>
+								<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
+									<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
+									<span class="text-xs font-medium">{spell.name}</span>
+									{#if spell.concentration}
+										<span class="text-xs text-muted-foreground" title="Requires concentration">C</span>
+									{/if}
+									{#if spell.ritual}
+										<span class="text-xs text-muted-foreground" title="Can be cast as a ritual">R</span>
+									{/if}
+								</Collapsible.Trigger>
+								<Collapsible.Content>
+									<div class="ml-5.5 mb-2 rounded-md border border-border bg-muted/30 px-3 py-2 text-xs space-y-1.5">
+										<div class="flex flex-wrap gap-x-4 gap-y-0.5 text-muted-foreground">
+											<span><strong>Casting Time:</strong> {spell.castingTime}</span>
+											<span><strong>Range:</strong> {spell.range}</span>
+											<span><strong>Duration:</strong> {spell.duration}</span>
+											<span><strong>Components:</strong> {[spell.components.verbal && 'V', spell.components.somatic && 'S', spell.components.material && `M (${spell.components.material})`].filter(Boolean).join(', ')}</span>
+										</div>
+										<Separator />
+										<p class="whitespace-pre-line max-h-48 overflow-y-auto">{spell.description}</p>
+										{#if spell.higherLevels}
+											<p class="text-muted-foreground"><strong>At Higher Levels:</strong> {spell.higherLevels}</p>
+										{/if}
+									</div>
+								</Collapsible.Content>
+							</Collapsible.Root>
 						{/each}
 					</div>
 				</div>
