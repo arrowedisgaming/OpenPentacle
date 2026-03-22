@@ -42,6 +42,15 @@
 					license. The full license text is included in the
 					<code class="rounded bg-muted px-1.5 py-0.5 text-xs">LICENSE</code> file in the project root.
 				</p>
+				<a
+					href="https://github.com/arrowedisgaming/OpenPentacle"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+				>
+					View source on GitHub
+					<ExternalLink class="size-3" />
+				</a>
 			</Card.Content>
 		</Card.Root>
 

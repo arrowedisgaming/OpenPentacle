@@ -6,8 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+- Open5E spell source integration: logged-in users can add third-party spell sources (Deep Magic, Tome of Heroes, A5E, etc.) from the Open5E API
+- Per-character spell source selection via a side drawer in the spell wizard step
+- Settings page (`/settings`) for managing default Open5E spell sources applied to new characters
+- SQLite-backed spell cache with 7-day TTL for Open5E API responses
+- API endpoints: `/api/open5e/spells`, `/api/open5e/sources`, `/api/settings/open5e-defaults`
+- Settings link in user dropdown menu
+- Wizard store auto-loads user's default Open5E sources when starting a new character
+- GitHub source link on the Licensing page
+- Comprehensive README with architecture docs, Open5E integration, and content pack structure
+
 ### Changed
 - Extracted shared test fixtures (`makeFeature`, `makeProgression`, `makeClassDef`, `makeCharacter`, fighter/cleric/wizard class data) into `tests/fixtures/index.ts` to eliminate duplication across engine test files
+- Spell consumers (wizard, review, sheet, level-up) now merge Open5E spells with built-in pack spells
+- CharacterData type extended with optional `open5eSources` field
 
 ### Added
 - Integration tests for `computeSheet` engine function (39 tests covering AC, HP, skills, saves, spells, speed, proficiency bonus, class summary, and ability score bonuses)

@@ -76,3 +76,25 @@ export const userContentPacks = sqliteTable('user_content_packs', {
 }, (table) => [
 	index('user_content_packs_user_id_idx').on(table.userId)
 ]);
+
+// ─── Open5E Integration ─────────────────────────────────────
+
+/** Global cache of fetched+mapped Open5E spells per source document */
+export const open5eSpellCache = sqliteTable('open5e_spell_cache', {
+	documentKey: text('document_key').primaryKey(),
+	documentName: text('document_name').notNull(),
+	spellCount: integer('spell_count').notNull(),
+	/** JSON array of SpellDefinition[] */
+	spells: text('spells').notNull(),
+	fetchedAt: integer('fetched_at').notNull()
+});
+
+/** User's default Open5E spell sources for new characters */
+export const userOpen5eDefaults = sqliteTable('user_open5e_defaults', {
+	id: text('id').primaryKey(),
+	userId: text('user_id').notNull().unique()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	/** JSON array of enabled document keys, e.g. ["deepm", "toh"] */
+	enabledSources: text('enabled_sources').notNull().default('[]'),
+	updatedAt: integer('updated_at').notNull()
+});

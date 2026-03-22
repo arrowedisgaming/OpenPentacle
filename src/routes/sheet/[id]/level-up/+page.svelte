@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import type { ContentPack, ClassDefinition, SubclassDefinition, FeatDefinition, SpellDefinition } from '$lib/types/content-pack.js';
 	import type { CharacterData, AbilityBonus, FeatSelection, SpellKnown } from '$lib/types/character.js';
 	import type { AbilityId, SkillId } from '$lib/types/common.js';
@@ -75,7 +76,22 @@
 	const feats: FeatDefinition[] = $derived(pack?.feats ?? []);
 
 	// ─── Spell Choice ───────────────────────────────────────
-	const allSpells: SpellDefinition[] = $derived(pack?.spells ?? []);
+	let open5eSpells = $state<SpellDefinition[]>([]);
+	const allSpells: SpellDefinition[] = $derived.by(() => {
+		const base: SpellDefinition[] = pack?.spells ?? [];
+		if (open5eSpells.length === 0) return base;
+		const baseNames = new Set(base.map((s) => s.name.toLowerCase()));
+		return [...base, ...open5eSpells.filter((s: SpellDefinition) => !baseNames.has(s.name.toLowerCase()))];
+	});
+
+	onMount(async () => {
+		const sources = data?.open5eSources;
+		if (!sources?.length) return;
+		try {
+			const res = await fetch(`/api/open5e/spells?sources=${sources.join(',')}`);
+			if (res.ok) open5eSpells = await res.json();
+		} catch { /* graceful degradation */ }
+	});
 
 	let newSpellIds = $state<Set<string>>(new Set());
 	let newCantripIds = $state<Set<string>>(new Set());

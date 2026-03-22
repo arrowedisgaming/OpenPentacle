@@ -17,6 +17,9 @@ export interface CharacterData {
 	/** Content pack IDs used (base + any homebrew) */
 	contentPackIds: string[];
 
+	/** Open5E spell source document keys enabled for this character */
+	open5eSources?: string[];
+
 	/** Basic info */
 	name: string;
 	level: number;

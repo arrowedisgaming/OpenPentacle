@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { getContext } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 	import { wizardStore } from '$lib/stores/wizard.js';
 	import type { SpellDefinition, ClassDefinition } from '$lib/types/content-pack.js';
 	import type { SpellKnown } from '$lib/types/character.js';
@@ -11,15 +11,58 @@
 	import SelectionCard from '$lib/components/ui/selection-card/SelectionCard.svelte';
 	import WizardNav from '$lib/components/wizard/WizardNav.svelte';
 	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
+	import { BookOpen, ChevronDown, ChevronUp } from 'lucide-svelte';
+	import * as Sheet from '$lib/components/ui/sheet';
+	import * as Collapsible from '$lib/components/ui/collapsible';
+	import SourceSelector from '$lib/components/open5e/SourceSelector.svelte';
 
 
 	const wizNav = getContext<any>('wizard-nav');
 
 	const { pack, systemId } = $derived($page.data as { pack: any; systemId: string });
-	const allSpells: SpellDefinition[] = $derived(pack?.spells ?? []);
 	const classes: ClassDefinition[] = $derived(pack?.classes ?? []);
+
+	// ─── Open5E Spell Merging ───────────────────────────────
+	const ALLOWED_SOURCES = new Set(['deepm', 'a5e-ag', 'srd-2024', 'toh']);
+
+	let open5eSpells = $state<SpellDefinition[]>([]);
+	let open5eLoading = $state(false);
+	let showSourceSelector = $state(false);
+	let selectedOpen5eSources = $state<string[]>(
+		(wizardStore.getCharacter()?.open5eSources ?? []).filter((s) => ALLOWED_SOURCES.has(s))
+	);
+
+	const allSpells: SpellDefinition[] = $derived.by(() => {
+		const base: SpellDefinition[] = pack?.spells ?? [];
+		if (open5eSpells.length === 0) return base;
+		const baseNames = new Set(base.map((s) => s.name.toLowerCase()));
+		return [...base, ...open5eSpells.filter((s: SpellDefinition) => !baseNames.has(s.name.toLowerCase()))];
+	});
+
+	async function fetchOpen5eSpells() {
+		if (!selectedOpen5eSources.length) {
+			open5eSpells = [];
+			return;
+		}
+		open5eLoading = true;
+		try {
+			const res = await fetch(`/api/open5e/spells?sources=${selectedOpen5eSources.join(',')}`);
+			if (res.ok) {
+				open5eSpells = await res.json();
+			}
+		} catch (err) {
+			console.error('Failed to fetch Open5E spells:', err);
+		} finally {
+			open5eLoading = false;
+		}
+	}
+
+	onMount(() => {
+		fetchOpen5eSpells();
+	});
 
 	const character = $derived(wizardStore.getCharacter());
 	const charLevel = $derived(character?.level ?? 1);
@@ -143,12 +186,40 @@
 		});
 	}
 
+	// Source labels for Open5E spells (derived from spell ID prefix)
+	const SOURCE_LABELS: Record<string, string> = {
+		deepm: 'Deep Magic',
+		'a5e-ag': 'A5E',
+		'srd-2024': 'SRD 2024',
+		toh: 'Tome of Heroes'
+	};
+
+	function getSpellSource(spellId: string): string | null {
+		const underscoreIdx = spellId.indexOf('_');
+		if (underscoreIdx === -1) return null; // Built-in SRD spell
+		const prefix = spellId.substring(0, underscoreIdx);
+		return SOURCE_LABELS[prefix] ?? prefix;
+	}
+
+	let expandedSpellId = $state<string | null>(null);
+
+	function toggleExpand(spellId: string, event: MouseEvent) {
+		event.stopPropagation();
+		expandedSpellId = expandedSpellId === spellId ? null : spellId;
+	}
+
 	const spellLevels = $derived([...spellsByLevel().entries()]);
 	const defaultTab = $derived(spellLevels.length > 0 ? String(spellLevels[0][0]) : '0');
 
 	const nextPath = $derived(wizNav.getNextStepPath('spells'));
 	const nextLabel = $derived(`Next: ${wizNav.getNextStepLabel('spells')}`);
 	const prevPath = $derived(wizNav.getPrevStepPath('spells'));
+
+	function handleSourcesChange(sources: string[]) {
+		selectedOpen5eSources = sources.filter((s) => ALLOWED_SOURCES.has(s));
+		wizardStore.updateCharacter({ open5eSources: selectedOpen5eSources });
+		fetchOpen5eSpells();
+	}
 
 	function proceed() {
 		const cls = characterClass();
@@ -203,6 +274,19 @@
 					Up to {formatSpellLevel(maxSpellLevelAvailable())} level
 				</Badge>
 			{/if}
+			<div class="ml-auto">
+				<Button variant="outline" size="sm" onclick={() => (showSourceSelector = true)}>
+					<BookOpen class="mr-1.5 size-3.5" />
+					Spell Sources
+					{#if open5eLoading}
+						<span class="ml-1.5 size-3 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+					{:else if selectedOpen5eSources.length}
+						<Badge variant="secondary" class="ml-1.5 px-1.5 py-0 text-xs">
+							{selectedOpen5eSources.length}
+						</Badge>
+					{/if}
+				</Button>
+			</div>
 		</Card.Content>
 	</Card.Root>
 
@@ -263,6 +347,8 @@
 					</div>
 					<div class="space-y-2">
 							{#each filtered as spell}
+								{@const source = getSpellSource(spell.id)}
+								{@const isExpanded = expandedSpellId === spell.id}
 								<SelectionCard
 									selected={selectedSpellIds.has(spell.id)}
 									onclick={() => toggleSpell(spell.id)}
@@ -276,10 +362,33 @@
 										{#if spell.ritual}
 											<Badge variant="outline" class="text-xs">R</Badge>
 										{/if}
+										{#if source}
+											<Badge variant="outline" class="text-xs text-primary/70">{source}</Badge>
+										{/if}
 									</div>
-									<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">{spell.description}</p>
-									<div class="mt-1 text-xs text-muted-foreground">
-										{spell.castingTime} &middot; {spell.range} &middot; {spell.duration}
+									<p class="{isExpanded ? '' : 'line-clamp-2'} mt-1 text-sm text-muted-foreground">{spell.description}</p>
+									{#if spell.higherLevels && isExpanded}
+										<p class="mt-1 text-sm text-muted-foreground italic">{spell.higherLevels}</p>
+									{/if}
+									<div class="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+										<span>
+											{spell.castingTime} &middot; {spell.range} &middot; {spell.duration}
+											&middot; {[
+												spell.components.verbal ? 'V' : '',
+												spell.components.somatic ? 'S' : '',
+												spell.components.material ? 'M' : ''
+											].filter(Boolean).join(', ') || '—'}{#if spell.components.materialCost}&nbsp;({spell.components.materialCost} gp){/if}
+										</span>
+										<button
+											onclick={(e) => toggleExpand(spell.id, e)}
+											class="ml-auto inline-flex items-center gap-0.5 text-primary/60 hover:text-primary"
+										>
+											{#if isExpanded}
+												<ChevronUp class="size-3.5" />
+											{:else}
+												<ChevronDown class="size-3.5" />
+											{/if}
+										</button>
 									</div>
 								</SelectionCard>
 							{/each}
@@ -296,3 +405,20 @@
 		onNext={proceed}
 	/>
 </div>
+
+<Sheet.Root bind:open={showSourceSelector}>
+	<Sheet.Content side="right" class="w-full sm:max-w-lg overflow-y-auto">
+		<Sheet.Header>
+			<Sheet.Title>Open5E Spell Sources</Sheet.Title>
+			<Sheet.Description>
+				Add third-party spell sources to expand your options. Changes apply to this character only.
+			</Sheet.Description>
+		</Sheet.Header>
+		<div class="mt-4 px-1">
+			<SourceSelector
+				selected={selectedOpen5eSources}
+				onchange={handleSourcesChange}
+			/>
+		</div>
+	</Sheet.Content>
+</Sheet.Root>

@@ -38,4 +38,5 @@ docker-compose.override.yml
 dev.sh
 
 # Claude Code
-.claude/settings.local.json
+CLAUDE.md
+.claude/

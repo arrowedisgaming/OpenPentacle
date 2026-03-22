@@ -59,6 +59,7 @@ export const characterDataSchema = z.object({
 	schemaVersion: z.number().int().optional(),
 	systemId: systemIdSchema,
 	contentPackIds: z.array(z.string()).max(50),
+	open5eSources: z.array(z.string()).max(30).optional(),
 	name: z.string().min(1).max(100),
 	level: z.number().int().min(1).max(20),
 	xp: z.number().int().min(0),

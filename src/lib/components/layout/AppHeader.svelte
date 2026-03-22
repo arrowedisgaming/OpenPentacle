@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { signOut } from '@auth/sveltekit/client';
-	import { Swords, Menu, LogIn, LogOut, User } from 'lucide-svelte';
+	import { Swords, Menu, LogIn, LogOut, User, Settings } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as SheetUI from '$lib/components/ui/sheet';
@@ -99,6 +99,10 @@
 					<DropdownMenu.Item onclick={() => { window.location.href = '/characters'; }}>
 						<User class="mr-2 size-4" />
 						My Characters
+					</DropdownMenu.Item>
+					<DropdownMenu.Item onclick={() => { window.location.href = '/settings'; }}>
+						<Settings class="mr-2 size-4" />
+						Settings
 					</DropdownMenu.Item>
 					<DropdownMenu.Separator />
 					<DropdownMenu.Item onclick={() => signOut()}>

@@ -95,6 +95,19 @@ function createWizardStore() {
 				character,
 				active: true
 			});
+
+			// Load user's default Open5E sources (non-blocking)
+			fetch('/api/settings/open5e-defaults')
+				.then((res) => res.ok ? res.json() : null)
+				.then((data) => {
+					if (data?.enabledSources?.length) {
+						update((s) => {
+							if (!s.character) return s;
+							return { ...s, character: { ...s.character, open5eSources: data.enabledSources } };
+						});
+					}
+				})
+				.catch(() => { /* not logged in or API unavailable */ });
 		},
 
 		/** Navigate to a specific step */

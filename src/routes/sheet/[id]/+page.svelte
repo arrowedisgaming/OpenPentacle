@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 	import { computeSheet } from '$lib/engine/character-sheet.js';
-	import type { ContentPack } from '$lib/types/content-pack.js';
+	import type { ContentPack, SpellDefinition } from '$lib/types/content-pack.js';
 	import type { CharacterData } from '$lib/types/character.js';
 	import CharacterSheetView from '$lib/components/sheet/CharacterSheetView.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -13,6 +14,16 @@
 	});
 
 	const sheet = $derived(pack && character?.data ? computeSheet(character.data, pack) : null);
+
+	let open5eSpells = $state<SpellDefinition[]>([]);
+	onMount(async () => {
+		const sources = character?.data?.open5eSources;
+		if (!sources?.length) return;
+		try {
+			const res = await fetch(`/api/open5e/spells?sources=${sources.join(',')}`);
+			if (res.ok) open5eSpells = await res.json();
+		} catch { /* graceful degradation */ }
+	});
 
 	let shareUrl = $state('');
 	let sharing = $state(false);
@@ -85,7 +96,7 @@
 	</div>
 
 	{#if sheet}
-		<CharacterSheetView {sheet} data={character.data} {pack} />
+		<CharacterSheetView {sheet} data={character.data} {pack} additionalSpells={open5eSpells} />
 	{:else}
 		<p class="text-muted-foreground">Loading character sheet...</p>
 	{/if}

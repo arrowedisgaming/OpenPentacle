@@ -16,9 +16,10 @@
 		sheet: ComputedSheet;
 		data?: CharacterData;
 		pack?: ContentPack;
+		additionalSpells?: import('$lib/types/content-pack.js').SpellDefinition[];
 	};
 
-	let { sheet, data, pack }: Props = $props();
+	let { sheet, data, pack, additionalSpells = [] }: Props = $props();
 
 	// Resolve class/subclass definitions when data + pack available
 	const classDef = $derived(
@@ -67,7 +68,8 @@
 		if (!data || !pack || data.spells.knownSpells.length === 0) return null;
 		const groups = new Map<number, { name: string; school: string; concentration: boolean }[]>();
 		for (const known of data.spells.knownSpells) {
-			const spell = pack.spells.find((s) => s.id === known.spellId);
+			const spell = pack.spells.find((s) => s.id === known.spellId)
+				?? additionalSpells.find((s) => s.id === known.spellId);
 			if (!spell) continue;
 			const list = groups.get(spell.level) ?? [];
 			list.push({ name: spell.name, school: spell.school, concentration: spell.concentration });

@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { getContext } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 	import { wizardStore } from '$lib/stores/wizard.js';
+	import type { SpellDefinition } from '$lib/types/content-pack.js';
 	import { ABILITY_NAMES, type AbilityId } from '$lib/types/common.js';
 	import { abilityModifier, formatModifier, totalAbilityScore } from '$lib/engine/ability-scores.js';
 	import { calculateMaxHP } from '$lib/engine/hit-points.js';
@@ -26,6 +27,24 @@
 
 	let saving = $state(false);
 	let error = $state('');
+
+	// Merge Open5E spells for name resolution
+	let open5eSpells = $state<SpellDefinition[]>([]);
+	const mergedSpells: SpellDefinition[] = $derived.by(() => {
+		const base: SpellDefinition[] = pack?.spells ?? [];
+		if (open5eSpells.length === 0) return base;
+		const baseNames = new Set(base.map((s) => s.name.toLowerCase()));
+		return [...base, ...open5eSpells.filter((s: SpellDefinition) => !baseNames.has(s.name.toLowerCase()))];
+	});
+
+	onMount(async () => {
+		const sources = wizardStore.getCharacter()?.open5eSources;
+		if (!sources?.length) return;
+		try {
+			const res = await fetch(`/api/open5e/spells?sources=${sources.join(',')}`);
+			if (res.ok) open5eSpells = await res.json();
+		} catch { /* graceful degradation */ }
+	});
 
 	// Computed values for the review
 	const classDef = $derived(
@@ -305,7 +324,7 @@
 					</div>
 					<ul class="mt-2 text-sm text-muted-foreground">
 						{#each character.spells.knownSpells as known}
-							{@const spell = pack.spells.find((s) => s.id === known.spellId)}
+							{@const spell = mergedSpells.find((s) => s.id === known.spellId)}
 							<li>{spell?.name ?? known.spellId}</li>
 						{/each}
 					</ul>
