@@ -192,6 +192,15 @@
 		description="Choose your method and assign your ability scores."
 	/>
 
+	<WizardNav
+		backHref="/create/{systemId}/origin"
+		backLabel="Back"
+		nextLabel="Next: Background"
+		onNext={proceed}
+		nextDisabled={!isValid()}
+		compact
+	/>
+
 	<!-- Method selector -->
 	<div class="mt-6">
 		<ToggleGroup.Root

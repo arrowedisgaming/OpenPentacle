@@ -181,7 +181,7 @@
         "name": "Dwarf",
         "description": "Bold and hardy, dwarves are known as skilled warriors, miners, and workers of stone and metal. Though they stand well under 5 feet tall, dwarves are so broad and compact that they can weigh as much as a human standing nearly two feet taller.",
         "size": "Medium",
-        "speed": 25,
+        "speed": 30,
         "abilityScoreChanges": [
           { "ability": "choice", "value": 2, "choiceCount": 1 },
           { "ability": "choice", "value": 1, "choiceCount": 1 }
@@ -265,7 +265,7 @@
         "name": "Halfling",
         "description": "The comforts of home are the goals of most halflings' lives: a place to settle in peace and quiet, far from marauding monsters and clashing armies. Others form nomadic bands that travel constantly, lured by the open road and the wide horizon.",
         "size": "Small",
-        "speed": 25,
+        "speed": 30,
         "abilityScoreChanges": [
           { "ability": "choice", "value": 2, "choiceCount": 1 },
           { "ability": "choice", "value": 1, "choiceCount": 1 }

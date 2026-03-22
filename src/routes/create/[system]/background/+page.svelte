@@ -127,6 +127,15 @@
 		description="Your background describes what your character did before becoming an adventurer."
 	/>
 
+	<WizardNav
+		backHref="/create/{systemId}/abilities"
+		backLabel="Back"
+		nextLabel="Next: Skills"
+		onNext={proceed}
+		nextDisabled={!selectedId || !asiComplete()}
+		compact
+	/>
+
 	<div class="mt-6 grid gap-3 sm:grid-cols-2" role="listbox" aria-label="Backgrounds" use:rovingTabindex>
 		{#each backgrounds as bg}
 			<SelectionCard

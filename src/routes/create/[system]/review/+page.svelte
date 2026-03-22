@@ -162,6 +162,16 @@
 		description="Check everything looks right before saving."
 	/>
 
+	<WizardNav
+		backHref="/create/{systemId}/{wizNav.getPrevStepPath('review')}"
+		backLabel="Back"
+		nextLabel={saving ? 'Saving...' : 'Save Character'}
+		onNext={saveCharacter}
+		nextDisabled={saving}
+		{saving}
+		compact
+	/>
+
 	{#if character}
 		<div class="mt-6 space-y-6">
 			<!-- Summary Card -->

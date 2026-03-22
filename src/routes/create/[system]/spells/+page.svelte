@@ -26,7 +26,7 @@
 	const classes: ClassDefinition[] = $derived(pack?.classes ?? []);
 
 	// ─── Open5E Spell Merging ───────────────────────────────
-	const ALLOWED_SOURCES = new Set(['deepm', 'a5e-ag', 'srd-2024', 'toh']);
+	const ALLOWED_SOURCES = new Set(['deepm', 'a5e-ag', 'toh']);
 
 	let open5eSpells = $state<SpellDefinition[]>([]);
 	let open5eLoading = $state(false);
@@ -190,7 +190,6 @@
 	const SOURCE_LABELS: Record<string, string> = {
 		deepm: 'Deep Magic',
 		'a5e-ag': 'A5E',
-		'srd-2024': 'SRD 2024',
 		toh: 'Tome of Heroes'
 	};
 

@@ -12,7 +12,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
-	import { Sword, Wand2, Shield, Heart, Cross, Flame, Music, Leaf, Skull, BookOpen, Zap, Target, Star, Sparkles } from 'lucide-svelte';
+	import { Sword, Wand2, Shield, Heart, Cross, Flame, Music, Leaf, Skull, BookOpen, Zap, Target, Star, Sparkles, ChevronDown, ChevronUp } from 'lucide-svelte';
 	import { rovingTabindex } from '$lib/actions/roving-tabindex.js';
 
 	const { pack, systemId } = $derived($page.data as { pack: any; systemId: string });
@@ -33,16 +33,15 @@
 	const asiLevels = $derived(selectedClass ? getASILevels(selectedClass) : []);
 	const needsSubclass = $derived(subclassTrigger !== null && selectedLevel >= subclassTrigger);
 
-	// Build level-by-level feature preview for selected class
+	// Build level-by-level feature preview for selected class (includes descriptions)
 	const featurePreview = $derived(() => {
 		if (!selectedClass) return [];
-		const rows: { level: number; features: string[]; isSubclass: boolean; isASI: boolean; active: boolean }[] = [];
+		const rows: { level: number; features: { name: string; description: string }[]; isSubclass: boolean; isASI: boolean; active: boolean }[] = [];
 		for (const prog of selectedClass.progression) {
 			if (prog.features.length === 0) continue;
-			const names = prog.features.map((f) => f.name);
 			rows.push({
 				level: prog.level,
-				features: names,
+				features: prog.features.map((f) => ({ name: f.name, description: f.description })),
 				isSubclass: prog.level === subclassTrigger,
 				isASI: asiLevels.includes(prog.level),
 				active: prog.level <= selectedLevel
@@ -50,6 +49,12 @@
 		}
 		return rows;
 	});
+
+	let expandedFeature = $state<string | null>(null);
+
+	function toggleFeature(key: string) {
+		expandedFeature = expandedFeature === key ? null : key;
+	}
 
 	function selectClass(classId: string) {
 		selectedClassId = classId;
@@ -126,111 +131,135 @@
 		compact
 	/>
 
-	<div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" role="listbox" aria-label="Character classes" use:rovingTabindex>
-		{#each classes as classDef}
-			{@const Icon = classIcons[classDef.id] ?? BookOpen}
-			<SelectionCard
-				selected={selectedClassId === classDef.id}
-				onclick={() => selectClass(classDef.id)}
-			>
-				<div class="flex items-start justify-between pr-6">
-					<div class="flex items-center gap-2">
-						<Icon class="size-4 text-muted-foreground" />
-						<h3 class="font-semibold">{classDef.name}</h3>
-					</div>
-					<Badge variant="outline" class="text-xs">{classDef.hitDie}</Badge>
-				</div>
-				<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
-					{classDef.description}
-				</p>
-				<div class="mt-2 flex flex-wrap gap-1">
-					{#each classDef.primaryAbility as ability}
-						<Badge variant="secondary" class="text-xs">
-							{ability.toUpperCase()}
-						</Badge>
-					{/each}
-					{#if classDef.spellcasting}
-						<Badge class="bg-primary/10 text-primary text-xs hover:bg-primary/10">
-							Spellcaster
-						</Badge>
-					{/if}
-				</div>
-			</SelectionCard>
-		{/each}
-	</div>
-
-	<!-- Selected class details + level picker -->
-	{#if selectedClass}
-		<div class="mt-6">
-			<DetailPanel title={selectedClass.name}>
-				<p class="text-sm text-muted-foreground">{selectedClass.description}</p>
-
-				<div class="mt-4 grid gap-4 text-sm sm:grid-cols-2">
-					<div>
-						<span class="font-medium">Hit Die:</span>
-						<span class="text-muted-foreground"> {selectedClass.hitDie}</span>
-					</div>
-					<div>
-						<span class="font-medium">Primary Ability:</span>
-						<span class="text-muted-foreground"> {selectedClass.primaryAbility.map(a => a.toUpperCase()).join(', ')}</span>
-					</div>
-					<div>
-						<span class="font-medium">Saving Throws:</span>
-						<span class="text-muted-foreground"> {selectedClass.savingThrows.map(a => a.toUpperCase()).join(', ')}</span>
-					</div>
-					<div>
-						<span class="font-medium">Armor:</span>
-						<span class="text-muted-foreground"> {selectedClass.armorProficiencies.join(', ') || 'None'}</span>
-					</div>
-				</div>
-
-				<Separator class="my-4" />
-
-				<!-- Level Picker -->
-				<div class="flex items-center gap-4">
-					<Label for="level-input" class="text-sm font-medium">Character Level</Label>
-					<Input
-						id="level-input"
-						type="number"
-						min={1}
-						max={20}
-						value={selectedLevel}
-						oninput={handleLevelInput}
-						class="w-20"
-					/>
-					<span class="text-xs text-muted-foreground">1–20</span>
-				</div>
-
-				<!-- Level features preview -->
-				{#if featurePreview().length > 0}
-					<Separator class="my-4" />
-					<h4 class="mb-2 text-sm font-medium">Features by Level</h4>
-					<div class="max-h-60 space-y-1 overflow-y-auto text-sm">
-						{#each featurePreview() as row}
-							<div class="flex gap-2 {row.active ? '' : 'opacity-40'}">
-								<span class="w-16 shrink-0 font-mono text-xs text-muted-foreground">
-									Level {row.level}
-								</span>
-								<span class="flex flex-wrap items-center gap-1">
-									{#if row.isSubclass}
-										<Star class="inline size-3 text-amber-500" />
-									{/if}
-									{#if row.isASI}
-										<Sparkles class="inline size-3 text-blue-500" />
-									{/if}
-									{row.features.join(', ')}
-								</span>
+	<div class="xl:flex xl:gap-6">
+		<div class="xl:w-3/5">
+			<div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2" role="listbox" aria-label="Character classes" use:rovingTabindex>
+				{#each classes as classDef}
+					{@const Icon = classIcons[classDef.id] ?? BookOpen}
+					<SelectionCard
+						selected={selectedClassId === classDef.id}
+						onclick={() => selectClass(classDef.id)}
+					>
+						<div class="flex items-start justify-between pr-6">
+							<div class="flex items-center gap-2">
+								<Icon class="size-4 text-muted-foreground" />
+								<h3 class="font-semibold">{classDef.name}</h3>
 							</div>
-						{/each}
-					</div>
-					<div class="mt-2 flex gap-4 text-xs text-muted-foreground">
-						<span class="flex items-center gap-1"><Star class="size-3 text-amber-500" /> Subclass</span>
-						<span class="flex items-center gap-1"><Sparkles class="size-3 text-blue-500" /> ASI</span>
-					</div>
-				{/if}
-			</DetailPanel>
+							<Badge variant="outline" class="text-xs">{classDef.hitDie}</Badge>
+						</div>
+						<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
+							{classDef.description}
+						</p>
+						<div class="mt-2 flex flex-wrap gap-1">
+							{#each classDef.primaryAbility as ability}
+								<Badge variant="secondary" class="text-xs">
+									{ability.toUpperCase()}
+								</Badge>
+							{/each}
+							{#if classDef.spellcasting}
+								<Badge class="bg-primary/10 text-primary text-xs hover:bg-primary/10">
+									Spellcaster
+								</Badge>
+							{/if}
+						</div>
+					</SelectionCard>
+				{/each}
+			</div>
 		</div>
-	{/if}
+
+		<!-- Selected class details + level picker -->
+		{#if selectedClass}
+			<div class="mt-6 xl:mt-4 xl:w-2/5">
+				<div class="xl:sticky xl:top-4">
+					<DetailPanel title={selectedClass.name}>
+						<p class="text-sm text-muted-foreground">{selectedClass.description}</p>
+
+						<div class="mt-4 grid gap-4 text-sm sm:grid-cols-2 xl:grid-cols-1">
+							<div>
+								<span class="font-medium">Hit Die:</span>
+								<span class="text-muted-foreground"> {selectedClass.hitDie}</span>
+							</div>
+							<div>
+								<span class="font-medium">Primary Ability:</span>
+								<span class="text-muted-foreground"> {selectedClass.primaryAbility.map(a => a.toUpperCase()).join(', ')}</span>
+							</div>
+							<div>
+								<span class="font-medium">Saving Throws:</span>
+								<span class="text-muted-foreground"> {selectedClass.savingThrows.map(a => a.toUpperCase()).join(', ')}</span>
+							</div>
+							<div>
+								<span class="font-medium">Armor:</span>
+								<span class="text-muted-foreground"> {selectedClass.armorProficiencies.join(', ') || 'None'}</span>
+							</div>
+						</div>
+
+						<Separator class="my-4" />
+
+						<!-- Level Picker -->
+						<div class="flex items-center gap-4">
+							<Label for="level-input" class="text-sm font-medium">Character Level</Label>
+							<Input
+								id="level-input"
+								type="number"
+								min={1}
+								max={20}
+								value={selectedLevel}
+								oninput={handleLevelInput}
+								class="w-20"
+							/>
+							<span class="text-xs text-muted-foreground">1–20</span>
+						</div>
+
+						<!-- Level features preview with expandable descriptions -->
+						{#if featurePreview().length > 0}
+							<Separator class="my-4" />
+							<h4 class="mb-2 text-sm font-medium">Features by Level</h4>
+							<div class="max-h-96 space-y-1 overflow-y-auto text-sm">
+								{#each featurePreview() as row}
+									<div class="{row.active ? '' : 'opacity-40'}">
+										<div class="flex gap-2">
+											<span class="w-16 shrink-0 font-mono text-xs text-muted-foreground pt-0.5">
+												Level {row.level}
+											</span>
+											<div class="flex-1 space-y-0.5">
+												{#each row.features as feat}
+													{@const key = `L${row.level}-${feat.name}`}
+													<button
+														class="flex w-full items-center gap-1 text-left hover:text-primary"
+														onclick={() => toggleFeature(key)}
+													>
+														{#if row.isSubclass && feat === row.features[0]}
+															<Star class="inline size-3 shrink-0 text-amber-500" />
+														{/if}
+														{#if row.isASI && feat.name === 'Ability Score Improvement'}
+															<Sparkles class="inline size-3 shrink-0 text-blue-500" />
+														{/if}
+														<span class="font-medium">{feat.name}</span>
+														{#if expandedFeature === key}
+															<ChevronUp class="ml-auto size-3 shrink-0 text-muted-foreground" />
+														{:else}
+															<ChevronDown class="ml-auto size-3 shrink-0 text-muted-foreground" />
+														{/if}
+													</button>
+													{#if expandedFeature === key && feat.description}
+														<p class="ml-4 pb-2 text-xs text-muted-foreground leading-relaxed">{feat.description}</p>
+													{/if}
+												{/each}
+											</div>
+										</div>
+									</div>
+								{/each}
+							</div>
+							<div class="mt-2 flex gap-4 text-xs text-muted-foreground">
+								<span class="flex items-center gap-1"><Star class="size-3 text-amber-500" /> Subclass</span>
+								<span class="flex items-center gap-1"><Sparkles class="size-3 text-blue-500" /> ASI</span>
+							</div>
+						{/if}
+					</DetailPanel>
+				</div>
+			</div>
+		{/if}
+	</div>
 
 	<WizardNav
 		nextLabel={nextLabel}

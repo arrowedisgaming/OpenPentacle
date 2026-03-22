@@ -34,43 +34,25 @@
     },
     "startingEquipment": [
       {
-        "description": "A greataxe or any martial melee weapon",
+        "description": "Greataxe, 4 Handaxes, Explorer's Pack, and 15 GP",
         "items": [
           {
             "equipmentId": "greataxe",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "greataxe",
-              "martial-melee"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "Two handaxes or any simple weapon",
-        "items": [
-          {
-            "equipmentId": "handaxe",
-            "quantity": 2,
-            "isChoice": true,
-            "choices": [
-              "handaxe",
-              "simple-weapon"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "An explorer's pack and four javelins",
-        "items": [
-          {
-            "equipmentId": "explorers-pack",
-            "quantity": 1
+            "isChoice": false,
+            "choices": []
           },
           {
-            "equipmentId": "javelin",
-            "quantity": 4
+            "equipmentId": "handaxe",
+            "quantity": 4,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "explorers-pack",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
           }
         ]
       }
@@ -513,58 +495,25 @@
     },
     "startingEquipment": [
       {
-        "description": "A rapier, a longsword, or any simple weapon",
-        "items": [
-          {
-            "equipmentId": "rapier",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "rapier",
-              "longsword",
-              "simple-weapon"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A diplomat's pack or an entertainer's pack",
-        "items": [
-          {
-            "equipmentId": "diplomats-pack",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "diplomats-pack",
-              "entertainers-pack"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A lute or any musical instrument",
-        "items": [
-          {
-            "equipmentId": "lute",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "lute",
-              "musical-instrument"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "Leather armor and a dagger",
+        "description": "Leather Armor, 2 Daggers, Entertainer's Pack, and 19 GP",
         "items": [
           {
             "equipmentId": "leather-armor",
-            "quantity": 1
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
           },
           {
             "equipmentId": "dagger",
-            "quantity": 1
+            "quantity": 2,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "entertainers-pack",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
           }
         ]
       }
@@ -1045,72 +994,37 @@
     },
     "startingEquipment": [
       {
-        "description": "A mace or a warhammer (if proficient)",
+        "description": "Chain Shirt, Shield, Mace, Holy Symbol (Amulet), Priest's Pack, and 7 GP",
         "items": [
+          {
+            "equipmentId": "chain-shirt",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "shield",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
           {
             "equipmentId": "mace",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "mace",
-              "warhammer"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "Scale mail, leather armor, or chain mail (if proficient)",
-        "items": [
+            "isChoice": false,
+            "choices": []
+          },
           {
-            "equipmentId": "scale-mail",
+            "equipmentId": "holy-symbol-amulet",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "scale-mail",
-              "leather-armor",
-              "chain-mail"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A light crossbow and 20 bolts or any simple weapon",
-        "items": [
-          {
-            "equipmentId": "light-crossbow",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "light-crossbow",
-              "simple-weapon"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A priest's pack or an explorer's pack",
-        "items": [
+            "isChoice": false,
+            "choices": []
+          },
           {
             "equipmentId": "priests-pack",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "priests-pack",
-              "explorers-pack"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A shield and a holy symbol",
-        "items": [
-          {
-            "equipmentId": "shield",
-            "quantity": 1
-          },
-          {
-            "equipmentId": "holy-symbol",
-            "quantity": 1
+            "isChoice": false,
+            "choices": []
           }
         ]
       }
@@ -1580,47 +1494,43 @@
     },
     "startingEquipment": [
       {
-        "description": "A wooden shield or any simple weapon",
-        "items": [
-          {
-            "equipmentId": "shield",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "shield",
-              "simple-weapon"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A scimitar or any simple melee weapon",
-        "items": [
-          {
-            "equipmentId": "scimitar",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "scimitar",
-              "simple-melee"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "Leather armor, an explorer's pack, and a druidic focus",
+        "description": "Leather Armor, Shield, Sickle, Druidic Focus (Wooden Staff), Explorer's Pack, Herbalism Kit, and 9 GP",
         "items": [
           {
             "equipmentId": "leather-armor",
-            "quantity": 1
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "shield",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "sickle",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "druidic-focus-wooden-staff",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
           },
           {
             "equipmentId": "explorers-pack",
-            "quantity": 1
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
           },
           {
-            "equipmentId": "druidic-focus",
-            "quantity": 1
+            "equipmentId": "herbalism-kit",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
           }
         ]
       }
@@ -2092,58 +2002,37 @@
     },
     "startingEquipment": [
       {
-        "description": "Chain mail or leather armor, a longbow, and 20 arrows",
+        "description": "Chain Mail, Greatsword, Flail, 8 Javelins, Dungeoneer's Pack, and 4 GP",
         "items": [
           {
             "equipmentId": "chain-mail",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "chain-mail",
-              "leather-armor"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A martial weapon and a shield or two martial weapons",
-        "items": [
+            "isChoice": false,
+            "choices": []
+          },
           {
-            "equipmentId": "martial-weapon",
+            "equipmentId": "greatsword",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "martial-weapon-and-shield",
-              "two-martial-weapons"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A light crossbow and 20 bolts or two handaxes",
-        "items": [
+            "isChoice": false,
+            "choices": []
+          },
           {
-            "equipmentId": "light-crossbow",
+            "equipmentId": "flail",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "light-crossbow",
-              "handaxe"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A dungeoneer's pack or an explorer's pack",
-        "items": [
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "javelin",
+            "quantity": 8,
+            "isChoice": false,
+            "choices": []
+          },
           {
             "equipmentId": "dungeoneers-pack",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "dungeoneers-pack",
-              "explorers-pack"
-            ]
+            "isChoice": false,
+            "choices": []
           }
         ]
       }
@@ -2507,39 +2396,25 @@
     },
     "startingEquipment": [
       {
-        "description": "A shortsword or any simple weapon",
+        "description": "Spear, 5 Daggers, Explorer's Pack, and 11 GP",
         "items": [
           {
-            "equipmentId": "shortsword",
+            "equipmentId": "spear",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "shortsword",
-              "simple-weapon"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A dungeoneer's pack or an explorer's pack",
-        "items": [
+            "isChoice": false,
+            "choices": []
+          },
           {
-            "equipmentId": "dungeoneers-pack",
+            "equipmentId": "dagger",
+            "quantity": 5,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "explorers-pack",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "dungeoneers-pack",
-              "explorers-pack"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "10 darts",
-        "items": [
-          {
-            "equipmentId": "dart",
-            "quantity": 10
+            "isChoice": false,
+            "choices": []
           }
         ]
       }
@@ -2986,57 +2861,43 @@
     },
     "startingEquipment": [
       {
-        "description": "A martial weapon and a shield or two martial weapons",
-        "items": [
-          {
-            "equipmentId": "martial-weapon",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "martial-weapon-and-shield",
-              "two-martial-weapons"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "Five javelins or any simple melee weapon",
-        "items": [
-          {
-            "equipmentId": "javelin",
-            "quantity": 5,
-            "isChoice": true,
-            "choices": [
-              "javelin",
-              "simple-melee"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A priest's pack or an explorer's pack",
-        "items": [
-          {
-            "equipmentId": "priests-pack",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "priests-pack",
-              "explorers-pack"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "Chain mail and a holy symbol",
+        "description": "Chain Mail, Shield, Longsword, 6 Javelins, Holy Symbol (Amulet), Priest's Pack, and 9 GP",
         "items": [
           {
             "equipmentId": "chain-mail",
-            "quantity": 1
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
           },
           {
-            "equipmentId": "holy-symbol",
-            "quantity": 1
+            "equipmentId": "shield",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "longsword",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "javelin",
+            "quantity": 6,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "holy-symbol-amulet",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "priests-pack",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
           }
         ]
       }
@@ -3462,57 +3323,49 @@
     },
     "startingEquipment": [
       {
-        "description": "Scale mail or leather armor",
+        "description": "Studded Leather Armor, Scimitar, Shortsword, Longbow, 20 Arrows, Druidic Focus (Sprig of Mistletoe), Explorer's Pack, and 7 GP",
         "items": [
           {
-            "equipmentId": "scale-mail",
+            "equipmentId": "studded-leather-armor",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "scale-mail",
-              "leather-armor"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "Two shortswords or two simple melee weapons",
-        "items": [
-          {
-            "equipmentId": "shortsword",
-            "quantity": 2,
-            "isChoice": true,
-            "choices": [
-              "shortsword",
-              "simple-melee"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A dungeoneer's pack or an explorer's pack",
-        "items": [
-          {
-            "equipmentId": "dungeoneers-pack",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "dungeoneers-pack",
-              "explorers-pack"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A longbow and a quiver of 20 arrows",
-        "items": [
-          {
-            "equipmentId": "longbow",
-            "quantity": 1
+            "isChoice": false,
+            "choices": []
           },
           {
-            "equipmentId": "arrow",
-            "quantity": 20
+            "equipmentId": "scimitar",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "shortsword",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "longbow",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "arrows-20",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "druidic-focus-sprig-of-mistletoe",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "explorers-pack",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
           }
         ]
       }
@@ -3966,62 +3819,49 @@
     },
     "startingEquipment": [
       {
-        "description": "A rapier or a shortsword",
-        "items": [
-          {
-            "equipmentId": "rapier",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "rapier",
-              "shortsword"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A shortbow and quiver of 20 arrows or a shortsword",
-        "items": [
-          {
-            "equipmentId": "shortbow",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "shortbow",
-              "shortsword"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A burglar's pack, dungeoneer's pack, or explorer's pack",
-        "items": [
-          {
-            "equipmentId": "burglars-pack",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "burglars-pack",
-              "dungeoneers-pack",
-              "explorers-pack"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "Leather armor, two daggers, and thieves' tools",
+        "description": "Leather Armor, 2 Daggers, Shortsword, Shortbow, 20 Arrows, Thieves' Tools, Burglar's Pack, and 8 GP",
         "items": [
           {
             "equipmentId": "leather-armor",
-            "quantity": 1
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
           },
           {
             "equipmentId": "dagger",
-            "quantity": 2
+            "quantity": 2,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "shortsword",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "shortbow",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "arrows-20",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
           },
           {
             "equipmentId": "thieves-tools",
-            "quantity": 1
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "burglar-pack",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
           }
         ]
       }
@@ -4418,53 +4258,31 @@
     },
     "startingEquipment": [
       {
-        "description": "A light crossbow and 20 bolts or any simple weapon",
+        "description": "Spear, 2 Daggers, Arcane Focus (Crystal), Dungeoneer's Pack, and 28 GP",
         "items": [
           {
-            "equipmentId": "light-crossbow",
+            "equipmentId": "spear",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "light-crossbow",
-              "simple-weapon"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A component pouch or an arcane focus",
-        "items": [
+            "isChoice": false,
+            "choices": []
+          },
           {
-            "equipmentId": "component-pouch",
+            "equipmentId": "dagger",
+            "quantity": 2,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "arcane-focus-crystal",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "component-pouch",
-              "arcane-focus"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A dungeoneer's pack or an explorer's pack",
-        "items": [
+            "isChoice": false,
+            "choices": []
+          },
           {
             "equipmentId": "dungeoneers-pack",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "dungeoneers-pack",
-              "explorers-pack"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "Two daggers",
-        "items": [
-          {
-            "equipmentId": "dagger",
-            "quantity": 2
+            "isChoice": false,
+            "choices": []
           }
         ]
       }
@@ -5001,61 +4819,37 @@
     },
     "startingEquipment": [
       {
-        "description": "A light crossbow and 20 bolts or any simple weapon",
-        "items": [
-          {
-            "equipmentId": "light-crossbow",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "light-crossbow",
-              "simple-weapon"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A component pouch or an arcane focus",
-        "items": [
-          {
-            "equipmentId": "component-pouch",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "component-pouch",
-              "arcane-focus"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A scholar's pack or a dungeoneer's pack",
-        "items": [
-          {
-            "equipmentId": "scholars-pack",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "scholars-pack",
-              "dungeoneers-pack"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "Leather armor, any simple weapon, and two daggers",
+        "description": "Leather Armor, Sickle, 2 Daggers, Arcane Focus (Orb), Scholar's Pack, and 15 GP",
         "items": [
           {
             "equipmentId": "leather-armor",
-            "quantity": 1
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
           },
           {
-            "equipmentId": "simple-weapon",
-            "quantity": 1
+            "equipmentId": "sickle",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
           },
           {
             "equipmentId": "dagger",
-            "quantity": 2
+            "quantity": 2,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "arcane-focus-orb",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "scholars-pack",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
           }
         ]
       }
@@ -5529,53 +5323,31 @@
     },
     "startingEquipment": [
       {
-        "description": "A quarterstaff or a dagger",
+        "description": "2 Daggers, Arcane Focus (Staff), Spellbook, Scholar's Pack, and 5 GP",
         "items": [
           {
-            "equipmentId": "quarterstaff",
-            "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "quarterstaff",
-              "dagger"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A component pouch or an arcane focus",
-        "items": [
+            "equipmentId": "dagger",
+            "quantity": 2,
+            "isChoice": false,
+            "choices": []
+          },
           {
-            "equipmentId": "component-pouch",
+            "equipmentId": "arcane-focus-staff",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "component-pouch",
-              "arcane-focus"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A scholar's pack or an explorer's pack",
-        "items": [
+            "isChoice": false,
+            "choices": []
+          },
+          {
+            "equipmentId": "spellbook",
+            "quantity": 1,
+            "isChoice": false,
+            "choices": []
+          },
           {
             "equipmentId": "scholars-pack",
             "quantity": 1,
-            "isChoice": true,
-            "choices": [
-              "scholars-pack",
-              "explorers-pack"
-            ]
-          }
-        ]
-      },
-      {
-        "description": "A spellbook",
-        "items": [
-          {
-            "equipmentId": "spellbook",
-            "quantity": 1
+            "isChoice": false,
+            "choices": []
           }
         ]
       }

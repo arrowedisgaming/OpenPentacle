@@ -51,6 +51,15 @@
 		description="Give your character a name and flesh out their personality."
 	/>
 
+	<WizardNav
+		backHref="/create/{systemId}/{prevPath}"
+		backLabel="Back"
+		nextLabel="Next: Review"
+		onNext={proceed}
+		nextDisabled={!name.trim()}
+		compact
+	/>
+
 	<Card.Root class="mt-6 max-w-xl">
 		<Card.Content class="space-y-4 pt-6">
 			<div class="space-y-2">

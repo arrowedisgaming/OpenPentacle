@@ -11,7 +11,6 @@ const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const ALLOWED_SOURCES: Open5eSourceInfo[] = [
 	{ key: 'deepm', displayName: 'Deep Magic for 5th Edition', publisher: 'Kobold Press', gameSystem: '5th Edition 2014', spellCount: 515 },
 	{ key: 'a5e-ag', displayName: "Adventurer's Guide", publisher: 'EN Publishing', gameSystem: 'Advanced 5th Edition', spellCount: 371 },
-	{ key: 'srd-2024', displayName: '5e 2024 Rules', publisher: 'Wizards of the Coast', gameSystem: '5th Edition 2024', spellCount: 338 },
 	{ key: 'toh', displayName: 'Tome of Heroes', publisher: 'Kobold Press', gameSystem: '5th Edition 2014', spellCount: 91 },
 ];
 

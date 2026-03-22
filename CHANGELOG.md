@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.4.0] - 2026-03-22
+
+### Added
+- Full SRD 5.2.1 spell list: 338 spells across levels 0–9 (was 48 spells up to level 3)
+- Expandable feature descriptions in class selection step — click any feature name to see its full SRD description
+- Compact "Next" navigation button at top of all wizard steps (abilities, background, details, review were missing it)
+
+### Changed
+- Starting equipment for all 12 classes rewritten to match 2024 SRD 5.2.1 format (single fixed item set per class, no more broken phantom IDs)
+- Dwarf and Halfling movement speed corrected from 25 ft to 30 ft per 2024 SRD
+- Class selection detail panel moves to the right side on wide viewports (xl breakpoint)
+- Notebook theme font size increased to 17px to compensate for Patrick Hand readability
+- Open5E spell sources no longer include SRD 2024 (built-in content pack now covers all SRD spells)
+
+### Fixed
+- Starting equipment auto-populate silently dropping items due to unresolvable phantom equipment IDs
+- Spell selection wizard only showing spells up to level 3 due to missing content
+- 11 spell descriptions had stray markdown header artifacts from Open5E source data
+
 ## [Unreleased]
 
 ### Added
