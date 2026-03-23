@@ -72,6 +72,30 @@ export function isASILevel(classDef: ClassDefinition, level: number): boolean {
 	return getASILevels(classDef).includes(level);
 }
 
+/** Name used for Epic Boon features in progression data */
+const EPIC_BOON_FEATURE_NAME = 'Epic Boon';
+
+/**
+ * Detect Epic Boon levels by scanning progression features for "Epic Boon".
+ * Returns sorted array of levels where Epic Boons occur (typically [19]).
+ */
+export function getEpicBoonLevels(classDef: ClassDefinition): number[] {
+	const levels: number[] = [];
+	for (const row of classDef.progression) {
+		if (row.features.some((f) => f.name === EPIC_BOON_FEATURE_NAME)) {
+			levels.push(row.level);
+		}
+	}
+	return levels.sort((a, b) => a - b);
+}
+
+/**
+ * Check if a specific level is an Epic Boon level for a class.
+ */
+export function isEpicBoonLevel(classDef: ClassDefinition, level: number): boolean {
+	return getEpicBoonLevels(classDef).includes(level);
+}
+
 /**
  * Get the highest spell level a class can cast at a given character level.
  * Reads from the progression table's spellSlots array.

@@ -1,6 +1,6 @@
 import type { CharacterData } from '$lib/types/character.js';
 import type { ClassDefinition, ClassFeature, ContentPack } from '$lib/types/content-pack.js';
-import { isASILevel, getSubclassLevel } from './class-progression.js';
+import { isASILevel, isEpicBoonLevel, getSubclassLevel } from './class-progression.js';
 
 /** Everything the level-up page needs to know about the next level */
 export interface LevelUpChoices {
@@ -12,12 +12,24 @@ export interface LevelUpChoices {
 	needsSubclass: boolean;
 	/** Whether this level is an ASI level */
 	needsASI: boolean;
-	/** Change in spells known at this level (0 if N/A) */
+	/** Whether this level is an Epic Boon level */
+	needsEpicBoon: boolean;
+	/** Change in spells known at this level (0 if N/A, for known-spell casters) */
 	spellsKnownDelta: number;
 	/** Change in cantrips known at this level (0 if N/A) */
 	cantripsKnownDelta: number;
 	/** Highest spell level available at the new level */
 	newMaxSpellLevel: number;
+	/** Change in prepared spell limit (for prepared casters) */
+	preparedSpellsDelta: number;
+	/** New total prepared spell limit */
+	newPreparedSpells: number;
+	/** Whether this class is a prepared caster (Wizard, Cleric, Druid, Paladin) */
+	isPreparedCaster: boolean;
+	/** Whether this class uses a spellbook (Wizard only) */
+	isSpellbookCaster: boolean;
+	/** Number of new spells to add to spellbook (2 for wizard per level) */
+	spellbookGrowth: number;
 }
 
 /**
@@ -49,8 +61,9 @@ export function computeLevelUpChoices(
 
 	// ASI
 	const needsASI = isASILevel(classDef, newLevel);
+	const needsEpicBoon = isEpicBoonLevel(classDef, newLevel);
 
-	// Spells known delta
+	// Spells known delta (for known-spell casters: Bard, Ranger, Sorcerer, Warlock)
 	const prevRow = classDef.progression.find((p) => p.level === data.level);
 	const prevSpellsKnown = prevRow?.spellsKnown ?? 0;
 	const newSpellsKnown = progressionRow?.spellsKnown ?? 0;
@@ -65,13 +78,28 @@ export function computeLevelUpChoices(
 	const newSpellSlots = progressionRow?.spellSlots ?? [];
 	const newMaxSpellLevel = newSpellSlots.length;
 
+	// Prepared spells (for prepared casters: Wizard, Cleric, Druid, Paladin)
+	const isPreparedCaster = classDef.spellcasting?.preparedCaster ?? false;
+	const isSpellbookCaster = isPreparedCaster && classDef.id === 'wizard';
+	const prevPrepared = prevRow?.preparedSpells ?? 0;
+	const newPreparedSpells = progressionRow?.preparedSpells ?? 0;
+	const preparedSpellsDelta = newPreparedSpells - prevPrepared;
+	// Wizard gains 2 spellbook spells per level (after level 1)
+	const spellbookGrowth = isSpellbookCaster && classDef.spellcasting ? 2 : 0;
+
 	return {
 		newLevel,
 		newFeatures,
 		needsSubclass,
 		needsASI,
+		needsEpicBoon,
 		spellsKnownDelta,
 		cantripsKnownDelta,
-		newMaxSpellLevel
+		newMaxSpellLevel,
+		preparedSpellsDelta,
+		newPreparedSpells,
+		isPreparedCaster,
+		isSpellbookCaster,
+		spellbookGrowth
 	};
 }
