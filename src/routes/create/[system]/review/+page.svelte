@@ -15,11 +15,12 @@
 	import WizardNav from '$lib/components/wizard/WizardNav.svelte';
 	import StatBlock from '$lib/components/sheet/StatBlock.svelte';
 	import * as Card from '$lib/components/ui/card';
+	import * as Collapsible from '$lib/components/ui/collapsible';
 	import * as Alert from '$lib/components/ui/alert';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import { Heart, Shield, Sparkles, Pencil } from 'lucide-svelte';
+	import { Heart, Shield, Sparkles, Pencil, ChevronDown } from 'lucide-svelte';
 
 	const wizNav = getContext<any>('wizard-nav');
 	const { pack, systemId } = $derived($page.data as { pack: ContentPack; systemId: string });
@@ -240,24 +241,50 @@
 
 					{#if classFeatures().length > 0}
 						<h4 class="mt-3 text-sm font-medium">Class Features</h4>
-						<div class="mt-1 flex flex-wrap gap-1">
+						<div class="mt-1 space-y-1">
 							{#each classFeatures() as feature}
-								<Badge variant="secondary" class="text-xs">
-									{feature.name}
-									<span class="ml-1 opacity-60">Lv{feature.level}</span>
-								</Badge>
+								{#if feature.description}
+									<Collapsible.Root>
+										<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
+											<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
+											<span class="text-sm font-medium">{feature.name}</span>
+											<Badge variant="outline" class="text-[10px] px-1.5 py-0">Lv{feature.level}</Badge>
+										</Collapsible.Trigger>
+										<Collapsible.Content>
+											<p class="mt-1 mb-2 ml-5.5 text-xs text-muted-foreground whitespace-pre-line">{feature.description}</p>
+										</Collapsible.Content>
+									</Collapsible.Root>
+								{:else}
+									<div class="flex items-center gap-2 px-1 py-1">
+										<span class="ml-5.5 text-sm font-medium">{feature.name}</span>
+										<Badge variant="outline" class="text-[10px] px-1.5 py-0">Lv{feature.level}</Badge>
+									</div>
+								{/if}
 							{/each}
 						</div>
 					{/if}
 
 					{#if subclassFeatures().length > 0}
 						<h4 class="mt-3 text-sm font-medium">{subclassDef()!.name} Features</h4>
-						<div class="mt-1 flex flex-wrap gap-1">
+						<div class="mt-1 space-y-1">
 							{#each subclassFeatures() as feature}
-								<Badge variant="outline" class="text-xs">
-									{feature.name}
-									<span class="ml-1 opacity-60">Lv{feature.level}</span>
-								</Badge>
+								{#if feature.description}
+									<Collapsible.Root>
+										<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
+											<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
+											<span class="text-sm font-medium">{feature.name}</span>
+											<Badge variant="outline" class="text-[10px] px-1.5 py-0">Lv{feature.level}</Badge>
+										</Collapsible.Trigger>
+										<Collapsible.Content>
+											<p class="mt-1 mb-2 ml-5.5 text-xs text-muted-foreground whitespace-pre-line">{feature.description}</p>
+										</Collapsible.Content>
+									</Collapsible.Root>
+								{:else}
+									<div class="flex items-center gap-2 px-1 py-1">
+										<span class="ml-5.5 text-sm font-medium">{feature.name}</span>
+										<Badge variant="outline" class="text-[10px] px-1.5 py-0">Lv{feature.level}</Badge>
+									</div>
+								{/if}
 							{/each}
 						</div>
 					{/if}
