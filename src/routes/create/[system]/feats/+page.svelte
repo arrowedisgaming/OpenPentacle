@@ -800,7 +800,7 @@
 													<span class="text-xs text-muted-foreground">({prof.abilityAbbr})</span>
 												{/if}
 												{#if isSkill}
-													<span class="ml-auto font-mono text-sm font-bold {isSelected ? 'text-primary' : 'text-muted-foreground'}">{skillBonus(prof.id.replace('skill:', '') as SkillId, isSelected)}</span>
+													<span class="font-mono text-sm font-bold {isSelected ? 'text-primary' : 'text-muted-foreground'}">{skillBonus(prof.id.replace('skill:', '') as SkillId, isSelected)}</span>
 												{/if}
 											</div>
 											<p class="mt-0.5 text-xs text-muted-foreground">{prof.description}</p>
@@ -1169,7 +1169,7 @@
 														<span class="text-xs text-muted-foreground">({prof.abilityAbbr})</span>
 													{/if}
 													{#if isSkill}
-														<span class="ml-auto font-mono text-sm font-bold {isSelected ? 'text-primary' : 'text-muted-foreground'}">{skillBonus(prof.id.replace('skill:', '') as SkillId, isSelected)}</span>
+														<span class="font-mono text-sm font-bold {isSelected ? 'text-primary' : 'text-muted-foreground'}">{skillBonus(prof.id.replace('skill:', '') as SkillId, isSelected)}</span>
 													{/if}
 												</div>
 												<p class="mt-0.5 text-xs text-muted-foreground">{prof.description}</p>
