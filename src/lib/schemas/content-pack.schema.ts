@@ -136,6 +136,7 @@ const classProgressionSchema = z.object({
 	classSpecific: z.record(z.string(), z.union([z.string(), z.number()])).optional(),
 	cantripsKnown: z.number().int().min(0).optional(),
 	spellsKnown: z.number().int().min(0).optional(),
+	preparedSpells: z.number().int().min(0).optional(),
 	spellSlots: z.array(z.number().int().min(0)).optional()
 });
 
@@ -273,7 +274,7 @@ const featDefinitionSchema = z.object({
 	description: z.string(),
 	category: z.enum(['general', 'origin', 'fighting-style', 'epic']),
 	prerequisites: z.array(z.object({
-		type: z.enum(['ability', 'proficiency', 'level', 'spellcasting', 'class']),
+		type: z.enum(['ability', 'proficiency', 'level', 'spellcasting', 'class', 'feature']),
 		value: z.string(),
 		minimum: z.number().optional()
 	})).optional(),
@@ -281,9 +282,18 @@ const featDefinitionSchema = z.object({
 	abilityScoreIncrease: z.object({
 		abilities: z.array(abilityIdSchema),
 		count: z.number().int().positive(),
-		value: z.number().int()
+		value: z.number().int(),
+		max: z.number().int().optional()
 	}).optional(),
-	repeatable: z.boolean().optional()
+	repeatable: z.boolean().optional(),
+	choices: z.array(z.object({
+		id: z.string().min(1),
+		type: z.enum(['spell-list', 'cantrip', 'spell', 'skill-or-tool']),
+		label: z.string().min(1),
+		count: z.number().int().positive().optional(),
+		dependsOn: z.string().optional(),
+		options: z.array(z.string()).optional()
+	})).optional()
 });
 
 // ─── Ability Score Methods ───────────────────────────────────

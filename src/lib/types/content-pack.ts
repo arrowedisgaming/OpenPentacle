@@ -165,7 +165,10 @@ export interface ClassProgression {
 	/** Extra columns (e.g., Rage Damage, Sneak Attack dice, Ki Points) */
 	classSpecific?: Record<string, string | number>;
 	cantripsKnown?: number;
+	/** Number of spells known (for known-spell casters: Bard, Ranger, Sorcerer, Warlock) */
 	spellsKnown?: number;
+	/** Number of spells that can be prepared (for prepared casters: Wizard, Cleric, Druid, Paladin) */
+	preparedSpells?: number;
 	spellSlots?: number[];
 }
 
@@ -324,12 +327,13 @@ export interface FeatDefinition {
 	effects: Trait[];
 	abilityScoreIncrease?: FeatAbilityIncrease;
 	repeatable?: boolean;
+	choices?: FeatChoiceDefinition[];
 }
 
 export type FeatCategory = 'general' | 'origin' | 'fighting-style' | 'epic';
 
 export interface FeatPrerequisite {
-	type: 'ability' | 'proficiency' | 'level' | 'spellcasting' | 'class';
+	type: 'ability' | 'proficiency' | 'level' | 'spellcasting' | 'class' | 'feature';
 	value: string;
 	minimum?: number;
 }
@@ -338,6 +342,16 @@ export interface FeatAbilityIncrease {
 	abilities: AbilityId[];
 	count: number; // How many to choose
 	value: number; // Increase amount
+	max?: number; // Default: 20. Epic Boons use 30.
+}
+
+export interface FeatChoiceDefinition {
+	id: string;
+	type: 'spell-list' | 'cantrip' | 'spell' | 'skill-or-tool';
+	label: string;
+	count?: number;
+	dependsOn?: string;
+	options?: string[];
 }
 
 // ─── Ability Score Methods ───────────────────────────────────
