@@ -8,13 +8,15 @@
 	import type { AbilityId } from '$lib/types/common.js';
 	import { ABILITY_IDS, ABILITY_NAMES } from '$lib/types/common.js';
 	import { totalAbilityScore } from '$lib/engine/ability-scores.js';
-	import { getASILevels } from '$lib/engine/class-progression.js';
+	import { getASILevels, isEpicBoonLevel } from '$lib/engine/class-progression.js';
+	import { getAvailableFeats, FEAT_CATEGORY_LABELS } from '$lib/engine/feats.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
 	import SelectionCard from '$lib/components/ui/selection-card/SelectionCard.svelte';
 	import WizardNav from '$lib/components/wizard/WizardNav.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
+	import { ChevronDown, ChevronUp } from 'lucide-svelte';
 
 	const wizNav = getContext<any>('wizard-nav');
 	const prevPath = $derived(wizNav.getPrevStepPath('feats'));
@@ -28,6 +30,22 @@
 	const classId = $derived(character?.classes[0]?.classId ?? '');
 	const charLevel = $derived(character?.level ?? 1);
 	const classDef = $derived(classes.find((c) => c.id === classId));
+
+	// Current ability scores for feat prerequisite checks
+	const currentAbilityScores = $derived.by(() => {
+		if (!character) return {} as Record<AbilityId, number>;
+		const scores = {} as Record<AbilityId, number>;
+		for (const ab of ABILITY_IDS) {
+			scores[ab] = totalAbilityScore(character.abilityScores, ab);
+		}
+		return scores;
+	});
+
+	// Filter feats by category, level, prerequisites
+	const availableFeats = $derived.by(() => {
+		if (!character || !classDef) return feats;
+		return getAvailableFeats(feats, character.level, classDef, character.feats ?? [], currentAbilityScores);
+	});
 
 	// Determine which ASI levels this character has reached
 	const reachedASILevels = $derived(
@@ -76,6 +94,13 @@
 	}
 
 	let decisions = $state<ASIChoice[]>(initDecisions());
+	let expandedFeatId = $state<string | null>(null);
+
+	function toggleFeatExpand(featId: string, event: MouseEvent) {
+		event.stopPropagation();
+		expandedFeatId = expandedFeatId === featId ? null : featId;
+	}
+
 	// Background feat is auto-assigned on the background step — just read it
 	const backgroundFeatId = $derived(
 		character?.feats?.find((f) => f.source === 'background')?.featId ?? ''
@@ -88,6 +113,16 @@
 	$effect(() => {
 		if (decisions.length !== reachedASILevels.length) {
 			decisions = initDecisions();
+		}
+	});
+
+	// Force Epic Boon levels to feat type
+	$effect(() => {
+		if (!classDef) return;
+		for (let i = 0; i < decisions.length; i++) {
+			if (isEpicBoonLevel(classDef, decisions[i].level) && decisions[i].type !== 'feat') {
+				decisions[i] = { ...decisions[i], type: 'feat', ability1: undefined, ability2: undefined };
+			}
 		}
 	});
 
@@ -107,14 +142,27 @@
 		// Add prior ASI decisions
 		for (let i = 0; i < upToIndex; i++) {
 			const d = decisions[i];
+			const cap = getAsiCap(d);
 			if (d.type === 'asi-2' && d.ability1) {
-				scores[d.ability1] = Math.min(scores[d.ability1] + 2, 20);
+				scores[d.ability1] = Math.min(scores[d.ability1] + 2, cap);
 			} else if (d.type === 'asi-1-1') {
-				if (d.ability1) scores[d.ability1] = Math.min(scores[d.ability1] + 1, 20);
-				if (d.ability2) scores[d.ability2] = Math.min(scores[d.ability2] + 1, 20);
+				if (d.ability1) scores[d.ability1] = Math.min(scores[d.ability1] + 1, cap);
+				if (d.ability2) scores[d.ability2] = Math.min(scores[d.ability2] + 1, cap);
 			}
 		}
 		return scores;
+	}
+
+	/** Get the ability score cap for a decision — 20 normally, but Epic Boon feats allow 30 */
+	function getAsiCap(decision: ASIChoice): number {
+		if (decision.type === 'feat' && decision.featId) {
+			const featDef = feats.find((f) => f.id === decision.featId);
+			return featDef?.abilityScoreIncrease?.max ?? 20;
+		}
+		if (classDef && isEpicBoonLevel(classDef, decision.level)) {
+			return 30;
+		}
+		return 20;
 	}
 
 	function setDecisionType(index: number, type: 'asi-2' | 'asi-1-1' | 'feat') {
@@ -212,7 +260,7 @@
 				<div class="rounded-md border border-primary/20 bg-accent p-3">
 					<h4 class="font-medium text-sm">{backgroundFeatDef.name}</h4>
 					<p class="mt-0.5 text-xs text-muted-foreground">{backgroundFeatDef.description}</p>
-					<Badge variant="secondary" class="mt-1 text-xs capitalize">{backgroundFeatDef.category}</Badge>
+					<Badge variant="secondary" class="mt-1 text-xs capitalize">{FEAT_CATEGORY_LABELS[backgroundFeatDef.category] ?? backgroundFeatDef.category}</Badge>
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -221,118 +269,209 @@
 	<!-- ASI Choices -->
 	{#each decisions as decision, i}
 		{@const scores = getScoreWithPriorASIs(i)}
+		{@const isEpicBoon = classDef ? isEpicBoonLevel(classDef, decision.level) : false}
+		{@const cap = getAsiCap(decision)}
 		<Card.Root class="mt-4">
 			<Card.Header>
-				<Card.Title class="text-base">Level {decision.level} — Ability Score Improvement</Card.Title>
+				<Card.Title class="text-base">
+					{#if isEpicBoon}
+						Level {decision.level} — Epic Boon
+					{:else}
+						Level {decision.level} — Ability Score Improvement
+					{/if}
+				</Card.Title>
 			</Card.Header>
 			<Card.Content>
-				<!-- Choice type selector -->
-				<div class="flex flex-wrap gap-2">
-					<button
-						type="button"
-						class="rounded-md border px-3 py-1.5 text-sm transition-colors {decision.type === 'asi-2' ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}"
-						onclick={() => setDecisionType(i, 'asi-2')}
-					>
-						+2 to one ability
-					</button>
-					<button
-						type="button"
-						class="rounded-md border px-3 py-1.5 text-sm transition-colors {decision.type === 'asi-1-1' ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}"
-						onclick={() => setDecisionType(i, 'asi-1-1')}
-					>
-						+1 to two abilities
-					</button>
-					<button
-						type="button"
-						class="rounded-md border px-3 py-1.5 text-sm transition-colors {decision.type === 'feat' ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}"
-						onclick={() => setDecisionType(i, 'feat')}
-					>
-						Take a feat
-					</button>
-				</div>
-
-				<Separator class="my-3" />
-
-				{#if decision.type === 'asi-2'}
-					<p class="mb-2 text-sm text-muted-foreground">Choose one ability to increase by 2 (max 20):</p>
-					<div class="flex flex-wrap gap-2">
-						{#each ABILITY_IDS as ab}
-							{@const current = scores[ab]}
-							{@const capped = current >= 20}
-							<button
-								type="button"
-								disabled={capped}
-								class="rounded-md border px-3 py-1.5 text-sm transition-colors
-									{decision.ability1 === ab ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}
-									{capped ? 'opacity-40 cursor-not-allowed' : ''}"
-								onclick={() => { decisions[i].ability1 = ab; }}
-							>
-								{ABILITY_NAMES[ab]}
-								<span class="ml-1 text-xs text-muted-foreground">{current}</span>
-							</button>
-						{/each}
-					</div>
-				{:else if decision.type === 'asi-1-1'}
-					<p class="mb-2 text-sm text-muted-foreground">Choose two different abilities to increase by 1 (max 20):</p>
-					<div class="space-y-2">
-						<div>
-							<span class="mr-2 text-xs font-medium text-muted-foreground">First:</span>
-							<div class="inline-flex flex-wrap gap-2">
-								{#each ABILITY_IDS as ab}
-									{@const current = scores[ab]}
-									{@const capped = current >= 20}
-									{@const isOther = decision.ability2 === ab}
-									<button
-										type="button"
-										disabled={capped || isOther}
-										class="rounded-md border px-3 py-1.5 text-sm transition-colors
-											{decision.ability1 === ab ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}
-											{capped || isOther ? 'opacity-40 cursor-not-allowed' : ''}"
-										onclick={() => { decisions[i].ability1 = ab; }}
-									>
-										{ABILITY_NAMES[ab]}
-										<span class="ml-1 text-xs text-muted-foreground">{current}</span>
-									</button>
-								{/each}
-							</div>
-						</div>
-						<div>
-							<span class="mr-2 text-xs font-medium text-muted-foreground">Second:</span>
-							<div class="inline-flex flex-wrap gap-2">
-								{#each ABILITY_IDS as ab}
-									{@const current = scores[ab]}
-									{@const capped = current >= 20}
-									{@const isOther = decision.ability1 === ab}
-									<button
-										type="button"
-										disabled={capped || isOther}
-										class="rounded-md border px-3 py-1.5 text-sm transition-colors
-											{decision.ability2 === ab ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}
-											{capped || isOther ? 'opacity-40 cursor-not-allowed' : ''}"
-										onclick={() => { decisions[i].ability2 = ab; }}
-									>
-										{ABILITY_NAMES[ab]}
-										<span class="ml-1 text-xs text-muted-foreground">{current}</span>
-									</button>
-								{/each}
-							</div>
-						</div>
-					</div>
-				{:else}
-					<p class="mb-2 text-sm text-muted-foreground">Choose a feat:</p>
+				{#if isEpicBoon}
+					<!-- Epic Boon level: feat picker only (no ASI toggle) -->
+					<p class="mb-2 text-sm text-muted-foreground">Choose an Epic Boon or another feat:</p>
 					<div class="grid gap-2 sm:grid-cols-2">
-						{#each feats as feat}
+						{#each availableFeats as feat}
+							{@const isFeatExpanded = expandedFeatId === feat.id}
 							<SelectionCard
 								selected={decision.featId === feat.id}
 								onclick={() => { decisions[i].featId = feat.id; }}
 								compact
 							>
 								<h4 class="pr-6 font-medium text-sm">{feat.name}</h4>
-								<p class="mt-0.5 text-xs text-muted-foreground line-clamp-2">{feat.description}</p>
-								<Badge variant="secondary" class="mt-1 text-xs capitalize">{feat.category}</Badge>
+								<p class="mt-0.5 text-xs text-muted-foreground {isFeatExpanded ? '' : 'line-clamp-2'}">{feat.description}</p>
+								{#if isFeatExpanded}
+									{#if feat.abilityScoreIncrease}
+										<p class="mt-1.5 text-xs font-medium text-primary">
+											+{feat.abilityScoreIncrease.value} to {feat.abilityScoreIncrease.abilities.map((a) => ABILITY_NAMES[a]).join(' or ')} (choose {feat.abilityScoreIncrease.count})
+										</p>
+									{/if}
+									{#if feat.effects.length > 0}
+										<ul class="mt-1.5 space-y-1">
+											{#each feat.effects as effect}
+												<li class="text-xs text-muted-foreground">
+													<span class="font-medium text-foreground/80">{effect.name}.</span> {effect.description}
+												</li>
+											{/each}
+										</ul>
+									{/if}
+								{/if}
+								<div class="mt-1 flex items-center gap-2">
+									<Badge variant="secondary" class="text-xs capitalize">{FEAT_CATEGORY_LABELS[feat.category] ?? feat.category}</Badge>
+									{#if feat.abilityScoreIncrease && !isFeatExpanded}
+										<Badge variant="outline" class="text-xs">+{feat.abilityScoreIncrease.value} {feat.abilityScoreIncrease.abilities.map((a) => ABILITY_NAMES[a]?.slice(0, 3).toUpperCase()).join('/')}</Badge>
+									{/if}
+									<button
+										onclick={(e) => toggleFeatExpand(feat.id, e)}
+										class="ml-auto inline-flex items-center gap-0.5 text-primary/60 hover:text-primary"
+									>
+										{#if isFeatExpanded}
+											<ChevronUp class="size-3.5" />
+										{:else}
+											<ChevronDown class="size-3.5" />
+										{/if}
+									</button>
+								</div>
 							</SelectionCard>
 						{/each}
 					</div>
+				{:else}
+					<!-- Regular ASI level: toggle between ASI and feat -->
+					<!-- Choice type selector -->
+					<div class="flex flex-wrap gap-2">
+						<button
+							type="button"
+							class="rounded-md border px-3 py-1.5 text-sm transition-colors {decision.type === 'asi-2' ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}"
+							onclick={() => setDecisionType(i, 'asi-2')}
+						>
+							+2 to one ability
+						</button>
+						<button
+							type="button"
+							class="rounded-md border px-3 py-1.5 text-sm transition-colors {decision.type === 'asi-1-1' ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}"
+							onclick={() => setDecisionType(i, 'asi-1-1')}
+						>
+							+1 to two abilities
+						</button>
+						<button
+							type="button"
+							class="rounded-md border px-3 py-1.5 text-sm transition-colors {decision.type === 'feat' ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}"
+							onclick={() => setDecisionType(i, 'feat')}
+						>
+							Take a feat
+						</button>
+					</div>
+
+					<Separator class="my-3" />
+
+					{#if decision.type === 'asi-2'}
+						<p class="mb-2 text-sm text-muted-foreground">Choose one ability to increase by 2 (max {cap}):</p>
+						<div class="flex flex-wrap gap-2">
+							{#each ABILITY_IDS as ab}
+								{@const current = scores[ab]}
+								{@const capped = current >= cap}
+								<button
+									type="button"
+									disabled={capped}
+									class="rounded-md border px-3 py-1.5 text-sm transition-colors
+										{decision.ability1 === ab ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}
+										{capped ? 'opacity-40 cursor-not-allowed' : ''}"
+									onclick={() => { decisions[i].ability1 = ab; }}
+								>
+									{ABILITY_NAMES[ab]}
+									<span class="ml-1 text-xs text-muted-foreground">{current}</span>
+								</button>
+							{/each}
+						</div>
+					{:else if decision.type === 'asi-1-1'}
+						<p class="mb-2 text-sm text-muted-foreground">Choose two different abilities to increase by 1 (max {cap}):</p>
+						<div class="space-y-2">
+							<div>
+								<span class="mr-2 text-xs font-medium text-muted-foreground">First:</span>
+								<div class="inline-flex flex-wrap gap-2">
+									{#each ABILITY_IDS as ab}
+										{@const current = scores[ab]}
+										{@const capped = current >= cap}
+										{@const isOther = decision.ability2 === ab}
+										<button
+											type="button"
+											disabled={capped || isOther}
+											class="rounded-md border px-3 py-1.5 text-sm transition-colors
+												{decision.ability1 === ab ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}
+												{capped || isOther ? 'opacity-40 cursor-not-allowed' : ''}"
+											onclick={() => { decisions[i].ability1 = ab; }}
+										>
+											{ABILITY_NAMES[ab]}
+											<span class="ml-1 text-xs text-muted-foreground">{current}</span>
+										</button>
+									{/each}
+								</div>
+							</div>
+							<div>
+								<span class="mr-2 text-xs font-medium text-muted-foreground">Second:</span>
+								<div class="inline-flex flex-wrap gap-2">
+									{#each ABILITY_IDS as ab}
+										{@const current = scores[ab]}
+										{@const capped = current >= cap}
+										{@const isOther = decision.ability1 === ab}
+										<button
+											type="button"
+											disabled={capped || isOther}
+											class="rounded-md border px-3 py-1.5 text-sm transition-colors
+												{decision.ability2 === ab ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}
+												{capped || isOther ? 'opacity-40 cursor-not-allowed' : ''}"
+											onclick={() => { decisions[i].ability2 = ab; }}
+										>
+											{ABILITY_NAMES[ab]}
+											<span class="ml-1 text-xs text-muted-foreground">{current}</span>
+										</button>
+									{/each}
+								</div>
+							</div>
+						</div>
+					{:else}
+						<p class="mb-2 text-sm text-muted-foreground">Choose a feat:</p>
+						<div class="grid gap-2 sm:grid-cols-2">
+							{#each availableFeats as feat}
+								{@const isFeatExpanded = expandedFeatId === feat.id}
+								<SelectionCard
+									selected={decision.featId === feat.id}
+									onclick={() => { decisions[i].featId = feat.id; }}
+									compact
+								>
+									<h4 class="pr-6 font-medium text-sm">{feat.name}</h4>
+									<p class="mt-0.5 text-xs text-muted-foreground {isFeatExpanded ? '' : 'line-clamp-2'}">{feat.description}</p>
+									{#if isFeatExpanded}
+										{#if feat.abilityScoreIncrease}
+											<p class="mt-1.5 text-xs font-medium text-primary">
+												+{feat.abilityScoreIncrease.value} to {feat.abilityScoreIncrease.abilities.map((a) => ABILITY_NAMES[a]).join(' or ')} (choose {feat.abilityScoreIncrease.count})
+											</p>
+										{/if}
+										{#if feat.effects.length > 0}
+											<ul class="mt-1.5 space-y-1">
+												{#each feat.effects as effect}
+													<li class="text-xs text-muted-foreground">
+														<span class="font-medium text-foreground/80">{effect.name}.</span> {effect.description}
+													</li>
+												{/each}
+											</ul>
+										{/if}
+									{/if}
+									<div class="mt-1 flex items-center gap-2">
+										<Badge variant="secondary" class="text-xs capitalize">{FEAT_CATEGORY_LABELS[feat.category] ?? feat.category}</Badge>
+										{#if feat.abilityScoreIncrease && !isFeatExpanded}
+											<Badge variant="outline" class="text-xs">+{feat.abilityScoreIncrease.value} {feat.abilityScoreIncrease.abilities.map((a) => ABILITY_NAMES[a]?.slice(0, 3).toUpperCase()).join('/')}</Badge>
+										{/if}
+										<button
+											onclick={(e) => toggleFeatExpand(feat.id, e)}
+											class="ml-auto inline-flex items-center gap-0.5 text-primary/60 hover:text-primary"
+										>
+											{#if isFeatExpanded}
+												<ChevronUp class="size-3.5" />
+											{:else}
+												<ChevronDown class="size-3.5" />
+											{/if}
+										</button>
+									</div>
+								</SelectionCard>
+							{/each}
+						</div>
+					{/if}
 				{/if}
 			</Card.Content>
 		</Card.Root>
