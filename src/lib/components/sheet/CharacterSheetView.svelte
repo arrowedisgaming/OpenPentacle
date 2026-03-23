@@ -3,6 +3,7 @@
 	import { formatModifier, kebabToTitle } from '$lib/utils/format.js';
 	import { formatSpellLevel } from '$lib/utils/format.js';
 	import { getClassFeaturesUpToLevel, getSubclassFeaturesUpToLevel } from '$lib/engine/class-progression.js';
+	import { FEAT_CATEGORY_LABELS } from '$lib/engine/feats.js';
 	import type { ComputedSheet } from '$lib/engine/character-sheet.js';
 	import type { CharacterData } from '$lib/types/character.js';
 	import type { ContentPack, ClassFeature } from '$lib/types/content-pack.js';
@@ -27,6 +28,7 @@
 	const classDef = $derived(
 		data && pack ? pack.classes.find((c) => c.id === data.classes[0]?.classId) : null
 	);
+	const isPreparedCaster = $derived(classDef?.spellcasting?.preparedCaster ?? false);
 	const subclassDef = $derived.by(() => {
 		const subId = data?.classes[0]?.subclassId;
 		if (!subId || !classDef) return null;
@@ -44,14 +46,14 @@
 		[...classFeatures, ...subclassFeatures].sort((a, b) => a.level - b.level)
 	);
 
-	// Bug 2: Resolved feats list
+	// Bug 2: Resolved feats list (includes unresolved legacy feats)
 	const featsList = $derived.by(() => {
 		if (!data || !pack) return null;
-		const resolved = data.feats.map((sel) => {
-			const def = pack.feats?.find((f) => f.id === sel.featId);
-			return def ? { ...def, source: sel.source } : null;
-		}).filter((f): f is NonNullable<typeof f> => f !== null);
-		return resolved.length > 0 ? resolved : null;
+		if (data.feats.length === 0) return null;
+		return data.feats.map((sel) => {
+			const def = pack.feats?.find((f) => f.id === sel.featId) ?? null;
+			return { sel, def };
+		});
 	});
 
 	// Bug 7: Get selected choice labels for a feature
@@ -106,7 +108,7 @@
 		return null;
 	}
 
-	// Bug 4: Get display name for subclass features
+	// Get display name for subclass features (e.g., "Wizard Subclass: Evoker")
 	function getFeatureDisplayName(feature: ClassFeature): string {
 		if (!data || !subclassDef) return feature.name;
 		if (feature.name.endsWith('Subclass') && feature.description?.includes('subclass')) {
@@ -115,7 +117,16 @@
 		return feature.name;
 	}
 
-	// Bug 5: Weapons with computed attack/damage
+	// Replace generic subclass placeholder text with actual subclass description
+	function getFeatureDescription(feature: ClassFeature): string {
+		if (!data || !subclassDef) return feature.description;
+		if (feature.name.endsWith('Subclass') && feature.description?.includes('subclass')) {
+			return subclassDef.description;
+		}
+		return feature.description;
+	}
+
+	// Weapons with computed attack/damage + details for expanded view
 	const weaponsList = $derived.by(() => {
 		if (!data || !pack) return null;
 		const weapons = data.equipment
@@ -145,24 +156,54 @@
 					damageType: w.damageType,
 					properties: w.properties,
 					range: w.range,
-					equipped: eq.equipped
+					equipped: eq.equipped,
+					category: w.category,
+					cost: def.cost,
+					weight: def.weight
 				};
 			})
 			.filter((w): w is NonNullable<typeof w> => w !== null);
 		return weapons.length > 0 ? weapons : null;
 	});
 
-	// Bug 5: Non-weapon equipment (to avoid duplication)
-	const nonWeaponEquipment = $derived.by(() => {
+	// Armor items (including shields) with full properties
+	const armorItems = $derived.by(() => {
+		if (!data || !pack) return null;
+		const items = data.equipment
+			.map((eq) => {
+				const def = pack.equipment.find((e) => e.id === eq.equipmentId);
+				if (!def?.armor) return null;
+				return {
+					name: def.name,
+					quantity: eq.quantity,
+					equipped: eq.equipped,
+					armor: def.armor,
+					cost: def.cost,
+					weight: def.weight
+				};
+			})
+			.filter((item): item is NonNullable<typeof item> => item !== null);
+		return items.length > 0 ? items : null;
+	});
+
+	// Non-weapon, non-armor equipment
+	const otherEquipment = $derived.by(() => {
 		if (!data || !pack) return null;
 		const items = data.equipment
 			.filter((eq) => {
 				const def = pack.equipment.find((e) => e.id === eq.equipmentId);
-				return !def?.weapon;
+				return !def?.weapon && !def?.armor;
 			})
 			.map((eq) => {
 				const def = pack.equipment.find((e) => e.id === eq.equipmentId);
-				return { name: def?.name ?? kebabToTitle(eq.equipmentId), quantity: eq.quantity, equipped: eq.equipped };
+				return {
+					name: def?.name ?? kebabToTitle(eq.equipmentId),
+					quantity: eq.quantity,
+					equipped: eq.equipped,
+					cost: def?.cost,
+					weight: def?.weight,
+					description: def?.description
+				};
 			});
 		return items.length > 0 ? items : null;
 	});
@@ -318,26 +359,44 @@
 					<Card.Title class="text-sm">Feats</Card.Title>
 				</Card.Header>
 				<Card.Content class="space-y-1">
-					{#each featsList as feat}
-						<Collapsible.Root>
-							<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
-								<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
-								<span class="text-sm font-medium">{feat.name}</span>
-								<Badge variant="outline" class="text-[10px] px-1.5 py-0">{formatFeatSource(feat.source)}</Badge>
-							</Collapsible.Trigger>
-							<Collapsible.Content>
-								<div class="mt-1 mb-2 ml-5.5 text-xs text-muted-foreground space-y-1">
-									<p class="whitespace-pre-line">{feat.description}</p>
-									{#if feat.effects.length > 0}
-										<ul class="list-disc pl-4">
-											{#each feat.effects as effect}
-												<li>{effect.description}</li>
-											{/each}
-										</ul>
+					{#each featsList as { sel, def: featDef }}
+						{#if featDef}
+							<Collapsible.Root>
+								<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
+									<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
+									<span class="text-sm font-medium">{featDef.name}</span>
+									<Badge variant="outline" class="text-[10px] px-1.5 py-0">{formatFeatSource(sel.source)}</Badge>
+									{#if featDef.category && FEAT_CATEGORY_LABELS[featDef.category]}
+										<Badge variant="outline" class="text-[10px] px-1.5 py-0 text-muted-foreground">{FEAT_CATEGORY_LABELS[featDef.category]}</Badge>
 									{/if}
+								</Collapsible.Trigger>
+								<Collapsible.Content>
+									<div class="mt-1 mb-2 ml-5.5 text-xs text-muted-foreground space-y-1">
+										<p class="whitespace-pre-line">{featDef.description}</p>
+										{#if featDef.effects.length > 0}
+											<ul class="list-disc pl-4">
+												{#each featDef.effects as effect}
+													<li>{effect.description}</li>
+												{/each}
+											</ul>
+										{/if}
+									</div>
+								</Collapsible.Content>
+							</Collapsible.Root>
+							{#if sel.choices && sel.choices.length > 0}
+								<div class="mb-1 ml-5.5 text-xs text-muted-foreground">
+									{#each sel.choices as choice}
+										<span class="mr-2">{kebabToTitle(choice.choiceId)}: {kebabToTitle(choice.selectedValue.replace(/^(skill:|tool:)/, ''))}</span>
+									{/each}
 								</div>
-							</Collapsible.Content>
-						</Collapsible.Root>
+							{/if}
+						{:else}
+							<div class="flex items-center gap-2 px-1.5 py-1">
+								<span class="ml-5.5 text-sm font-medium">{kebabToTitle(sel.featId)}</span>
+								<Badge variant="outline" class="text-[10px] px-1.5 py-0">{formatFeatSource(sel.source)}</Badge>
+								<Badge variant="outline" class="text-[10px] px-1.5 py-0 text-amber-600 dark:text-amber-400">Legacy</Badge>
+							</div>
+						{/if}
 					{/each}
 				</Card.Content>
 			</Card.Root>
@@ -371,7 +430,7 @@
 											<p class="mt-1 ml-5.5 text-xs font-medium text-primary">{label}</p>
 										{/each}
 									{/if}
-									<p class="mt-1 mb-2 ml-5.5 text-xs text-muted-foreground whitespace-pre-line">{feature.description}</p>
+									<p class="mt-1 mb-2 ml-5.5 text-xs text-muted-foreground whitespace-pre-line">{getFeatureDescription(feature)}</p>
 								</Collapsible.Content>
 							</Collapsible.Root>
 						{:else}
@@ -391,45 +450,129 @@
 				<Card.Header class="pb-2">
 					<Card.Title class="flex items-center gap-1.5 text-sm"><Swords class="size-3.5" /> Weapons</Card.Title>
 				</Card.Header>
-				<Card.Content class="space-y-2">
+				<Card.Content class="space-y-1">
 					{#each weaponsList as weapon}
-						<div class="rounded-md border border-border p-2 {weapon.equipped ? '' : 'opacity-60'}">
-							<div class="flex items-center justify-between">
-								<span class="text-sm font-medium">{weapon.name}</span>
-								<span class="text-sm font-mono">{formatModifier(weapon.attackBonus)} to hit</span>
-							</div>
-							<div class="mt-0.5 flex flex-wrap gap-x-3 text-xs text-muted-foreground">
-								<span>{weapon.damage}{weapon.damageBonus !== 0 ? ` ${formatModifier(weapon.damageBonus)}` : ''} {weapon.damageType}</span>
-								{#if weapon.range}
-									<span>{weapon.range.normal}/{weapon.range.long} ft</span>
-								{/if}
-								{#if weapon.properties.length > 0}
-									<span>{weapon.properties.map(kebabToTitle).join(', ')}</span>
-								{/if}
-							</div>
-						</div>
+						<Collapsible.Root>
+							<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md border border-border p-2 text-left hover:bg-muted/50 transition-colors {weapon.equipped ? '' : 'opacity-60'}">
+								<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
+								<div class="flex-1 min-w-0">
+									<div class="flex items-center justify-between">
+										<span class="text-sm font-medium">{weapon.name}</span>
+										<span class="text-sm font-mono">{formatModifier(weapon.attackBonus)} to hit</span>
+									</div>
+									<div class="mt-0.5 flex flex-wrap gap-x-3 text-xs text-muted-foreground">
+										<span>{weapon.damage}{weapon.damageBonus !== 0 ? ` ${formatModifier(weapon.damageBonus)}` : ''} {weapon.damageType}</span>
+										{#if weapon.range}
+											<span>{weapon.range.normal}/{weapon.range.long} ft</span>
+										{/if}
+										{#if weapon.properties.length > 0}
+											<span>{weapon.properties.map(kebabToTitle).join(', ')}</span>
+										{/if}
+									</div>
+								</div>
+							</Collapsible.Trigger>
+							<Collapsible.Content>
+								<div class="ml-5.5 mb-2 mt-1 text-xs text-muted-foreground space-y-0.5">
+									<p><span class="font-medium text-foreground/70">Category:</span> {kebabToTitle(weapon.category)} Weapon</p>
+									{#if weapon.cost}
+										<p><span class="font-medium text-foreground/70">Cost:</span> {weapon.cost.amount} {weapon.cost.currency}</p>
+									{/if}
+									{#if weapon.weight}
+										<p><span class="font-medium text-foreground/70">Weight:</span> {weapon.weight} lb.</p>
+									{/if}
+								</div>
+							</Collapsible.Content>
+						</Collapsible.Root>
 					{/each}
 				</Card.Content>
 			</Card.Root>
 		{/if}
 
-		<!-- Equipment -->
-		{#if nonWeaponEquipment}
+		<!-- Armor -->
+		{#if armorItems}
+			<Card.Root>
+				<Card.Header class="pb-2">
+					<Card.Title class="flex items-center gap-1.5 text-sm"><Shield class="size-3.5" /> Armor</Card.Title>
+				</Card.Header>
+				<Card.Content class="space-y-1">
+					{#each armorItems as item}
+						<Collapsible.Root>
+							<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors {item.equipped ? '' : 'opacity-60'}">
+								<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
+								<span class="text-sm font-medium">{item.name}</span>
+								<Badge variant="outline" class="text-[10px] px-1.5 py-0">
+									{#if item.armor.category === 'shield'}
+										+{item.armor.baseAC} AC
+									{:else if item.armor.maxDexBonus === 0}
+										AC {item.armor.baseAC}
+									{:else if item.armor.maxDexBonus !== undefined}
+										AC {item.armor.baseAC} + DEX (max {item.armor.maxDexBonus})
+									{:else}
+										AC {item.armor.baseAC} + DEX
+									{/if}
+								</Badge>
+								{#if item.armor.stealthDisadvantage}
+									<Badge variant="outline" class="text-[10px] px-1.5 py-0 text-amber-600 dark:text-amber-400">Stealth Disadv.</Badge>
+								{/if}
+							</Collapsible.Trigger>
+							<Collapsible.Content>
+								<div class="ml-5.5 mb-2 mt-1 text-xs text-muted-foreground space-y-0.5">
+									<p><span class="font-medium text-foreground/70">Category:</span> {kebabToTitle(item.armor.category)}{item.armor.category !== 'shield' ? ' Armor' : ''}</p>
+									{#if item.armor.strengthRequirement}
+										<p><span class="font-medium text-foreground/70">Strength Required:</span> {item.armor.strengthRequirement}</p>
+									{/if}
+									<p><span class="font-medium text-foreground/70">Cost:</span> {item.cost.amount} {item.cost.currency}</p>
+									{#if item.weight}
+										<p><span class="font-medium text-foreground/70">Weight:</span> {item.weight} lb.</p>
+									{/if}
+								</div>
+							</Collapsible.Content>
+						</Collapsible.Root>
+					{/each}
+				</Card.Content>
+			</Card.Root>
+		{/if}
+
+		<!-- Other Equipment -->
+		{#if otherEquipment}
 			<Card.Root>
 				<Card.Header class="pb-2">
 					<Card.Title class="text-sm">Equipment</Card.Title>
 				</Card.Header>
-				<Card.Content>
-					<ul class="space-y-0.5 text-sm">
-						{#each nonWeaponEquipment as item}
-							<li class="flex items-center gap-1.5">
-								<span class="{item.equipped ? '' : 'text-muted-foreground'}">{item.name}</span>
+				<Card.Content class="space-y-0.5">
+					{#each otherEquipment as item}
+						{#if item.cost || item.weight || item.description}
+							<Collapsible.Root>
+								<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
+									<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
+									<span class="text-sm {item.equipped ? '' : 'text-muted-foreground'}">{item.name}</span>
+									{#if item.quantity > 1}
+										<span class="text-xs text-muted-foreground">x{item.quantity}</span>
+									{/if}
+								</Collapsible.Trigger>
+								<Collapsible.Content>
+									<div class="ml-5.5 mb-2 mt-1 text-xs text-muted-foreground space-y-0.5">
+										{#if item.description}
+											<p>{item.description}</p>
+										{/if}
+										{#if item.cost && item.cost.amount > 0}
+											<p><span class="font-medium text-foreground/70">Cost:</span> {item.cost.amount} {item.cost.currency}</p>
+										{/if}
+										{#if item.weight}
+											<p><span class="font-medium text-foreground/70">Weight:</span> {item.weight} lb.</p>
+										{/if}
+									</div>
+								</Collapsible.Content>
+							</Collapsible.Root>
+						{:else}
+							<div class="flex items-center gap-1.5 px-1.5 py-1">
+								<span class="ml-5.5 text-sm {item.equipped ? '' : 'text-muted-foreground'}">{item.name}</span>
 								{#if item.quantity > 1}
 									<span class="text-xs text-muted-foreground">x{item.quantity}</span>
 								{/if}
-							</li>
-						{/each}
-					</ul>
+							</div>
+						{/if}
+					{/each}
 				</Card.Content>
 			</Card.Root>
 		{/if}
@@ -457,11 +600,11 @@
 	</Card.Root>
 {/if}
 
-<!-- Known Spells -->
+<!-- Spells -->
 {#if spellGroups}
 	<Card.Root class="mt-4">
 		<Card.Header class="pb-2">
-			<Card.Title class="text-sm">Spells Known</Card.Title>
+			<Card.Title class="text-sm">{isPreparedCaster ? 'Prepared Spells' : 'Spells Known'}</Card.Title>
 		</Card.Header>
 		<Card.Content class="space-y-3">
 			{#each [...spellGroups.entries()] as [level, spells]}
