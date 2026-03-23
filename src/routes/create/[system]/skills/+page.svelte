@@ -7,7 +7,7 @@
 	import type { SkillSelection } from '$lib/types/character.js';
 	import type { AbilityId, SkillId } from '$lib/types/common.js';
 	import { SKILL_ABILITIES, ABILITY_NAMES } from '$lib/types/common.js';
-	import { computeSkillChoiceContext, getSelectableSkills } from '$lib/engine/skills.js';
+	import { computeSkillChoiceContext, getSelectableSkills, SKILL_EXAMPLES } from '$lib/engine/skills.js';
 	import { allAbilityTotals, allAbilityModifiers } from '$lib/engine/ability-scores.js';
 	import { kebabToTitle, formatModifier } from '$lib/utils/format.js';
 	import { Separator } from '$lib/components/ui/separator';
@@ -96,26 +96,6 @@
 		return SKILL_ABILITIES[skillId].toUpperCase();
 	}
 
-	const SKILL_EXAMPLES: Record<SkillId, string> = {
-		acrobatics: 'Stay on your feet in a tricky situation, or perform an acrobatic stunt.',
-		'animal-handling': 'Calm or train an animal, or get an animal to behave in a certain way.',
-		arcana: 'Recall lore about spells, magic items, and the planes of existence.',
-		athletics: 'Jump farther than normal, stay afloat in rough water, or break something.',
-		deception: 'Tell a convincing lie, or wear a disguise convincingly.',
-		history: 'Recall lore about historical events, people, nations, and cultures.',
-		insight: "Discern a person's mood and intentions.",
-		intimidation: 'Awe or threaten someone into doing what you want.',
-		investigation: 'Find obscure information in books, or deduce how something works.',
-		medicine: 'Diagnose an illness, or determine what killed the recently slain.',
-		nature: 'Recall lore about terrain, plants, animals, and weather.',
-		perception: "Using a combination of senses, notice something that's easy to miss.",
-		performance: 'Act, tell a story, perform music, or dance.',
-		persuasion: 'Honestly and graciously convince someone of something.',
-		religion: 'Recall lore about gods, religious rituals, and holy symbols.',
-		'sleight-of-hand': 'Pick a pocket, conceal a handheld object, or perform legerdemain.',
-		stealth: 'Escape notice by moving quietly and hiding behind things.',
-		survival: 'Follow tracks, forage, find a trail, or avoid natural hazards.'
-	};
 
 	// Reactive store for ability score preview
 	let wizChar = $state(wizardStore.getCharacter());
