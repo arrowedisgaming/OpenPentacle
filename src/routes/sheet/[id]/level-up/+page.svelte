@@ -7,6 +7,7 @@
 	import type { AbilityId, SkillId } from '$lib/types/common.js';
 	import { ABILITY_IDS, ABILITY_NAMES } from '$lib/types/common.js';
 	import { computeLevelUpChoices } from '$lib/engine/level-up.js';
+	import { getAvailableFeats, FEAT_CATEGORY_LABELS } from '$lib/engine/feats.js';
 	import { averageHitDieRoll, parseDice } from '$lib/engine/hit-points.js';
 	import { totalAbilityScore, abilityModifier } from '$lib/engine/ability-scores.js';
 	import { calculateMaxHP } from '$lib/engine/hit-points.js';
@@ -19,7 +20,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
-	import { ArrowLeft, Dices, Heart, Shield, Sparkles, Star } from 'lucide-svelte';
+	import { ArrowLeft, ChevronDown, ChevronUp, Dices, Heart, Shield, Sparkles, Star } from 'lucide-svelte';
 	import { rovingTabindex } from '$lib/actions/roving-tabindex.js';
 
 	const { character, pack } = $derived($page.data as {
@@ -64,6 +65,12 @@
 	let asiAbility1 = $state<AbilityId | undefined>(undefined);
 	let asiAbility2 = $state<AbilityId | undefined>(undefined);
 	let asiFeatId = $state('');
+	let expandedFeatId = $state<string | null>(null);
+
+	function toggleFeatExpand(featId: string, event: MouseEvent) {
+		event.stopPropagation();
+		expandedFeatId = expandedFeatId === featId ? null : featId;
+	}
 
 	const currentScores = $derived(() => {
 		const scores = {} as Record<AbilityId, number>;
@@ -74,6 +81,11 @@
 	});
 
 	const feats: FeatDefinition[] = $derived(pack?.feats ?? []);
+
+	const availableFeats = $derived.by(() => {
+		if (!levelUp || !classDef) return feats;
+		return getAvailableFeats(feats, levelUp.newLevel, classDef, data.feats ?? [], currentScores());
+	});
 
 	// ─── Spell Choice ───────────────────────────────────────
 	let open5eSpells = $state<SpellDefinition[]>([]);
@@ -125,7 +137,10 @@
 		if (newSet.has(spellId)) {
 			newSet.delete(spellId);
 		} else {
-			if (!levelUp || newSet.size >= levelUp.spellsKnownDelta) return;
+			if (!levelUp) return;
+			// Use spellbook growth for wizard, spellsKnownDelta for known-spell casters
+			const maxNewSpells = levelUp.isSpellbookCaster ? levelUp.spellbookGrowth : levelUp.spellsKnownDelta;
+			if (newSet.size >= maxNewSpells) return;
 			newSet.add(spellId);
 		}
 		newSpellIds = newSet;
@@ -191,7 +206,9 @@
 			if (asiType === 'asi-1-1' && (!asiAbility1 || !asiAbility2)) return false;
 			if (asiType === 'feat' && !asiFeatId) return false;
 		}
+		if (levelUp.needsEpicBoon && !asiFeatId) return false;
 		if (levelUp.spellsKnownDelta > 0 && newSpellIds.size < levelUp.spellsKnownDelta) return false;
+		if (levelUp.isSpellbookCaster && levelUp.spellbookGrowth > 0 && newSpellIds.size < levelUp.spellbookGrowth) return false;
 		if (levelUp.cantripsKnownDelta > 0 && newCantripIds.size < levelUp.cantripsKnownDelta) return false;
 		return true;
 	});
@@ -252,6 +269,10 @@
 			} else if (asiType === 'feat' && asiFeatId) {
 				updatedFeats.push({ featId: asiFeatId, source, choices: [] });
 			}
+		}
+		if (levelUp.needsEpicBoon && asiFeatId) {
+			const source = `class:${primaryClass.classId}:${newLevel}`;
+			updatedFeats.push({ featId: asiFeatId, source, choices: [] });
 		}
 
 		// Update spells
@@ -562,19 +583,108 @@
 						{:else}
 							<p class="mb-2 text-sm text-muted-foreground">Choose a feat:</p>
 							<div class="grid gap-2 sm:grid-cols-2" role="listbox" aria-label="Feats" use:rovingTabindex>
-								{#each feats as feat}
+								{#each availableFeats as feat}
+									{@const isFeatExpanded = expandedFeatId === feat.id}
 									<SelectionCard
 										selected={asiFeatId === feat.id}
 										onclick={() => { asiFeatId = feat.id; }}
 										compact
 									>
 										<h4 class="pr-6 font-medium text-sm">{feat.name}</h4>
-										<p class="mt-0.5 text-xs text-muted-foreground line-clamp-2">{feat.description}</p>
-										<Badge variant="secondary" class="mt-1 text-xs capitalize">{feat.category}</Badge>
+										<p class="mt-0.5 text-xs text-muted-foreground {isFeatExpanded ? '' : 'line-clamp-2'}">{feat.description}</p>
+										{#if isFeatExpanded}
+											{#if feat.abilityScoreIncrease}
+												<p class="mt-1.5 text-xs font-medium text-primary">
+													+{feat.abilityScoreIncrease.value} to {feat.abilityScoreIncrease.abilities.map((a) => ABILITY_NAMES[a]).join(' or ')} (choose {feat.abilityScoreIncrease.count})
+												</p>
+											{/if}
+											{#if feat.effects.length > 0}
+												<ul class="mt-1.5 space-y-1">
+													{#each feat.effects as effect}
+														<li class="text-xs text-muted-foreground">
+															<span class="font-medium text-foreground/80">{effect.name}.</span> {effect.description}
+														</li>
+													{/each}
+												</ul>
+											{/if}
+										{/if}
+										<div class="mt-1 flex items-center gap-2">
+											<Badge variant="secondary" class="text-xs">{FEAT_CATEGORY_LABELS[feat.category] ?? feat.category}</Badge>
+											{#if feat.abilityScoreIncrease && !isFeatExpanded}
+												<Badge variant="outline" class="text-xs">+{feat.abilityScoreIncrease.value} {feat.abilityScoreIncrease.abilities.map((a) => ABILITY_NAMES[a]?.slice(0, 3).toUpperCase()).join('/')}</Badge>
+											{/if}
+											<button
+												onclick={(e) => toggleFeatExpand(feat.id, e)}
+												class="ml-auto inline-flex items-center gap-0.5 text-primary/60 hover:text-primary"
+											>
+												{#if isFeatExpanded}
+													<ChevronUp class="size-3.5" />
+												{:else}
+													<ChevronDown class="size-3.5" />
+												{/if}
+											</button>
+										</div>
 									</SelectionCard>
 								{/each}
 							</div>
 						{/if}
+					</Card.Content>
+				</Card.Root>
+			{:else if levelUp.needsEpicBoon}
+				<Card.Root>
+					<Card.Header>
+						<Card.Title class="flex items-center gap-2 text-base">
+							<Shield class="size-4" />
+							Epic Boon
+						</Card.Title>
+						<Card.Description>Choose an Epic Boon or another feat you qualify for.</Card.Description>
+					</Card.Header>
+					<Card.Content>
+						<div class="grid gap-2 sm:grid-cols-2" role="listbox" aria-label="Epic Boon Feats" use:rovingTabindex>
+							{#each availableFeats as feat}
+								{@const isFeatExpanded = expandedFeatId === feat.id}
+								<SelectionCard
+									selected={asiFeatId === feat.id}
+									onclick={() => { asiFeatId = feat.id; }}
+									compact
+								>
+									<h4 class="pr-6 font-medium text-sm">{feat.name}</h4>
+									<p class="mt-0.5 text-xs text-muted-foreground {isFeatExpanded ? '' : 'line-clamp-2'}">{feat.description}</p>
+									{#if isFeatExpanded}
+										{#if feat.abilityScoreIncrease}
+											<p class="mt-1.5 text-xs font-medium text-primary">
+												+{feat.abilityScoreIncrease.value} to {feat.abilityScoreIncrease.abilities.map((a) => ABILITY_NAMES[a]).join(' or ')} (max {feat.abilityScoreIncrease.max ?? 20})
+											</p>
+										{/if}
+										{#if feat.effects.length > 0}
+											<ul class="mt-1.5 space-y-1">
+												{#each feat.effects as effect}
+													<li class="text-xs text-muted-foreground">
+														<span class="font-medium text-foreground/80">{effect.name}.</span> {effect.description}
+													</li>
+												{/each}
+											</ul>
+										{/if}
+									{/if}
+									<div class="mt-1 flex items-center gap-2">
+										<Badge variant="secondary" class="text-xs">{FEAT_CATEGORY_LABELS[feat.category] ?? feat.category}</Badge>
+										{#if feat.abilityScoreIncrease && !isFeatExpanded}
+											<Badge variant="outline" class="text-xs">+{feat.abilityScoreIncrease.value} {feat.abilityScoreIncrease.abilities.map((a) => ABILITY_NAMES[a]?.slice(0, 3).toUpperCase()).join('/')}</Badge>
+										{/if}
+										<button
+											onclick={(e) => toggleFeatExpand(feat.id, e)}
+											class="ml-auto inline-flex items-center gap-0.5 text-primary/60 hover:text-primary"
+										>
+											{#if isFeatExpanded}
+												<ChevronUp class="size-3.5" />
+											{:else}
+												<ChevronDown class="size-3.5" />
+											{/if}
+										</button>
+									</div>
+								</SelectionCard>
+							{/each}
+						</div>
 					</Card.Content>
 				</Card.Root>
 			{/if}
@@ -644,6 +754,60 @@
 								</SelectionCard>
 							{/each}
 						</div>
+					</Card.Content>
+				</Card.Root>
+			{:else if levelUp.isSpellbookCaster && levelUp.spellbookGrowth > 0}
+				<!-- Wizard spellbook growth: add 2 spells to spellbook -->
+				<Card.Root>
+					<Card.Header>
+						<Card.Title class="text-base">
+							Add {levelUp.spellbookGrowth} Spell{levelUp.spellbookGrowth > 1 ? 's' : ''} to Spellbook
+							{#if levelUp.newMaxSpellLevel > 0}
+								<Badge variant="outline" class="ml-2 text-xs">Up to {formatSpellLevel(levelUp.newMaxSpellLevel)} level</Badge>
+							{/if}
+						</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<Badge variant="secondary" class="mb-3">
+							Selected: {newSpellIds.size} / {levelUp.spellbookGrowth}
+						</Badge>
+						{#if levelUp.preparedSpellsDelta > 0}
+							<p class="mb-3 text-sm text-muted-foreground">
+								Prepared spell limit increases to {levelUp.newPreparedSpells}.
+							</p>
+						{/if}
+						<div class="space-y-2">
+							{#each availableSpells() as spell}
+								<SelectionCard
+									selected={newSpellIds.has(spell.id)}
+									onclick={() => toggleNewSpell(spell.id)}
+									compact
+								>
+									<div class="flex items-center gap-2 pr-6">
+										<span class="font-medium text-sm">{spell.name}</span>
+										<Badge variant="secondary" class="text-xs">{formatSpellLevel(spell.level)}</Badge>
+										<Badge variant="secondary" class="text-xs capitalize">{spell.school}</Badge>
+										{#if spell.concentration}
+											<Badge variant="outline" class="text-xs">C</Badge>
+										{/if}
+									</div>
+									<p class="mt-1 line-clamp-2 text-xs text-muted-foreground">{spell.description}</p>
+								</SelectionCard>
+							{/each}
+						</div>
+					</Card.Content>
+				</Card.Root>
+			{:else if levelUp.isPreparedCaster && levelUp.preparedSpellsDelta > 0}
+				<!-- Cleric/Druid/Paladin: prepared limit info -->
+				<Card.Root>
+					<Card.Header>
+						<Card.Title class="text-base">Prepared Spells</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<p class="text-sm text-muted-foreground">
+							Your prepared spell limit increases to <strong>{levelUp.newPreparedSpells}</strong> (was {levelUp.newPreparedSpells - levelUp.preparedSpellsDelta}).
+							You can change your prepared spells after a long rest.
+						</p>
 					</Card.Content>
 				</Card.Root>
 			{/if}
