@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import type { ContentPack, ClassDefinition, SubclassDefinition, FeatDefinition, SpellDefinition } from '$lib/types/content-pack.js';
-	import type { CharacterData, AbilityBonus, FeatSelection, SpellKnown, FeatureChoiceSelection } from '$lib/types/character.js';
+	import type { CharacterData, AbilityBonus, FeatSelection, FeatChoiceSelection, SpellKnown, FeatureChoiceSelection } from '$lib/types/character.js';
 	import type { AbilityId, SkillId } from '$lib/types/common.js';
 	import { ABILITY_IDS, ABILITY_NAMES } from '$lib/types/common.js';
 	import { computeLevelUpChoices } from '$lib/engine/level-up.js';
@@ -70,6 +70,70 @@
 	function toggleFeatExpand(featId: string, event: MouseEvent) {
 		event.stopPropagation();
 		expandedFeatId = expandedFeatId === featId ? null : featId;
+	}
+
+	// ─── Magic Initiate Configuration ───────────────────────
+	type FeatSpellConfig = { spellList: string; cantrips: Set<string>; spell: string };
+	let miFeatConfig = $state<FeatSpellConfig | null>(null);
+
+	const packSpells: SpellDefinition[] = $derived(pack?.spells ?? []);
+
+	function getSpellsForList(listId: string, level: number): SpellDefinition[] {
+		return packSpells.filter((s) => s.lists.includes(listId) && s.level === level);
+	}
+
+	function featHasSpellChoices(featId: string): boolean {
+		if (!featId) return false;
+		const feat = feats.find((f) => f.id === featId);
+		return !!feat?.choices?.some((c) => c.type === 'spell-list');
+	}
+
+	/** Get spell lists already used by prior Magic Initiate selections */
+	function getUsedSpellLists(): Set<string> {
+		const used = new Set<string>();
+		for (const f of data.feats ?? []) {
+			if (f.featId === 'magic-initiate') {
+				const listChoice = f.choices?.find((c) => c.choiceId === 'spell-list');
+				if (listChoice) used.add(listChoice.selectedValue);
+			}
+		}
+		return used;
+	}
+
+	function setMiSpellList(list: string) {
+		miFeatConfig = { spellList: list, cantrips: new Set(), spell: '' };
+	}
+
+	function toggleMiCantrip(spellId: string) {
+		if (!miFeatConfig) return;
+		const newCantrips = new Set(miFeatConfig.cantrips);
+		if (newCantrips.has(spellId)) {
+			newCantrips.delete(spellId);
+		} else if (newCantrips.size < 2) {
+			newCantrips.add(spellId);
+		}
+		miFeatConfig = { ...miFeatConfig, cantrips: newCantrips };
+	}
+
+	function setMiSpell(spellId: string) {
+		if (!miFeatConfig) return;
+		miFeatConfig = { ...miFeatConfig, spell: spellId };
+	}
+
+	function buildMiFeatChoices(): FeatChoiceSelection[] {
+		if (!miFeatConfig) return [];
+		const cantrips = Array.from(miFeatConfig.cantrips);
+		return [
+			{ choiceId: 'spell-list', selectedValue: miFeatConfig.spellList },
+			{ choiceId: 'cantrip-1', selectedValue: cantrips[0] ?? '' },
+			{ choiceId: 'cantrip-2', selectedValue: cantrips[1] ?? '' },
+			{ choiceId: 'spell-1', selectedValue: miFeatConfig.spell }
+		];
+	}
+
+	function isMiConfigComplete(): boolean {
+		if (!miFeatConfig) return false;
+		return !!miFeatConfig.spellList && miFeatConfig.cantrips.size === 2 && !!miFeatConfig.spell;
 	}
 
 	const currentScores = $derived(() => {
@@ -205,8 +269,10 @@
 			if (asiType === 'asi-2' && !asiAbility1) return false;
 			if (asiType === 'asi-1-1' && (!asiAbility1 || !asiAbility2)) return false;
 			if (asiType === 'feat' && !asiFeatId) return false;
+			if (asiType === 'feat' && featHasSpellChoices(asiFeatId) && !isMiConfigComplete()) return false;
 		}
 		if (levelUp.needsEpicBoon && !asiFeatId) return false;
+		if (levelUp.needsEpicBoon && featHasSpellChoices(asiFeatId) && !isMiConfigComplete()) return false;
 		if (levelUp.spellsKnownDelta > 0 && newSpellIds.size < levelUp.spellsKnownDelta) return false;
 		if (levelUp.isSpellbookCaster && levelUp.spellbookGrowth > 0 && newSpellIds.size < levelUp.spellbookGrowth) return false;
 		if (levelUp.cantripsKnownDelta > 0 && newCantripIds.size < levelUp.cantripsKnownDelta) return false;
@@ -267,12 +333,14 @@
 					});
 				}
 			} else if (asiType === 'feat' && asiFeatId) {
-				updatedFeats.push({ featId: asiFeatId, source, choices: [] });
+				const choices = featHasSpellChoices(asiFeatId) ? buildMiFeatChoices() : [];
+				updatedFeats.push({ featId: asiFeatId, source, choices });
 			}
 		}
 		if (levelUp.needsEpicBoon && asiFeatId) {
 			const source = `class:${primaryClass.classId}:${newLevel}`;
-			updatedFeats.push({ featId: asiFeatId, source, choices: [] });
+			const choices = featHasSpellChoices(asiFeatId) ? buildMiFeatChoices() : [];
+			updatedFeats.push({ featId: asiFeatId, source, choices });
 		}
 
 		// Update spells
@@ -587,7 +655,10 @@
 									{@const isFeatExpanded = expandedFeatId === feat.id}
 									<SelectionCard
 										selected={asiFeatId === feat.id}
-										onclick={() => { asiFeatId = feat.id; }}
+										onclick={() => {
+											if (asiFeatId !== feat.id) miFeatConfig = null;
+											asiFeatId = feat.id;
+										}}
 										compact
 									>
 										<h4 class="pr-6 font-medium text-sm">{feat.name}</h4>
@@ -627,6 +698,81 @@
 									</SelectionCard>
 								{/each}
 							</div>
+
+							<!-- Magic Initiate Configuration Panel (ASI section) -->
+							{#if featHasSpellChoices(asiFeatId)}
+								{@const selectedFeat = feats.find((f) => f.id === asiFeatId)}
+								{@const spellListChoice = selectedFeat?.choices?.find((c) => c.type === 'spell-list')}
+								{@const spellListOptions = spellListChoice?.options ?? []}
+								{@const usedLists = getUsedSpellLists()}
+								{@const selectedList = miFeatConfig?.spellList ?? ''}
+								<Card.Root class="mt-3">
+									<Card.Header class="pb-2">
+										<Card.Title class="text-sm">Magic Initiate Configuration</Card.Title>
+									</Card.Header>
+									<Card.Content class="space-y-4">
+										<div>
+											<p class="mb-1.5 text-xs font-medium text-muted-foreground">Spell List</p>
+											<div class="flex gap-2">
+												{#each spellListOptions as list}
+													{@const isUsed = usedLists.has(list)}
+													<button
+														type="button"
+														disabled={isUsed}
+														class="rounded-md border px-3 py-1.5 text-sm capitalize transition-colors
+															{selectedList === list ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}
+															{isUsed ? 'opacity-40 cursor-not-allowed' : ''}"
+														onclick={() => setMiSpellList(list)}
+													>
+														{list}
+													</button>
+												{/each}
+											</div>
+										</div>
+
+										{#if selectedList}
+											{@const availCantrips = getSpellsForList(selectedList, 0)}
+											{@const availLevel1 = getSpellsForList(selectedList, 1)}
+											<div>
+												<p class="mb-1.5 text-xs font-medium text-muted-foreground">Choose 2 Cantrips ({miFeatConfig?.cantrips.size ?? 0}/2)</p>
+												<div class="grid gap-1.5 sm:grid-cols-2">
+													{#each availCantrips as spell}
+														{@const isSelected = miFeatConfig?.cantrips.has(spell.id) ?? false}
+														<SelectionCard
+															selected={isSelected}
+															disabled={!isSelected && (miFeatConfig?.cantrips.size ?? 0) >= 2}
+															onclick={() => toggleMiCantrip(spell.id)}
+															compact
+														>
+															<span class="text-sm font-medium">{spell.name}</span>
+															<Badge variant="secondary" class="ml-2 text-xs capitalize">{spell.school}</Badge>
+														</SelectionCard>
+													{/each}
+												</div>
+											</div>
+
+											<div>
+												<p class="mb-1.5 text-xs font-medium text-muted-foreground">Choose 1 Level 1 Spell ({miFeatConfig?.spell ? 1 : 0}/1)</p>
+												<div class="grid gap-1.5 sm:grid-cols-2">
+													{#each availLevel1 as spell}
+														{@const isSelected = miFeatConfig?.spell === spell.id}
+														<SelectionCard
+															selected={isSelected}
+															onclick={() => setMiSpell(spell.id)}
+															compact
+														>
+															<span class="text-sm font-medium">{spell.name}</span>
+															<Badge variant="secondary" class="ml-2 text-xs capitalize">{spell.school}</Badge>
+														</SelectionCard>
+													{/each}
+												</div>
+											</div>
+
+											<p class="text-xs text-muted-foreground italic">You always have the chosen level 1 spell prepared. You can cast it once without a spell slot per Long Rest.</p>
+										{/if}
+									</Card.Content>
+								</Card.Root>
+							{/if}
 						{/if}
 					</Card.Content>
 				</Card.Root>
@@ -645,7 +791,10 @@
 								{@const isFeatExpanded = expandedFeatId === feat.id}
 								<SelectionCard
 									selected={asiFeatId === feat.id}
-									onclick={() => { asiFeatId = feat.id; }}
+									onclick={() => {
+										if (asiFeatId !== feat.id) miFeatConfig = null;
+										asiFeatId = feat.id;
+									}}
 									compact
 								>
 									<h4 class="pr-6 font-medium text-sm">{feat.name}</h4>
@@ -685,6 +834,81 @@
 								</SelectionCard>
 							{/each}
 						</div>
+
+						<!-- Magic Initiate Configuration Panel (Epic Boon section) -->
+						{#if featHasSpellChoices(asiFeatId)}
+							{@const selectedFeat = feats.find((f) => f.id === asiFeatId)}
+							{@const spellListChoice = selectedFeat?.choices?.find((c) => c.type === 'spell-list')}
+							{@const spellListOptions = spellListChoice?.options ?? []}
+							{@const usedLists = getUsedSpellLists()}
+							{@const selectedList = miFeatConfig?.spellList ?? ''}
+							<Card.Root class="mt-3">
+								<Card.Header class="pb-2">
+									<Card.Title class="text-sm">Magic Initiate Configuration</Card.Title>
+								</Card.Header>
+								<Card.Content class="space-y-4">
+									<div>
+										<p class="mb-1.5 text-xs font-medium text-muted-foreground">Spell List</p>
+										<div class="flex gap-2">
+											{#each spellListOptions as list}
+												{@const isUsed = usedLists.has(list)}
+												<button
+													type="button"
+													disabled={isUsed}
+													class="rounded-md border px-3 py-1.5 text-sm capitalize transition-colors
+														{selectedList === list ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}
+														{isUsed ? 'opacity-40 cursor-not-allowed' : ''}"
+													onclick={() => setMiSpellList(list)}
+												>
+													{list}
+												</button>
+											{/each}
+										</div>
+									</div>
+
+									{#if selectedList}
+										{@const availCantrips = getSpellsForList(selectedList, 0)}
+										{@const availLevel1 = getSpellsForList(selectedList, 1)}
+										<div>
+											<p class="mb-1.5 text-xs font-medium text-muted-foreground">Choose 2 Cantrips ({miFeatConfig?.cantrips.size ?? 0}/2)</p>
+											<div class="grid gap-1.5 sm:grid-cols-2">
+												{#each availCantrips as spell}
+													{@const isSelected = miFeatConfig?.cantrips.has(spell.id) ?? false}
+													<SelectionCard
+														selected={isSelected}
+														disabled={!isSelected && (miFeatConfig?.cantrips.size ?? 0) >= 2}
+														onclick={() => toggleMiCantrip(spell.id)}
+														compact
+													>
+														<span class="text-sm font-medium">{spell.name}</span>
+														<Badge variant="secondary" class="ml-2 text-xs capitalize">{spell.school}</Badge>
+													</SelectionCard>
+												{/each}
+											</div>
+										</div>
+
+										<div>
+											<p class="mb-1.5 text-xs font-medium text-muted-foreground">Choose 1 Level 1 Spell ({miFeatConfig?.spell ? 1 : 0}/1)</p>
+											<div class="grid gap-1.5 sm:grid-cols-2">
+												{#each availLevel1 as spell}
+													{@const isSelected = miFeatConfig?.spell === spell.id}
+													<SelectionCard
+														selected={isSelected}
+														onclick={() => setMiSpell(spell.id)}
+														compact
+													>
+														<span class="text-sm font-medium">{spell.name}</span>
+														<Badge variant="secondary" class="ml-2 text-xs capitalize">{spell.school}</Badge>
+													</SelectionCard>
+												{/each}
+											</div>
+										</div>
+
+										<p class="text-xs text-muted-foreground italic">You always have the chosen level 1 spell prepared. You can cast it once without a spell slot per Long Rest.</p>
+									{/if}
+								</Card.Content>
+							</Card.Root>
+						{/if}
 					</Card.Content>
 				</Card.Root>
 			{/if}
