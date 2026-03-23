@@ -12,7 +12,7 @@
 	import { totalAbilityScore, abilityModifier } from '$lib/engine/ability-scores.js';
 	import { calculateMaxHP } from '$lib/engine/hit-points.js';
 	import { getMaxSpellLevel } from '$lib/engine/class-progression.js';
-	import { formatSpellLevel, kebabToTitle } from '$lib/utils/format.js';
+	import { formatSpellLevel, kebabToTitle, formatModifier } from '$lib/utils/format.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
 	import SelectionCard from '$lib/components/ui/selection-card/SelectionCard.svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -242,6 +242,35 @@
 		}));
 		return [...skills, ...tools];
 	});
+
+	function scoreToMod(score: number): number {
+		return Math.floor((score - 10) / 2);
+	}
+
+	function getPreviewScoresLevelUp(): Record<AbilityId, number> {
+		const base = { ...currentScores() };
+		if (asiType === 'asi-2' && asiAbility1) {
+			base[asiAbility1] = Math.min(base[asiAbility1] + 2, 20);
+		} else if (asiType === 'asi-1-1') {
+			if (asiAbility1) base[asiAbility1] = Math.min(base[asiAbility1] + 1, 20);
+			if (asiAbility2) base[asiAbility2] = Math.min(base[asiAbility2] + 1, 20);
+		} else if (asiType === 'feat' && asiFeatId && featAbilityChoice) {
+			const featDef = feats.find((f) => f.id === asiFeatId);
+			const max = featDef?.abilityScoreIncrease?.max ?? 20;
+			base[featAbilityChoice] = Math.min(base[featAbilityChoice] + (featDef?.abilityScoreIncrease?.value ?? 1), max);
+		}
+		return base;
+	}
+
+	function getPreviewScoresEpicBoon(): Record<AbilityId, number> {
+		const base = { ...currentScores() };
+		if (asiFeatId && featAbilityChoice) {
+			const featDef = feats.find((f) => f.id === asiFeatId);
+			const max = featDef?.abilityScoreIncrease?.max ?? 20;
+			base[featAbilityChoice] = Math.min(base[featAbilityChoice] + (featDef?.abilityScoreIncrease?.value ?? 1), max);
+		}
+		return base;
+	}
 
 	const currentScores = $derived(() => {
 		const scores = {} as Record<AbilityId, number>;
@@ -735,6 +764,21 @@
 									</button>
 								{/each}
 							</div>
+							<!-- Inline stats preview -->
+							{@const previewAsi2 = getPreviewScoresLevelUp()}
+							<Separator class="my-3" />
+							<div class="grid grid-cols-6 gap-1.5 text-center">
+								{#each ABILITY_IDS as ab2}
+									{@const baseAsi2 = currentScores()[ab2]}
+									{@const finalAsi2 = previewAsi2[ab2]}
+									{@const changedAsi2 = finalAsi2 !== baseAsi2}
+									<div class="flex flex-col items-center">
+										<span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{ab2}</span>
+										<span class="text-lg font-bold leading-tight {changedAsi2 ? 'text-primary' : ''}">{formatModifier(scoreToMod(finalAsi2))}</span>
+										<span class="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full {changedAsi2 ? 'bg-primary/20 text-primary' : 'bg-muted'} text-[10px] font-medium">{finalAsi2}</span>
+									</div>
+								{/each}
+							</div>
 						{:else if asiType === 'asi-1-1'}
 							<p class="mb-2 text-sm text-muted-foreground">Choose two different abilities to increase by 1 (max 20):</p>
 							<div class="space-y-2">
@@ -780,6 +824,21 @@
 										{/each}
 									</div>
 								</div>
+							</div>
+							<!-- Inline stats preview -->
+							{@const previewAsi11 = getPreviewScoresLevelUp()}
+							<Separator class="my-3" />
+							<div class="grid grid-cols-6 gap-1.5 text-center">
+								{#each ABILITY_IDS as ab11}
+									{@const baseAsi11 = currentScores()[ab11]}
+									{@const finalAsi11 = previewAsi11[ab11]}
+									{@const changedAsi11 = finalAsi11 !== baseAsi11}
+									<div class="flex flex-col items-center">
+										<span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{ab11}</span>
+										<span class="text-lg font-bold leading-tight {changedAsi11 ? 'text-primary' : ''}">{formatModifier(scoreToMod(finalAsi11))}</span>
+										<span class="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full {changedAsi11 ? 'bg-primary/20 text-primary' : 'bg-muted'} text-[10px] font-medium">{finalAsi11}</span>
+									</div>
+								{/each}
 							</div>
 						{:else}
 							<p class="mb-2 text-sm text-muted-foreground">Choose a feat:</p>
@@ -948,6 +1007,21 @@
 														{ABILITY_NAMES[ab]}
 														<span class="ml-1 text-xs text-muted-foreground">{current}</span>
 													</button>
+												{/each}
+											</div>
+											<!-- Inline stats preview -->
+											{@const previewFeat = getPreviewScoresLevelUp()}
+											<Separator class="my-3" />
+											<div class="grid grid-cols-6 gap-1.5 text-center">
+												{#each ABILITY_IDS as abFeat}
+													{@const baseFeat = currentScores()[abFeat]}
+													{@const finalFeat = previewFeat[abFeat]}
+													{@const changedFeat = finalFeat !== baseFeat}
+													<div class="flex flex-col items-center">
+														<span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{abFeat}</span>
+														<span class="text-lg font-bold leading-tight {changedFeat ? 'text-primary' : ''}">{formatModifier(scoreToMod(finalFeat))}</span>
+														<span class="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full {changedFeat ? 'bg-primary/20 text-primary' : 'bg-muted'} text-[10px] font-medium">{finalFeat}</span>
+													</div>
 												{/each}
 											</div>
 										</Card.Content>
@@ -1165,6 +1239,21 @@
 													{ABILITY_NAMES[ab]}
 													<span class="ml-1 text-xs text-muted-foreground">{current}</span>
 												</button>
+											{/each}
+										</div>
+										<!-- Inline stats preview -->
+										{@const previewEpicFeat = getPreviewScoresEpicBoon()}
+										<Separator class="my-3" />
+										<div class="grid grid-cols-6 gap-1.5 text-center">
+											{#each ABILITY_IDS as abEpic}
+												{@const baseEpic = currentScores()[abEpic]}
+												{@const finalEpic = previewEpicFeat[abEpic]}
+												{@const changedEpic = finalEpic !== baseEpic}
+												<div class="flex flex-col items-center">
+													<span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{abEpic}</span>
+													<span class="text-lg font-bold leading-tight {changedEpic ? 'text-primary' : ''}">{formatModifier(scoreToMod(finalEpic))}</span>
+													<span class="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full {changedEpic ? 'bg-primary/20 text-primary' : 'bg-muted'} text-[10px] font-medium">{finalEpic}</span>
+												</div>
 											{/each}
 										</div>
 									</Card.Content>

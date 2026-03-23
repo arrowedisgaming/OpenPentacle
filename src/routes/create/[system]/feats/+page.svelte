@@ -8,7 +8,7 @@
 	import type { AbilityId } from '$lib/types/common.js';
 	import { ABILITY_IDS, ABILITY_NAMES, SKILL_ABILITIES } from '$lib/types/common.js';
 	import type { SkillId } from '$lib/types/common.js';
-	import { kebabToTitle } from '$lib/utils/format.js';
+	import { kebabToTitle, formatModifier } from '$lib/utils/format.js';
 	import { totalAbilityScore } from '$lib/engine/ability-scores.js';
 	import { getASILevels, isEpicBoonLevel } from '$lib/engine/class-progression.js';
 	import { getAvailableFeats, FEAT_CATEGORY_LABELS } from '$lib/engine/feats.js';
@@ -386,6 +386,29 @@
 		return 20;
 	}
 
+	function scoreToMod(score: number): number {
+		return Math.floor((score - 10) / 2);
+	}
+
+	function getPreviewScores(decisionIndex: number): Record<AbilityId, number> {
+		const base = getScoreWithPriorASIs(decisionIndex);
+		const d = decisions[decisionIndex];
+		const cap = getAsiCap(d);
+		if (d.type === 'asi-2' && d.ability1) {
+			base[d.ability1] = Math.min(base[d.ability1] + 2, cap);
+		} else if (d.type === 'asi-1-1') {
+			if (d.ability1) base[d.ability1] = Math.min(base[d.ability1] + 1, cap);
+			if (d.ability2) base[d.ability2] = Math.min(base[d.ability2] + 1, cap);
+		}
+		if (d.type === 'feat' && d.featId && featAbilityChoice[decisionIndex]) {
+			const featDef = feats.find((f) => f.id === d.featId);
+			const max = featDef?.abilityScoreIncrease?.max ?? 20;
+			const ab = featAbilityChoice[decisionIndex];
+			base[ab] = Math.min(base[ab] + (featDef?.abilityScoreIncrease?.value ?? 1), max);
+		}
+		return base;
+	}
+
 	function setDecisionType(index: number, type: 'asi-2' | 'asi-1-1' | 'feat') {
 		decisions[index] = {
 			...decisions[index],
@@ -698,6 +721,21 @@
 											</button>
 										{/each}
 									</div>
+									<!-- Inline stats preview -->
+									{@const previewEpicFeat = getPreviewScores(i)}
+									<Separator class="my-3" />
+									<div class="grid grid-cols-6 gap-1.5 text-center">
+										{#each ABILITY_IDS as ability}
+											{@const baseEpicFeat = scores[ability]}
+											{@const finalEpicFeat = previewEpicFeat[ability]}
+											{@const changedEpicFeat = finalEpicFeat !== baseEpicFeat}
+											<div class="flex flex-col items-center">
+												<span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{ability}</span>
+												<span class="text-lg font-bold leading-tight {changedEpicFeat ? 'text-primary' : ''}">{formatModifier(scoreToMod(finalEpicFeat))}</span>
+												<span class="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full {changedEpicFeat ? 'bg-primary/20 text-primary' : 'bg-muted'} text-[10px] font-medium">{finalEpicFeat}</span>
+											</div>
+										{/each}
+									</div>
 								</Card.Content>
 							</Card.Root>
 						{/if}
@@ -784,6 +822,21 @@
 								</button>
 							{/each}
 						</div>
+						<!-- Inline stats preview -->
+						{@const previewAsi2 = getPreviewScores(i)}
+						<Separator class="my-3" />
+						<div class="grid grid-cols-6 gap-1.5 text-center">
+							{#each ABILITY_IDS as ability}
+								{@const baseAsi2 = scores[ability]}
+								{@const finalAsi2 = previewAsi2[ability]}
+								{@const changedAsi2 = finalAsi2 !== baseAsi2}
+								<div class="flex flex-col items-center">
+									<span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{ability}</span>
+									<span class="text-lg font-bold leading-tight {changedAsi2 ? 'text-primary' : ''}">{formatModifier(scoreToMod(finalAsi2))}</span>
+									<span class="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full {changedAsi2 ? 'bg-primary/20 text-primary' : 'bg-muted'} text-[10px] font-medium">{finalAsi2}</span>
+								</div>
+							{/each}
+						</div>
 					{:else if decision.type === 'asi-1-1'}
 						<p class="mb-2 text-sm text-muted-foreground">Choose two different abilities to increase by 1 (max {cap}):</p>
 						<div class="space-y-2">
@@ -829,6 +882,21 @@
 									{/each}
 								</div>
 							</div>
+						</div>
+						<!-- Inline stats preview -->
+						{@const previewAsi11 = getPreviewScores(i)}
+						<Separator class="my-3" />
+						<div class="grid grid-cols-6 gap-1.5 text-center">
+							{#each ABILITY_IDS as ability}
+								{@const baseAsi11 = scores[ability]}
+								{@const finalAsi11 = previewAsi11[ability]}
+								{@const changedAsi11 = finalAsi11 !== baseAsi11}
+								<div class="flex flex-col items-center">
+									<span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{ability}</span>
+									<span class="text-lg font-bold leading-tight {changedAsi11 ? 'text-primary' : ''}">{formatModifier(scoreToMod(finalAsi11))}</span>
+									<span class="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full {changedAsi11 ? 'bg-primary/20 text-primary' : 'bg-muted'} text-[10px] font-medium">{finalAsi11}</span>
+								</div>
+							{/each}
 						</div>
 					{:else}
 						<p class="mb-2 text-sm text-muted-foreground">Choose a feat:</p>
@@ -998,6 +1066,21 @@
 													{ABILITY_NAMES[ab]}
 													<span class="ml-1 text-xs text-muted-foreground">{current}</span>
 												</button>
+											{/each}
+										</div>
+										<!-- Inline stats preview -->
+										{@const previewFeat = getPreviewScores(i)}
+										<Separator class="my-3" />
+										<div class="grid grid-cols-6 gap-1.5 text-center">
+											{#each ABILITY_IDS as ability}
+												{@const baseFeat = scores[ability]}
+												{@const finalFeat = previewFeat[ability]}
+												{@const changedFeat = finalFeat !== baseFeat}
+												<div class="flex flex-col items-center">
+													<span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{ability}</span>
+													<span class="text-lg font-bold leading-tight {changedFeat ? 'text-primary' : ''}">{formatModifier(scoreToMod(finalFeat))}</span>
+													<span class="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full {changedFeat ? 'bg-primary/20 text-primary' : 'bg-muted'} text-[10px] font-medium">{finalFeat}</span>
+												</div>
 											{/each}
 										</div>
 									</Card.Content>
