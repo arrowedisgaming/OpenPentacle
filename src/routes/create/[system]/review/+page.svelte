@@ -3,9 +3,11 @@
 	import { goto } from '$app/navigation';
 	import { getContext, onMount } from 'svelte';
 	import { wizardStore } from '$lib/stores/wizard.js';
-	import type { SpellDefinition } from '$lib/types/content-pack.js';
-	import { ABILITY_NAMES, type AbilityId } from '$lib/types/common.js';
-	import { abilityModifier, formatModifier, totalAbilityScore } from '$lib/engine/ability-scores.js';
+	import type { SpellDefinition, FeatDefinition } from '$lib/types/content-pack.js';
+	import type { FeatChoiceSelection } from '$lib/types/character.js';
+	import { ABILITY_NAMES, SKILL_ABILITIES, type AbilityId, type SkillId } from '$lib/types/common.js';
+	import { abilityModifier, allAbilityModifiers, formatModifier, totalAbilityScore } from '$lib/engine/ability-scores.js';
+	import { SKILL_EXAMPLES } from '$lib/engine/skills.js';
 	import { calculateMaxHP } from '$lib/engine/hit-points.js';
 	import { proficiencyBonus } from '$lib/engine/proficiency.js';
 	import { getClassFeaturesUpToLevel, getSubclassFeaturesUpToLevel } from '$lib/engine/class-progression.js';
@@ -89,19 +91,89 @@
 		return getSubclassFeaturesUpToLevel(sub, character.level);
 	});
 
-	// ASI/Feat summary
-	const asiSummary = $derived(() => {
+	// ASI level-up bonuses (human-readable)
+	const asiBonuses = $derived(() => {
 		if (!character) return [];
-		const items: string[] = [];
-		for (const bonus of character.abilityScores.levelUpBonuses) {
-			items.push(`+${bonus.value} ${ABILITY_NAMES[bonus.ability]} (${bonus.source})`);
-		}
-		for (const feat of character.feats) {
-			const def = pack.feats.find((f) => f.id === feat.featId);
-			items.push(`${def?.name ?? feat.featId} (${feat.source})`);
-		}
-		return items;
+		return character.abilityScores.levelUpBonuses.map((bonus) => {
+			const parts = bonus.source.split(':');
+			const level = parts[2] ?? '';
+			return `+${bonus.value} ${ABILITY_NAMES[bonus.ability]}${level ? ` (Level ${level})` : ''}`;
+		});
 	});
+
+	// Feat selections with resolved definitions
+	const featSelections = $derived(() => {
+		if (!character) return [];
+		return character.feats.map((feat) => {
+			const def = pack.feats.find((f: FeatDefinition) => f.id === feat.featId);
+			let sourceLabel = feat.source;
+			if (feat.source === 'background') {
+				sourceLabel = 'Background';
+			} else if (feat.source.startsWith('class:')) {
+				const parts = feat.source.split(':');
+				sourceLabel = `${kebabToTitle(parts[1])} Lv${parts[2]}`;
+			}
+			return { feat, def, sourceLabel };
+		});
+	});
+
+	function formatFeatChoice(choice: FeatChoiceSelection, featDef: FeatDefinition | undefined): string {
+		const choiceDef = featDef?.choices?.find((c) => c.id === choice.choiceId);
+		const label = choiceDef?.label ?? kebabToTitle(choice.choiceId);
+		let value = choice.selectedValue;
+
+		if (value.startsWith('skill:') || value.startsWith('tool:')) {
+			value = kebabToTitle(value.replace(/^(skill:|tool:)/, ''));
+		} else if (choiceDef?.type === 'cantrip' || choiceDef?.type === 'spell') {
+			const spell = mergedSpells.find((s) => s.id === value);
+			value = spell?.name ?? kebabToTitle(value);
+		} else if (choice.choiceId === 'spellcasting-ability') {
+			value = ABILITY_NAMES[value as AbilityId] ?? kebabToTitle(value);
+		} else {
+			value = kebabToTitle(value);
+		}
+
+		return `${label}: ${value}`;
+	}
+
+	const abilityMods = $derived(
+		character?.abilityScores?.method ? allAbilityModifiers(character.abilityScores) : null
+	);
+
+	function skillBonus(skillId: SkillId): string {
+		if (!abilityMods) return '';
+		const ability = SKILL_ABILITIES[skillId];
+		const mod = abilityMods[ability];
+		return formatModifier(mod + profBonus);
+	}
+
+	const spellsByLevel = $derived.by(() => {
+		if (!character?.spells?.knownSpells) return [];
+		const groups = new Map<number, { known: typeof character.spells.knownSpells[0]; spell: SpellDefinition }[]>();
+		for (const known of character.spells.knownSpells) {
+			const spell = mergedSpells.find((s) => s.id === known.spellId);
+			if (!spell) continue;
+			if (!groups.has(spell.level)) groups.set(spell.level, []);
+			groups.get(spell.level)!.push({ known, spell });
+		}
+		return [...groups.entries()].sort((a, b) => a[0] - b[0]);
+	});
+
+	function spellLevelLabel(level: number): string {
+		if (level === 0) return 'Cantrips';
+		const suffix = level === 1 ? 'st' : level === 2 ? 'nd' : level === 3 ? 'rd' : 'th';
+		return `${level}${suffix}-Level Spells`;
+	}
+
+	function spellComponents(spell: SpellDefinition): string {
+		const parts: string[] = [];
+		if (spell.components.verbal) parts.push('V');
+		if (spell.components.somatic) parts.push('S');
+		if (spell.components.material) {
+			parts.push(spell.components.materialDescription ? `M (${spell.components.materialDescription})` : 'M');
+		}
+		return parts.join(', ');
+	}
 
 	async function saveCharacter() {
 		if (!character) return;
@@ -292,14 +364,41 @@
 			{/if}
 
 			<!-- ASI / Feat Summary -->
-			{#if asiSummary().length > 0}
+			{#if asiBonuses().length > 0 || featSelections().length > 0}
 				<div>
 					<h3 class="text-lg font-semibold">ASI & Feats</h3>
-					<ul class="mt-2 space-y-1 text-sm text-muted-foreground">
-						{#each asiSummary() as item}
-							<li>{item}</li>
-						{/each}
-					</ul>
+					{#if asiBonuses().length > 0}
+						<div class="mt-2 flex flex-wrap gap-2">
+							{#each asiBonuses() as bonus}
+								<Badge variant="secondary" class="text-xs">{bonus}</Badge>
+							{/each}
+						</div>
+					{/if}
+					{#if featSelections().length > 0}
+						<div class="mt-2 space-y-1">
+							{#each featSelections() as { feat, def, sourceLabel }}
+								<Collapsible.Root>
+									<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
+										<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
+										<span class="text-sm font-medium">{def?.name ?? kebabToTitle(feat.featId)}</span>
+										<Badge variant="outline" class="text-[10px] px-1.5 py-0">{sourceLabel}</Badge>
+									</Collapsible.Trigger>
+									<Collapsible.Content>
+										{#if def?.description}
+											<p class="mt-1 ml-5.5 text-xs text-muted-foreground">{def.description}</p>
+										{/if}
+										{#if feat.choices.length > 0}
+											<div class="mt-1 ml-5.5 flex flex-wrap gap-1 mb-2">
+												{#each feat.choices as choice}
+													<Badge variant="secondary" class="text-[10px]">{formatFeatChoice(choice, def)}</Badge>
+												{/each}
+											</div>
+										{/if}
+									</Collapsible.Content>
+								</Collapsible.Root>
+							{/each}
+						</div>
+					{/if}
 				</div>
 			{/if}
 
@@ -310,8 +409,43 @@
 						<h3 class="text-lg font-semibold">Background: {backgroundDef.name}</h3>
 						<Button variant="ghost" size="icon-sm" href="/create/{systemId}/background" aria-label="Edit background"><Pencil class="size-3.5" /></Button>
 					</div>
-					{#if backgroundDef.feature}
-						<p class="mt-1 text-sm text-muted-foreground">{backgroundDef.feature.name}</p>
+
+					{#if backgroundDef.description}
+						<Collapsible.Root>
+							<Collapsible.Trigger class="mt-1 flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
+								<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
+								<span class="text-xs text-muted-foreground">Description</span>
+							</Collapsible.Trigger>
+							<Collapsible.Content>
+								<p class="mt-1 mb-2 ml-5.5 text-xs text-muted-foreground whitespace-pre-line">{backgroundDef.description}</p>
+							</Collapsible.Content>
+						</Collapsible.Root>
+					{/if}
+
+					<div class="mt-2 flex flex-wrap gap-2">
+						{#each (character.abilityScores.originBonuses ?? []).filter(b => b.source.startsWith('background')) as bonus}
+							{#if bonus.value !== 0}
+								<Badge variant="secondary" class="text-xs">+{bonus.value} {ABILITY_NAMES[bonus.ability]}</Badge>
+							{/if}
+						{/each}
+
+						{#if backgroundDef.feat}
+							{@const featDef = pack.feats.find(f => f.id === backgroundDef.feat)}
+							<Badge variant="outline" class="text-xs">Feat: {featDef?.name ?? kebabToTitle(backgroundDef.feat)}</Badge>
+						{/if}
+					</div>
+
+					<div class="mt-2 flex flex-wrap gap-1">
+						{#each backgroundDef.skillProficiencies as prof}
+							<Badge variant="outline" class="text-[10px]">Skill: {kebabToTitle(prof.value)}</Badge>
+						{/each}
+						{#each backgroundDef.toolProficiencies as prof}
+							<Badge variant="outline" class="text-[10px]">Tool: {kebabToTitle(prof.value)}</Badge>
+						{/each}
+					</div>
+
+					{#if backgroundDef.startingGold}
+						<p class="mt-1 text-xs text-muted-foreground">Starting Gold: {backgroundDef.startingGold} gp</p>
 					{/if}
 				</div>
 			{/if}
@@ -323,12 +457,18 @@
 						<h3 class="text-lg font-semibold">Skill Proficiencies</h3>
 						<Button variant="ghost" size="icon-sm" href="/create/{systemId}/skills" aria-label="Edit skills"><Pencil class="size-3.5" /></Button>
 					</div>
-					<div class="mt-2 flex flex-wrap gap-1">
+					<div class="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
 						{#each character.skills as skill}
-							<Badge variant={skill.source.startsWith('background') ? 'outline' : 'secondary'} class="text-xs">
-								{kebabToTitle(skill.skillId)}
-								<span class="ml-1 opacity-60">({skill.source.split(':')[0]})</span>
-							</Badge>
+							{@const ability = SKILL_ABILITIES[skill.skillId]}
+							<div class="rounded-lg border border-border p-3">
+								<div class="flex items-center gap-2">
+									<span class="font-medium text-sm">{kebabToTitle(skill.skillId)}</span>
+									<span class="text-xs text-muted-foreground">({ability.toUpperCase()})</span>
+									<span class="font-mono text-sm font-bold text-primary">{skillBonus(skill.skillId)}</span>
+								</div>
+								<p class="mt-0.5 text-xs text-muted-foreground">{SKILL_EXAMPLES[skill.skillId] ?? ''}</p>
+								<Badge variant={skill.source.startsWith('background') ? 'outline' : 'secondary'} class="mt-1 text-[10px]">{skill.source.split(':')[0]}</Badge>
+							</div>
 						{/each}
 					</div>
 				</div>
@@ -343,12 +483,56 @@
 						<h3 class="text-lg font-semibold">Equipment</h3>
 						<Button variant="ghost" size="icon-sm" href="/create/{systemId}/equipment" aria-label="Edit equipment"><Pencil class="size-3.5" /></Button>
 					</div>
-					<ul class="mt-2 text-sm text-muted-foreground">
+					<div class="mt-2 space-y-1">
 						{#each character.equipment as eq}
 							{@const item = pack.equipment.find((e) => e.id === eq.equipmentId)}
-							<li>{item?.name ?? eq.equipmentId} {eq.quantity > 1 ? `(x${eq.quantity})` : ''}</li>
+							{#if item}
+								<Collapsible.Root>
+									<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
+										<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
+										<span class="text-sm font-medium">{item.name}</span>
+										{#if eq.quantity > 1}
+											<Badge variant="secondary" class="text-[10px] px-1.5 py-0">x{eq.quantity}</Badge>
+										{/if}
+										<Badge variant="outline" class="text-[10px] px-1.5 py-0">{kebabToTitle(item.type)}</Badge>
+									</Collapsible.Trigger>
+									<Collapsible.Content>
+										<div class="mt-1 mb-2 ml-5.5 text-xs text-muted-foreground space-y-1">
+											{#if item.weapon}
+												<p>Damage: {item.weapon.damage} {item.weapon.damageType} &middot; {kebabToTitle(item.weapon.category)}</p>
+												{#if item.weapon.properties.length > 0}
+													<div class="flex flex-wrap gap-1">
+														{#each item.weapon.properties as prop}
+															<Badge variant="outline" class="text-[10px] px-1 py-0">{kebabToTitle(prop)}</Badge>
+														{/each}
+													</div>
+												{/if}
+												{#if item.weapon.range}
+													<p>Range: {item.weapon.range.normal}/{item.weapon.range.long} ft</p>
+												{/if}
+											{:else if item.armor}
+												<p>AC: {item.armor.baseAC}{item.armor.maxDexBonus !== undefined ? ` + DEX (max ${item.armor.maxDexBonus})` : item.armor.category !== 'shield' ? ' + DEX' : ''}</p>
+												{#if item.armor.stealthDisadvantage}
+													<p>Stealth: Disadvantage</p>
+												{/if}
+												{#if item.armor.strengthRequirement}
+													<p>Requires: STR {item.armor.strengthRequirement}</p>
+												{/if}
+											{/if}
+											{#if item.description}
+												<p>{item.description}</p>
+											{/if}
+											<p>{item.cost.amount} {item.cost.currency} &middot; {item.weight} lb</p>
+										</div>
+									</Collapsible.Content>
+								</Collapsible.Root>
+							{:else}
+								<div class="flex items-center gap-2 px-1 py-1">
+									<span class="ml-5.5 text-sm">{eq.equipmentId}</span>
+								</div>
+							{/if}
 						{/each}
-					</ul>
+					</div>
 				</div>
 			{/if}
 
@@ -359,12 +543,41 @@
 						<h3 class="text-lg font-semibold">Spells</h3>
 						<Button variant="ghost" size="icon-sm" href="/create/{systemId}/spells" aria-label="Edit spells"><Pencil class="size-3.5" /></Button>
 					</div>
-					<ul class="mt-2 text-sm text-muted-foreground">
-						{#each character.spells.knownSpells as known}
-							{@const spell = mergedSpells.find((s) => s.id === known.spellId)}
-							<li>{spell?.name ?? known.spellId}</li>
-						{/each}
-					</ul>
+					{#each spellsByLevel as [level, spells]}
+						<h4 class="mt-3 text-sm font-medium">{spellLevelLabel(level)}</h4>
+						<div class="mt-1 space-y-1">
+							{#each spells as { spell }}
+								<Collapsible.Root>
+									<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
+										<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
+										<span class="text-sm font-medium">{spell.name}</span>
+										<Badge variant="outline" class="text-[10px] px-1.5 py-0">{level === 0 ? 'Cantrip' : `Lv${level}`}</Badge>
+										<Badge variant="outline" class="text-[10px] px-1.5 py-0">{kebabToTitle(spell.school)}</Badge>
+										{#if spell.concentration}
+											<Badge variant="secondary" class="text-[10px] px-1.5 py-0">C</Badge>
+										{/if}
+										{#if spell.ritual}
+											<Badge variant="secondary" class="text-[10px] px-1.5 py-0">R</Badge>
+										{/if}
+									</Collapsible.Trigger>
+									<Collapsible.Content>
+										<div class="mt-1 mb-2 ml-5.5 text-xs text-muted-foreground space-y-1">
+											<p>
+												<span class="font-medium">Casting Time:</span> {spell.castingTime} &middot;
+												<span class="font-medium">Range:</span> {spell.range} &middot;
+												<span class="font-medium">Duration:</span> {spell.duration}
+											</p>
+											<p><span class="font-medium">Components:</span> {spellComponents(spell)}</p>
+											<p class="whitespace-pre-line">{spell.description}</p>
+											{#if spell.higherLevels}
+												<p><span class="font-medium">At Higher Levels:</span> {spell.higherLevels}</p>
+											{/if}
+										</div>
+									</Collapsible.Content>
+								</Collapsible.Root>
+							{/each}
+						</div>
+					{/each}
 				</div>
 			{/if}
 
