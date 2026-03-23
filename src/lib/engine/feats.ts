@@ -65,6 +65,8 @@ function checkPrerequisite(
 		case 'proficiency':
 		case 'class':
 			return true; // Not enforced yet
+		default:
+			return true; // Unknown prerequisite types pass by default
 	}
 }
 

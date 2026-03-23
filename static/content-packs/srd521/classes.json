@@ -584,7 +584,7 @@
       {
         "id": "path-of-the-berserker",
         "name": "Path of the Berserker",
-        "description": "For some Barbarians, rage is a means to an end — that end being violence. The Path of the Berserker is a path of untrammeled fury, slick with blood.",
+        "description": "For some Barbarians, rage is a means to an end \u2014 that end being violence. The Path of the Berserker is a path of untrammeled fury, slick with blood.",
         "features": [
           {
             "id": "frenzy",
@@ -1444,7 +1444,8 @@
         "cantripsKnown": 3,
         "spellSlots": [
           2
-        ]
+        ],
+        "preparedSpells": 4
       },
       {
         "level": 2,
@@ -1460,7 +1461,8 @@
         "cantripsKnown": 3,
         "spellSlots": [
           3
-        ]
+        ],
+        "preparedSpells": 5
       },
       {
         "level": 3,
@@ -1477,7 +1479,8 @@
         "spellSlots": [
           4,
           2
-        ]
+        ],
+        "preparedSpells": 6
       },
       {
         "level": 4,
@@ -1494,7 +1497,8 @@
         "spellSlots": [
           4,
           3
-        ]
+        ],
+        "preparedSpells": 7
       },
       {
         "level": 5,
@@ -1512,7 +1516,8 @@
           4,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 9
       },
       {
         "level": 6,
@@ -1523,7 +1528,8 @@
           4,
           3,
           3
-        ]
+        ],
+        "preparedSpells": 10
       },
       {
         "level": 7,
@@ -1542,7 +1548,8 @@
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 11
       },
       {
         "level": 8,
@@ -1561,7 +1568,8 @@
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 12
       },
       {
         "level": 9,
@@ -1574,7 +1582,8 @@
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 14
       },
       {
         "level": 10,
@@ -1594,7 +1603,8 @@
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 15
       },
       {
         "level": 11,
@@ -1608,7 +1618,8 @@
           3,
           2,
           1
-        ]
+        ],
+        "preparedSpells": 16
       },
       {
         "level": 12,
@@ -1629,7 +1640,8 @@
           3,
           2,
           1
-        ]
+        ],
+        "preparedSpells": 16
       },
       {
         "level": 13,
@@ -1644,7 +1656,8 @@
           2,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 17
       },
       {
         "level": 14,
@@ -1666,7 +1679,8 @@
           2,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 17
       },
       {
         "level": 15,
@@ -1682,7 +1696,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 18
       },
       {
         "level": 16,
@@ -1705,7 +1720,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 18
       },
       {
         "level": 17,
@@ -1722,7 +1738,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 19
       },
       {
         "level": 18,
@@ -1739,7 +1756,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 20
       },
       {
         "level": 19,
@@ -1763,7 +1781,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 21
       },
       {
         "level": 20,
@@ -1787,14 +1806,15 @@
           2,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 22
       }
     ],
     "subclasses": [
       {
         "id": "life-domain",
         "name": "Life Domain",
-        "description": "The Life Domain focuses on the vibrant positive energy — one of the fundamental forces of the multiverse — that sustains all life.",
+        "description": "The Life Domain focuses on the vibrant positive energy \u2014 one of the fundamental forces of the multiverse \u2014 that sustains all life.",
         "features": [
           {
             "id": "disciple-of-life",
@@ -1956,7 +1976,8 @@
         "cantripsKnown": 2,
         "spellSlots": [
           2
-        ]
+        ],
+        "preparedSpells": 4
       },
       {
         "level": 2,
@@ -1978,7 +1999,8 @@
         "cantripsKnown": 2,
         "spellSlots": [
           3
-        ]
+        ],
+        "preparedSpells": 5
       },
       {
         "level": 3,
@@ -1995,7 +2017,8 @@
         "spellSlots": [
           4,
           2
-        ]
+        ],
+        "preparedSpells": 6
       },
       {
         "level": 4,
@@ -2012,7 +2035,8 @@
         "spellSlots": [
           4,
           3
-        ]
+        ],
+        "preparedSpells": 7
       },
       {
         "level": 5,
@@ -2030,7 +2054,8 @@
           4,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 9
       },
       {
         "level": 6,
@@ -2041,7 +2066,8 @@
           4,
           3,
           3
-        ]
+        ],
+        "preparedSpells": 10
       },
       {
         "level": 7,
@@ -2060,7 +2086,8 @@
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 11
       },
       {
         "level": 8,
@@ -2079,7 +2106,8 @@
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 12
       },
       {
         "level": 9,
@@ -2092,7 +2120,8 @@
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 14
       },
       {
         "level": 10,
@@ -2105,7 +2134,8 @@
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 15
       },
       {
         "level": 11,
@@ -2119,7 +2149,8 @@
           3,
           2,
           1
-        ]
+        ],
+        "preparedSpells": 16
       },
       {
         "level": 12,
@@ -2140,7 +2171,8 @@
           3,
           2,
           1
-        ]
+        ],
+        "preparedSpells": 16
       },
       {
         "level": 13,
@@ -2155,7 +2187,8 @@
           2,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 17
       },
       {
         "level": 14,
@@ -2177,7 +2210,8 @@
           2,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 17
       },
       {
         "level": 15,
@@ -2193,7 +2227,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 18
       },
       {
         "level": 16,
@@ -2216,7 +2251,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 18
       },
       {
         "level": 17,
@@ -2233,7 +2269,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 19
       },
       {
         "level": 18,
@@ -2257,7 +2294,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 20
       },
       {
         "level": 19,
@@ -2281,7 +2319,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 21
       },
       {
         "level": 20,
@@ -2305,7 +2344,8 @@
           2,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 22
       }
     ],
     "subclasses": [
@@ -3769,7 +3809,8 @@
               }
             ]
           }
-        ]
+        ],
+        "preparedSpells": 2
       },
       {
         "level": 2,
@@ -3830,7 +3871,8 @@
         ],
         "spellSlots": [
           2
-        ]
+        ],
+        "preparedSpells": 3
       },
       {
         "level": 3,
@@ -3851,7 +3893,8 @@
         ],
         "spellSlots": [
           3
-        ]
+        ],
+        "preparedSpells": 4
       },
       {
         "level": 4,
@@ -3866,7 +3909,8 @@
         ],
         "spellSlots": [
           3
-        ]
+        ],
+        "preparedSpells": 5
       },
       {
         "level": 5,
@@ -3888,7 +3932,8 @@
         "spellSlots": [
           4,
           2
-        ]
+        ],
+        "preparedSpells": 6
       },
       {
         "level": 6,
@@ -3904,7 +3949,8 @@
         "spellSlots": [
           4,
           2
-        ]
+        ],
+        "preparedSpells": 6
       },
       {
         "level": 7,
@@ -3913,7 +3959,8 @@
         "spellSlots": [
           4,
           3
-        ]
+        ],
+        "preparedSpells": 7
       },
       {
         "level": 8,
@@ -3929,7 +3976,8 @@
         "spellSlots": [
           4,
           3
-        ]
+        ],
+        "preparedSpells": 7
       },
       {
         "level": 9,
@@ -3946,7 +3994,8 @@
           4,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 9
       },
       {
         "level": 10,
@@ -3963,7 +4012,8 @@
           4,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 9
       },
       {
         "level": 11,
@@ -3980,7 +4030,8 @@
           4,
           3,
           3
-        ]
+        ],
+        "preparedSpells": 10
       },
       {
         "level": 12,
@@ -3997,7 +4048,8 @@
           4,
           3,
           3
-        ]
+        ],
+        "preparedSpells": 10
       },
       {
         "level": 13,
@@ -4008,7 +4060,8 @@
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 11
       },
       {
         "level": 14,
@@ -4026,7 +4079,8 @@
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 11
       },
       {
         "level": 15,
@@ -4037,7 +4091,8 @@
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 12
       },
       {
         "level": 16,
@@ -4055,7 +4110,8 @@
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 12
       },
       {
         "level": 17,
@@ -4067,7 +4123,8 @@
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 14
       },
       {
         "level": 18,
@@ -4086,7 +4143,8 @@
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 14
       },
       {
         "level": 19,
@@ -4105,7 +4163,8 @@
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 15
       },
       {
         "level": 20,
@@ -4117,7 +4176,8 @@
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 15
       }
     ],
     "subclasses": [
@@ -7153,7 +7213,7 @@
       {
         "id": "fiend-patron",
         "name": "Fiend Patron",
-        "description": "Your pact draws on the Lower Planes, the realms of perdition. You might forge a bargain with a demon lord, an archdevil, or another fiend. That patron's aims are evil — the corruption or destruction of all things — and your path is defined by the extent to which you strive against those aims.",
+        "description": "Your pact draws on the Lower Planes, the realms of perdition. You might forge a bargain with a demon lord, an archdevil, or another fiend. That patron's aims are evil \u2014 the corruption or destruction of all things \u2014 and your path is defined by the extent to which you strive against those aims.",
         "features": [
           {
             "id": "dark-ones-blessing",
@@ -7288,7 +7348,8 @@
         "cantripsKnown": 3,
         "spellSlots": [
           2
-        ]
+        ],
+        "preparedSpells": 4
       },
       {
         "level": 2,
@@ -7304,7 +7365,8 @@
         "cantripsKnown": 3,
         "spellSlots": [
           3
-        ]
+        ],
+        "preparedSpells": 5
       },
       {
         "level": 3,
@@ -7321,7 +7383,8 @@
         "spellSlots": [
           4,
           2
-        ]
+        ],
+        "preparedSpells": 6
       },
       {
         "level": 4,
@@ -7338,7 +7401,8 @@
         "spellSlots": [
           4,
           3
-        ]
+        ],
+        "preparedSpells": 7
       },
       {
         "level": 5,
@@ -7356,7 +7420,8 @@
           4,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 9
       },
       {
         "level": 6,
@@ -7367,7 +7432,8 @@
           4,
           3,
           3
-        ]
+        ],
+        "preparedSpells": 10
       },
       {
         "level": 7,
@@ -7379,7 +7445,8 @@
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 11
       },
       {
         "level": 8,
@@ -7398,7 +7465,8 @@
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 12
       },
       {
         "level": 9,
@@ -7411,7 +7479,8 @@
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 14
       },
       {
         "level": 10,
@@ -7424,7 +7493,8 @@
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 15
       },
       {
         "level": 11,
@@ -7438,7 +7508,8 @@
           3,
           2,
           1
-        ]
+        ],
+        "preparedSpells": 16
       },
       {
         "level": 12,
@@ -7459,7 +7530,8 @@
           3,
           2,
           1
-        ]
+        ],
+        "preparedSpells": 16
       },
       {
         "level": 13,
@@ -7474,7 +7546,8 @@
           2,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 17
       },
       {
         "level": 14,
@@ -7489,7 +7562,8 @@
           2,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 17
       },
       {
         "level": 15,
@@ -7505,7 +7579,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 18
       },
       {
         "level": 16,
@@ -7528,7 +7603,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 18
       },
       {
         "level": 17,
@@ -7545,7 +7621,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 19
       },
       {
         "level": 18,
@@ -7569,7 +7646,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 20
       },
       {
         "level": 19,
@@ -7593,7 +7671,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 21
       },
       {
         "level": 20,
@@ -7617,7 +7696,8 @@
           2,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 22
       }
     ],
     "subclasses": [

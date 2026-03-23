@@ -583,6 +583,8 @@
 										<Badge variant="outline" class="text-xs">+{feat.abilityScoreIncrease.value} {feat.abilityScoreIncrease.abilities.map((a) => ABILITY_NAMES[a]?.slice(0, 3).toUpperCase()).join('/')}</Badge>
 									{/if}
 									<button
+										type="button"
+										aria-label={isFeatExpanded ? 'Collapse feat details' : 'Expand feat details'}
 										onclick={(e) => toggleFeatExpand(feat.id, e)}
 										class="ml-auto inline-flex items-center gap-0.5 text-primary/60 hover:text-primary"
 									>
@@ -952,6 +954,8 @@
 											<Badge variant="outline" class="text-xs">+{feat.abilityScoreIncrease.value} {feat.abilityScoreIncrease.abilities.map((a) => ABILITY_NAMES[a]?.slice(0, 3).toUpperCase()).join('/')}</Badge>
 										{/if}
 										<button
+											type="button"
+											aria-label={isFeatExpanded ? 'Collapse feat details' : 'Expand feat details'}
 											onclick={(e) => toggleFeatExpand(feat.id, e)}
 											class="ml-auto inline-flex items-center gap-0.5 text-primary/60 hover:text-primary"
 										>

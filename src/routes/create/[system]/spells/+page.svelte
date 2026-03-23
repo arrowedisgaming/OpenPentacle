@@ -79,27 +79,53 @@
 		return cls.progression.find((p) => p.level === charLevel) ?? null;
 	});
 
+	// ─── Spellcasting type detection ────────────────────────
+	const isPreparedCaster = $derived(characterClass()?.spellcasting?.preparedCaster ?? false);
+	const isSpellbookCaster = $derived(isPreparedCaster && characterClass()?.id === 'wizard');
+
 	// Read limits from progression data at the character's level
 	const maxCantrips = $derived(classProgression()?.cantripsKnown ?? 0);
-	const maxSpells = $derived(classProgression()?.spellsKnown ?? 0);
+	// Wizard spellbook: starts with 6 spells at L1, +2 per level after
+	const spellbookSize = $derived(isSpellbookCaster ? 4 + (charLevel * 2) : 0);
+	const maxPrepared = $derived(classProgression()?.preparedSpells ?? 0);
+	// Effective spell limit for the current phase
+	const maxLevelSpells = $derived.by(() => {
+		if (isSpellbookCaster) {
+			return spellPhase === 'spellbook' ? spellbookSize : maxPrepared;
+		}
+		if (isPreparedCaster) return maxPrepared;
+		return classProgression()?.spellsKnown ?? 0;
+	});
 	const maxSpellLevelAvailable = $derived(() => {
 		const cls = characterClass();
 		if (!cls) return 0;
 		return getMaxSpellLevel(cls, charLevel);
 	});
 
+	// ─── Wizard two-phase state ─────────────────────────────
+	let spellPhase = $state<'spellbook' | 'prepare'>('spellbook');
+
 	// Filter spells for this class's spell list AND within available spell levels
 	const availableSpells = $derived(() => {
 		const cls = characterClass();
 		if (!cls?.spellcasting) return [];
 		const maxLevel = maxSpellLevelAvailable();
-		return allSpells.filter((s) =>
+		const classSpells = allSpells.filter((s) =>
 			s.lists.includes(cls.spellcasting!.spellList) && s.level <= maxLevel
 		);
+		// In prepare phase for wizard: only show spellbook spells (level 1+)
+		if (isSpellbookCaster && spellPhase === 'prepare') {
+			return classSpells.filter((s) => s.level === 0 || selectedSpellIds.has(s.id));
+		}
+		return classSpells;
 	});
 
+	// ─── Spell selection state ──────────────────────────────
 	let selectedSpellIds = $state<Set<string>>(
 		new Set(wizardStore.getCharacter()?.spells?.knownSpells.map((s) => s.spellId) ?? [])
+	);
+	let preparedSpellIdSet = $state<Set<string>>(
+		new Set(wizardStore.getCharacter()?.spells?.preparedSpellIds ?? [])
 	);
 
 	const selectedCantrips = $derived(
@@ -111,21 +137,70 @@
 			return spell && spell.level > 0;
 		}).length
 	);
+	const selectedPreparedCount = $derived(
+		[...preparedSpellIdSet].filter((id) => {
+			const spell = allSpells.find((s) => s.id === id);
+			return spell && spell.level > 0;
+		}).length
+	);
+
+	// For the active phase, which count matters?
+	const activePhaseCount = $derived(
+		isSpellbookCaster && spellPhase === 'prepare' ? selectedPreparedCount : selectedLevelSpells
+	);
+
+	// Spell counter label
+	const spellCounterLabel = $derived.by(() => {
+		if (isSpellbookCaster) {
+			return spellPhase === 'spellbook' ? 'Spellbook' : 'Prepared';
+		}
+		if (isPreparedCaster) return 'Prepared Spells';
+		return 'Spells Known';
+	});
 
 	function toggleSpell(spellId: string) {
 		const spell = allSpells.find((s) => s.id === spellId);
 		if (!spell) return;
 
+		if (isSpellbookCaster && spellPhase === 'prepare') {
+			// Phase 2: toggle prepared status (only level 1+ spells from spellbook)
+			if (spell.level === 0) return; // Cantrips are always prepared
+			const newSet = new Set(preparedSpellIdSet);
+			if (newSet.has(spellId)) {
+				newSet.delete(spellId);
+			} else {
+				if (selectedPreparedCount >= maxPrepared) return;
+				newSet.add(spellId);
+			}
+			preparedSpellIdSet = newSet;
+			return;
+		}
+
+		// Phase 1 (spellbook) or non-wizard: toggle known spells
 		const newSet = new Set(selectedSpellIds);
 		if (newSet.has(spellId)) {
 			newSet.delete(spellId);
+			// Also remove from prepared set if wizard
+			if (isSpellbookCaster) {
+				const newPrep = new Set(preparedSpellIdSet);
+				newPrep.delete(spellId);
+				preparedSpellIdSet = newPrep;
+			}
 		} else {
 			// Check limits
 			if (spell.level === 0 && selectedCantrips >= maxCantrips) return;
-			if (spell.level > 0 && maxSpells > 0 && selectedLevelSpells >= maxSpells) return;
+			if (spell.level > 0 && maxLevelSpells > 0 && selectedLevelSpells >= maxLevelSpells) return;
 			newSet.add(spellId);
 		}
 		selectedSpellIds = newSet;
+	}
+
+	function goToPreparePhase() {
+		spellPhase = 'prepare';
+	}
+
+	function goToSpellbookPhase() {
+		spellPhase = 'spellbook';
 	}
 
 	// Filter state
@@ -222,14 +297,29 @@
 
 	function proceed() {
 		const cls = characterClass();
+		const classSource = `class:${cls?.id ?? 'unknown'}`;
 		const knownSpells: SpellKnown[] = [...selectedSpellIds].map((id) => ({
 			spellId: id,
-			source: `class:${cls?.id ?? 'unknown'}`
+			source: classSource
 		}));
+
+		let preparedIds: string[];
+		if (isSpellbookCaster) {
+			// Wizard: cantrips are always prepared, plus explicitly prepared level 1+ spells
+			const cantripIds = [...selectedSpellIds].filter((id) => {
+				const spell = allSpells.find((s) => s.id === id);
+				return spell && spell.level === 0;
+			});
+			preparedIds = [...cantripIds, ...preparedSpellIdSet];
+		} else {
+			// All others: known = prepared
+			preparedIds = knownSpells.map((s) => s.spellId);
+		}
+
 		wizardStore.updateCharacter({
 			spells: {
 				knownSpells,
-				preparedSpellIds: knownSpells.map((s) => s.spellId),
+				preparedSpellIds: preparedIds,
 				spellSlots: {},
 				pactSlots: undefined
 			}
@@ -246,51 +336,81 @@
 <div>
 	<PageHeader
 		as="h1"
-		title="Choose Spells"
-		description="Select your cantrips and spells for level {charLevel}."
+		title={isSpellbookCaster && spellPhase === 'prepare' ? 'Prepare Spells' : 'Choose Spells'}
+		description={isSpellbookCaster && spellPhase === 'prepare'
+			? `Choose which spells from your spellbook to prepare (${maxPrepared} max).`
+			: isPreparedCaster
+				? `Select spells to prepare for level ${charLevel}.`
+				: `Select your cantrips and spells for level ${charLevel}.`}
 	/>
 
 	<WizardNav
-		backHref="/create/{systemId}/{prevPath}"
-		backLabel="Back"
-		nextLabel={nextLabel}
-		onNext={proceed}
+		backHref={isSpellbookCaster && spellPhase === 'prepare' ? '' : `/create/${systemId}/${prevPath}`}
+		backLabel={isSpellbookCaster && spellPhase === 'prepare' ? 'Back to Spellbook' : 'Back'}
+		nextLabel={isSpellbookCaster && spellPhase === 'spellbook' ? 'Next: Prepare Spells' : nextLabel}
+		onNext={isSpellbookCaster && spellPhase === 'spellbook' ? goToPreparePhase : proceed}
+		onBack={isSpellbookCaster && spellPhase === 'prepare' ? goToSpellbookPhase : undefined}
 		compact
 	/>
 
-	<Card.Root class="mt-4">
-		<Card.Content class="flex flex-wrap items-center gap-4 py-3">
-			<Badge variant="secondary">
-				Cantrips: <strong class="ml-1">{selectedCantrips}</strong> / {maxCantrips}
+	<!-- Top bar: steps + sources -->
+	<div class="mt-4 flex flex-wrap items-center gap-3">
+		{#if isSpellbookCaster}
+			<button onclick={goToSpellbookPhase}>
+				<Badge variant={spellPhase === 'spellbook' ? 'default' : 'outline'} class="cursor-pointer text-xs">
+					Step 1: Spellbook
+				</Badge>
+			</button>
+			<button onclick={goToPreparePhase}>
+				<Badge variant={spellPhase === 'prepare' ? 'default' : 'outline'} class="cursor-pointer text-xs">
+					Step 2: Prepare
+				</Badge>
+			</button>
+		{/if}
+		{#if maxSpellLevelAvailable() > 0}
+			<Badge variant="outline">
+				Up to {formatSpellLevel(maxSpellLevelAvailable())} level
 			</Badge>
-			{#if maxSpells > 0}
-				<Badge variant="secondary">
-					Spells: <strong class="ml-1">{selectedLevelSpells}</strong> / {maxSpells}
-				</Badge>
+		{/if}
+		<div class="ml-auto">
+			<Button variant="outline" size="sm" onclick={() => (showSourceSelector = true)}>
+				<BookOpen class="mr-1.5 size-3.5" />
+				Spell Sources
+				{#if open5eLoading}
+					<span class="ml-1.5 size-3 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+				{:else if selectedOpen5eSources.length}
+					<Badge variant="secondary" class="ml-1.5 px-1.5 py-0 text-xs">
+						{selectedOpen5eSources.length}
+					</Badge>
+				{/if}
+			</Button>
+		</div>
+	</div>
+
+	<!-- Sticky spell counter bar (top-14 = below h-14 header) -->
+	<div class="sticky top-14 z-20 -mx-4 px-4 py-2 bg-background/95 backdrop-blur-sm border-b border-border/50 mt-4">
+		<div class="flex items-center justify-center gap-6">
+			{#if !(isSpellbookCaster && spellPhase === 'prepare')}
+				<div class="text-center">
+					<div class="text-xs text-muted-foreground">Cantrips</div>
+					<div class="text-lg font-bold tabular-nums {selectedCantrips >= maxCantrips ? 'text-primary' : ''}">
+						{selectedCantrips}<span class="text-muted-foreground font-normal text-sm">/{maxCantrips}</span>
+					</div>
+				</div>
 			{/if}
-			{#if maxSpellLevelAvailable() > 0}
-				<Badge variant="outline">
-					Up to {formatSpellLevel(maxSpellLevelAvailable())} level
-				</Badge>
+			{#if maxLevelSpells > 0}
+				<div class="text-center">
+					<div class="text-xs text-muted-foreground">{spellCounterLabel}</div>
+					<div class="text-lg font-bold tabular-nums {activePhaseCount >= maxLevelSpells ? 'text-primary' : ''}">
+						{activePhaseCount}<span class="text-muted-foreground font-normal text-sm">/{maxLevelSpells}</span>
+					</div>
+				</div>
 			{/if}
-			<div class="ml-auto">
-				<Button variant="outline" size="sm" onclick={() => (showSourceSelector = true)}>
-					<BookOpen class="mr-1.5 size-3.5" />
-					Spell Sources
-					{#if open5eLoading}
-						<span class="ml-1.5 size-3 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
-					{:else if selectedOpen5eSources.length}
-						<Badge variant="secondary" class="ml-1.5 px-1.5 py-0 text-xs">
-							{selectedOpen5eSources.length}
-						</Badge>
-					{/if}
-				</Button>
-			</div>
-		</Card.Content>
-	</Card.Root>
+		</div>
+	</div>
 
 	{#if spellLevels.length > 0}
-		<Tabs.Root value={defaultTab} class="mt-6" onValueChange={() => clearFilters()}>
+		<Tabs.Root value={defaultTab} class="mt-4" onValueChange={() => clearFilters()}>
 			<Tabs.List class="w-max">
 				{#each spellLevels as [level]}
 					<Tabs.Trigger value={String(level)}>
@@ -349,8 +469,11 @@
 								{@const source = getSpellSource(spell.id)}
 								{@const isExpanded = expandedSpellId === spell.id}
 								<SelectionCard
-									selected={selectedSpellIds.has(spell.id)}
+									selected={isSpellbookCaster && spellPhase === 'prepare'
+										? (spell.level === 0 || preparedSpellIdSet.has(spell.id))
+										: selectedSpellIds.has(spell.id)}
 									onclick={() => toggleSpell(spell.id)}
+									disabled={isSpellbookCaster && spellPhase === 'prepare' && spell.level === 0}
 								>
 									<div class="flex items-center gap-2 pr-6">
 										<span class="font-medium">{spell.name}</span>
@@ -398,10 +521,11 @@
 	{/if}
 
 	<WizardNav
-		backHref="/create/{systemId}/{prevPath}"
-		backLabel="Back"
-		nextLabel={nextLabel}
-		onNext={proceed}
+		backHref={isSpellbookCaster && spellPhase === 'prepare' ? '' : `/create/${systemId}/${prevPath}`}
+		backLabel={isSpellbookCaster && spellPhase === 'prepare' ? 'Back to Spellbook' : 'Back'}
+		nextLabel={isSpellbookCaster && spellPhase === 'spellbook' ? 'Next: Prepare Spells' : nextLabel}
+		onNext={isSpellbookCaster && spellPhase === 'spellbook' ? goToPreparePhase : proceed}
+		onBack={isSpellbookCaster && spellPhase === 'prepare' ? goToSpellbookPhase : undefined}
 	/>
 </div>
 

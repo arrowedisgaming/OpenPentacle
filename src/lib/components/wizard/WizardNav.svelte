@@ -7,6 +7,7 @@
 		backLabel?: string;
 		nextLabel?: string;
 		onNext?: () => void;
+		onBack?: () => void;
 		nextDisabled?: boolean;
 		saving?: boolean;
 		compact?: boolean;
@@ -17,6 +18,7 @@
 		backLabel = 'Back',
 		nextLabel = 'Next',
 		onNext,
+		onBack,
 		nextDisabled = false,
 		saving = false,
 		compact = false,
@@ -24,7 +26,12 @@
 </script>
 
 <div class="{compact ? 'mb-4 flex items-center justify-between' : 'sticky bottom-0 z-10 mt-8 flex items-center justify-between border-t border-border bg-background pt-4 pb-4'}">
-	{#if backHref}
+	{#if onBack}
+		<Button variant="outline" onclick={onBack} size={compact ? 'sm' : 'default'}>
+			<ChevronLeft class="size-4" />
+			{#if !compact}{backLabel}{/if}
+		</Button>
+	{:else if backHref}
 		<Button variant="outline" href={backHref} size={compact ? 'sm' : 'default'}>
 			<ChevronLeft class="size-4" />
 			{#if !compact}{backLabel}{/if}

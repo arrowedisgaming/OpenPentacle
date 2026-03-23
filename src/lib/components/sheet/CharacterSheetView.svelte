@@ -631,7 +631,7 @@
 											<span><strong>Casting Time:</strong> {spell.castingTime}</span>
 											<span><strong>Range:</strong> {spell.range}</span>
 											<span><strong>Duration:</strong> {spell.duration}</span>
-											<span><strong>Components:</strong> {[spell.components.verbal && 'V', spell.components.somatic && 'S', spell.components.material && `M (${spell.components.material})`].filter(Boolean).join(', ')}</span>
+											<span><strong>Components:</strong> {[spell.components.verbal && 'V', spell.components.somatic && 'S', spell.components.material && (spell.components.materialDescription ? `M (${spell.components.materialDescription})` : 'M')].filter(Boolean).join(', ')}</span>
 										</div>
 										<Separator />
 										<p class="whitespace-pre-line max-h-48 overflow-y-auto">{spell.description}</p>

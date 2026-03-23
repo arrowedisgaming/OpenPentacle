@@ -4,40 +4,44 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [0.6.0] - 2026-03-23
 
 ### Added
-- Rich detail review page — ASI/Feats section with expandable feat descriptions and choice badges, Background section with description collapsible/ability bonuses/origin feat/proficiencies, Skill cards with computed bonuses and descriptions, expandable Equipment with weapon/armor stats, expandable Spells grouped by level with full text
-- Spell known vs prepared distinction — prepared casters (Wizard, Cleric, Druid, Paladin) now use `preparedSpells` from SRD 5.2.1 feature tables instead of the old unlimited selection
-- Wizard two-phase spell selection — pick spells for spellbook (6 at L1), then choose which to prepare (4 at L1)
-- Cleric/Druid/Paladin pick prepared spells from full class spell list with correct limits
-- Known-spell casters (Bard, Ranger, Sorcerer, Warlock) show "Spells Known" label with enforced limit
-- Expandable weapon details on character sheet — tap to reveal category, cost, and weight
-- Separate Armor section on character sheet — shows AC formula, DEX cap, stealth disadvantage, strength requirement
-- Expandable equipment details — cost, weight, and description shown on expand
-- Level-up engine tracks `preparedSpellsDelta`, `isPreparedCaster`, `isSpellbookCaster`, and `spellbookGrowth`
-- Level-up page shows "Add 2 spells to spellbook" for wizard, info note for other prepared casters
-- WizardNav component supports `onBack` callback for in-page navigation
-- Sticky spell counter bar — cantrip and spell counts displayed prominently above the spell list, stays visible while scrolling
-- Expandable feat descriptions on ASI/Feats step and level-up page — chevron reveals full description, effects list, and ability score increase details
-- Grappler feat added to SRD 5.2.1 content pack — +1 STR/DEX, Punch and Grab, Attack Advantage, Fast Wrestler
+- SRD 5.2.1 feat system: 16 feats across 4 categories (Origin, General, Fighting Style, Epic Boon)
+- Magic Initiate spell configuration: spell list choice, cantrip picker, 1st-level spell picker
+- Skilled proficiency configuration: 3 skill/tool pickers with exclusion logic
+- Skilled picker shows existing proficiencies as read-only badges with live skill bonuses
+- Review page: expandable class/subclass features with full descriptions
+- Review page: rich ASI & Feats section with expandable feat cards showing choices
+- Review page: full background details (description, ability bonuses, origin feat, skills, tools)
+- Review page: skill proficiency cards with computed bonuses and flavor descriptions
+- Review page: expandable equipment items with weapon/armor/cost details
+- Review page: expandable spells grouped by level with full text, components, and tags
+- Live ability score preview on ASI picker
+- Spell known vs prepared distinction for prepared casters
+- Wizard two-phase spell selection (spellbook + prepare)
+- Expandable weapon/armor/equipment details on character sheet
+- WizardNav `onBack` callback for in-page navigation
+- Sticky spell counter bar on spell selection step
+- Expandable feat descriptions on ASI/Feats step and level-up page
+- Grappler feat added to SRD 5.2.1 content pack
 
-### Changed (Phase B1: Feat System Overhaul)
-- Feat system overhauled to match SRD 5.2.1 — removed 7 old 2014-era feats (GWM, Sentinel, Sharpshooter, War Caster, Lucky, Tough, Observant), added 16 official 2024 feats across 4 categories (Origin, General, Fighting Style, Epic Boon)
-- Alert feat recategorized from General to Origin with updated 2024 SRD effects (Initiative Proficiency + Initiative Swap)
-- Feat selection filtered by category, character level, ability score prerequisites, and class features via new `getAvailableFeats()` engine function
-- ASI levels (4, 8, 12, 16): Origin + General feats shown. L19 (Epic Boon): all qualifying feats shown
-- Epic Boon feats allow ability scores up to 30 (dynamic cap via `FeatAbilityIncrease.max`)
-- Magic Initiate feat: full spell list/cantrip/spell configuration UI with repeat enforcement (different list each take)
-- Skilled feat: 3 skill/tool proficiency picker UI with exclusion of existing proficiencies
-- Repeatable feats (Magic Initiate, Skilled) can be taken multiple times at different ASI levels
-- Legacy feat fallback on character sheet — saved characters with old 2014 feats show name + "Legacy" badge
-- Feat choices (Magic Initiate spells, Skilled proficiencies) displayed on character sheet
+### Changed
+- Feat system overhauled to match SRD 5.2.1 — 16 official 2024 feats, filtered by category/level/prerequisites
+- Epic Boon feats allow ability scores up to 30
+- Repeatable feats (Magic Initiate, Skilled) can be taken multiple times
+- Legacy feat fallback on character sheet for old 2014 feats
+- Extracted SKILL_EXAMPLES to shared engine module (DRY across 4 consumers)
 - 11 new engine tests for feat filtering, prerequisites, and repeatable logic (172 total)
 
 ### Fixed
-- Subclass description on character sheet — now shows actual subclass flavor text instead of generic "You gain a [Class] subclass of your choice" placeholder
-- Character sheet spell section title — shows "Prepared Spells" for prepared casters, "Spells Known" for known-spell casters
+- Skilled feat getUsedSkilledProficiencies() field path bug
+- Magic Initiate spellcasting ability choice persistence
+- Spell components display: materialDescription instead of boolean material field
+- Feat expand buttons: added type="button" and aria-label for accessibility
+- checkPrerequisite: added default case for unknown prerequisite types
+- Subclass description on character sheet shows actual flavor text
+- Character sheet spell section title matches caster type
 
 ## [0.5.0] - 2026-03-22
 

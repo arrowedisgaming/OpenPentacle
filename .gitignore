@@ -41,3 +41,5 @@ dev.sh
 # Claude Code
 CLAUDE.md
 .claude/
+.claude-flow/
+.mcp.json
