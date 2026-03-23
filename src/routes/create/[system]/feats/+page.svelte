@@ -9,7 +9,8 @@
 	import { ABILITY_IDS, ABILITY_NAMES, SKILL_ABILITIES } from '$lib/types/common.js';
 	import type { SkillId } from '$lib/types/common.js';
 	import { kebabToTitle, formatModifier } from '$lib/utils/format.js';
-	import { totalAbilityScore } from '$lib/engine/ability-scores.js';
+	import { totalAbilityScore, allAbilityModifiers } from '$lib/engine/ability-scores.js';
+	import { proficiencyBonus } from '$lib/engine/proficiency.js';
 	import { getASILevels, isEpicBoonLevel } from '$lib/engine/class-progression.js';
 	import { getAvailableFeats, FEAT_CATEGORY_LABELS } from '$lib/engine/feats.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
@@ -42,6 +43,19 @@
 		}
 		return scores;
 	});
+
+	const abilityMods = $derived(
+		character?.abilityScores?.method ? allAbilityModifiers(character.abilityScores) : null
+	);
+	const profBonus = $derived(proficiencyBonus(character?.level ?? 1));
+
+	function skillBonus(skillId: SkillId, proficient: boolean): string {
+		if (!abilityMods) return '';
+		const ability = SKILL_ABILITIES[skillId];
+		const mod = abilityMods[ability];
+		const total = proficient ? mod + profBonus : mod;
+		return formatModifier(total);
+	}
 
 	// Filter feats by category, level, prerequisites
 	const availableFeats = $derived.by(() => {
@@ -247,7 +261,7 @@
 	/** Get all proficiency IDs already taken by the character or other Skilled instances */
 	function getUsedSkilledProficiencies(currentIndex: number): Set<string> {
 		const used = new Set<string>();
-		for (const p of character?.proficiencies?.skills ?? []) {
+		for (const p of character?.skills ?? []) {
 			used.add(`skill:${p.skillId}`);
 		}
 		for (const f of character?.feats ?? []) {
@@ -745,19 +759,38 @@
 					{#if featHasSkillChoices(decision.featId)}
 						{@const usedProfs = getUsedSkilledProficiencies(i)}
 						{@const currentSel = skilledSelections[i] ?? new Set()}
+						{@const alreadyProficient = allProficiencyOptions.filter(p => usedProfs.has(p.id))}
+						{@const available = allProficiencyOptions.filter(p => !usedProfs.has(p.id))}
 						<Card.Root class="mt-3">
 							<Card.Header class="pb-2">
 								<Card.Title class="text-sm">Skilled — Choose 3 Proficiencies</Card.Title>
 								<Badge variant="secondary" class="w-fit text-xs">{currentSel.size} / 3 selected</Badge>
 							</Card.Header>
 							<Card.Content>
+								{#if alreadyProficient.length > 0}
+									<h4 class="text-xs font-medium text-muted-foreground mb-2">Already Proficient</h4>
+									<div class="flex flex-wrap gap-2 mb-4">
+										{#each alreadyProficient as prof}
+											<Badge variant="secondary" class="px-3 py-1.5 text-sm">
+												{prof.label}
+												{#if prof.abilityAbbr}
+													<span class="ml-1 text-xs opacity-60">({prof.abilityAbbr})</span>
+												{/if}
+												{#if prof.id.startsWith('skill:')}
+													<span class="ml-1 font-mono text-xs font-bold">{skillBonus(prof.id.replace('skill:', '') as SkillId, true)}</span>
+												{/if}
+											</Badge>
+										{/each}
+									</div>
+								{/if}
+								<h4 class="text-xs font-medium text-muted-foreground mb-2">Available ({available.length})</h4>
 								<div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="listbox">
-									{#each allProficiencyOptions as prof}
+									{#each available as prof}
 										{@const isSelected = currentSel.has(prof.id)}
-										{@const isUsedElsewhere = !isSelected && usedProfs.has(prof.id)}
+										{@const isSkill = prof.id.startsWith('skill:')}
 										<SelectionCard
 											selected={isSelected}
-											disabled={isUsedElsewhere || (!isSelected && currentSel.size >= 3)}
+											disabled={!isSelected && currentSel.size >= 3}
 											onclick={() => toggleSkilledProficiency(i, prof.id)}
 											compact
 										>
@@ -765,6 +798,9 @@
 												<span class="font-medium text-sm">{prof.label}</span>
 												{#if prof.abilityAbbr}
 													<span class="text-xs text-muted-foreground">({prof.abilityAbbr})</span>
+												{/if}
+												{#if isSkill}
+													<span class="ml-auto font-mono text-sm font-bold {isSelected ? 'text-primary' : 'text-muted-foreground'}">{skillBonus(prof.id.replace('skill:', '') as SkillId, isSelected)}</span>
 												{/if}
 											</div>
 											<p class="mt-0.5 text-xs text-muted-foreground">{prof.description}</p>
@@ -1092,19 +1128,38 @@
 						{#if featHasSkillChoices(decision.featId)}
 							{@const usedProfs = getUsedSkilledProficiencies(i)}
 							{@const currentSel = skilledSelections[i] ?? new Set()}
+							{@const alreadyProficient = allProficiencyOptions.filter(p => usedProfs.has(p.id))}
+							{@const available = allProficiencyOptions.filter(p => !usedProfs.has(p.id))}
 							<Card.Root class="mt-3">
 								<Card.Header class="pb-2">
 									<Card.Title class="text-sm">Skilled — Choose 3 Proficiencies</Card.Title>
 									<Badge variant="secondary" class="w-fit text-xs">{currentSel.size} / 3 selected</Badge>
 								</Card.Header>
 								<Card.Content>
+									{#if alreadyProficient.length > 0}
+										<h4 class="text-xs font-medium text-muted-foreground mb-2">Already Proficient</h4>
+										<div class="flex flex-wrap gap-2 mb-4">
+											{#each alreadyProficient as prof}
+												<Badge variant="secondary" class="px-3 py-1.5 text-sm">
+													{prof.label}
+													{#if prof.abilityAbbr}
+														<span class="ml-1 text-xs opacity-60">({prof.abilityAbbr})</span>
+													{/if}
+													{#if prof.id.startsWith('skill:')}
+														<span class="ml-1 font-mono text-xs font-bold">{skillBonus(prof.id.replace('skill:', '') as SkillId, true)}</span>
+													{/if}
+												</Badge>
+											{/each}
+										</div>
+									{/if}
+									<h4 class="text-xs font-medium text-muted-foreground mb-2">Available ({available.length})</h4>
 									<div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="listbox">
-										{#each allProficiencyOptions as prof}
+										{#each available as prof}
 											{@const isSelected = currentSel.has(prof.id)}
-											{@const isUsedElsewhere = !isSelected && usedProfs.has(prof.id)}
+											{@const isSkill = prof.id.startsWith('skill:')}
 											<SelectionCard
 												selected={isSelected}
-												disabled={isUsedElsewhere || (!isSelected && currentSel.size >= 3)}
+												disabled={!isSelected && currentSel.size >= 3}
 												onclick={() => toggleSkilledProficiency(i, prof.id)}
 												compact
 											>
@@ -1112,6 +1167,9 @@
 													<span class="font-medium text-sm">{prof.label}</span>
 													{#if prof.abilityAbbr}
 														<span class="text-xs text-muted-foreground">({prof.abilityAbbr})</span>
+													{/if}
+													{#if isSkill}
+														<span class="ml-auto font-mono text-sm font-bold {isSelected ? 'text-primary' : 'text-muted-foreground'}">{skillBonus(prof.id.replace('skill:', '') as SkillId, isSelected)}</span>
 													{/if}
 												</div>
 												<p class="mt-0.5 text-xs text-muted-foreground">{prof.description}</p>
