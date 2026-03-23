@@ -98,8 +98,11 @@
 	let decisions = $state<ASIChoice[]>(initDecisions());
 	let expandedFeatId = $state<string | null>(null);
 
+	// ─── Feat Ability Score Choice ─────────────────────────
+	let featAbilityChoice = $state<Record<number, AbilityId>>({});
+
 	// ─── Magic Initiate Configuration ───────────────────────
-	type FeatSpellConfig = { spellList: string; cantrips: Set<string>; spell: string };
+	type FeatSpellConfig = { spellList: string; cantrips: Set<string>; spell: string; spellcastingAbility: string };
 	let featChoicesConfig = $state<Record<number, FeatSpellConfig>>({});
 
 	const packSpells: SpellDefinition[] = $derived(pack?.spells ?? []);
@@ -147,7 +150,7 @@
 	function setSpellList(index: number, list: string) {
 		featChoicesConfig = {
 			...featChoicesConfig,
-			[index]: { spellList: list, cantrips: new Set(), spell: '' }
+			[index]: { spellList: list, cantrips: new Set(), spell: '', spellcastingAbility: '' }
 		};
 	}
 
@@ -175,6 +178,15 @@
 		};
 	}
 
+	function setSpellcastingAbility(index: number, ability: string) {
+		const config = featChoicesConfig[index];
+		if (!config) return;
+		featChoicesConfig = {
+			...featChoicesConfig,
+			[index]: { ...config, spellcastingAbility: ability }
+		};
+	}
+
 	function buildFeatChoices(index: number): FeatChoiceSelection[] {
 		const config = featChoicesConfig[index];
 		if (!config) return [];
@@ -183,14 +195,15 @@
 			{ choiceId: 'spell-list', selectedValue: config.spellList },
 			{ choiceId: 'cantrip-1', selectedValue: cantrips[0] ?? '' },
 			{ choiceId: 'cantrip-2', selectedValue: cantrips[1] ?? '' },
-			{ choiceId: 'spell-1', selectedValue: config.spell }
+			{ choiceId: 'spell-1', selectedValue: config.spell },
+			{ choiceId: 'spellcasting-ability', selectedValue: config.spellcastingAbility }
 		];
 	}
 
 	function isFeatConfigComplete(index: number): boolean {
 		const config = featChoicesConfig[index];
 		if (!config) return false;
-		return !!config.spellList && config.cantrips.size === 2 && !!config.spell;
+		return !!config.spellList && config.cantrips.size === 2 && !!config.spell && !!config.spellcastingAbility;
 	}
 
 	// ─── Skilled Configuration ─────────────────────────────
@@ -202,7 +215,28 @@
 
 	const ALL_SKILL_IDS = Object.keys(SKILL_ABILITIES) as SkillId[];
 
-	let skilledChoices = $state<Record<number, [string, string, string]>>({});
+	let skilledSelections = $state<Record<number, Set<string>>>({});
+
+	const SKILL_EXAMPLES: Record<string, string> = {
+		acrobatics: 'Stay on your feet in a tricky situation, or perform an acrobatic stunt.',
+		'animal-handling': 'Calm or train an animal, or get an animal to behave in a certain way.',
+		arcana: 'Recall lore about spells, magic items, and the planes of existence.',
+		athletics: 'Jump farther than normal, stay afloat in rough water, or break something.',
+		deception: 'Tell a convincing lie, or wear a disguise convincingly.',
+		history: 'Recall lore about historical events, people, nations, and cultures.',
+		insight: "Discern a person's mood and intentions.",
+		intimidation: 'Awe or threaten someone into doing what you want.',
+		investigation: 'Find obscure information in books, or deduce how something works.',
+		medicine: 'Diagnose an illness, or determine what killed the recently slain.',
+		nature: 'Recall lore about terrain, plants, animals, and weather.',
+		perception: "Using a combination of senses, notice something that's easy to miss.",
+		performance: 'Act, tell a story, perform music, or dance.',
+		persuasion: 'Honestly and graciously convince someone of something.',
+		religion: 'Recall lore about gods, religious rituals, and holy symbols.',
+		'sleight-of-hand': 'Pick a pocket, conceal a handheld object, or perform legerdemain.',
+		stealth: 'Escape notice by moving quietly and hiding behind things.',
+		survival: 'Follow tracks, forage, find a trail, or avoid natural hazards.'
+	};
 
 	function featHasSkillChoices(featId: string | undefined): boolean {
 		if (!featId) return false;
@@ -213,11 +247,9 @@
 	/** Get all proficiency IDs already taken by the character or other Skilled instances */
 	function getUsedSkilledProficiencies(currentIndex: number): Set<string> {
 		const used = new Set<string>();
-		// Existing character proficiencies (skills)
 		for (const p of character?.proficiencies?.skills ?? []) {
 			used.add(`skill:${p.skillId}`);
 		}
-		// Existing character proficiencies from previous Skilled feat selections
 		for (const f of character?.feats ?? []) {
 			if (f.featId === 'skilled') {
 				for (const c of f.choices ?? []) {
@@ -225,64 +257,63 @@
 				}
 			}
 		}
-		// Other Skilled configs in this wizard session
-		for (const [idxStr, choices] of Object.entries(skilledChoices)) {
+		for (const [idxStr, sel] of Object.entries(skilledSelections)) {
 			const idx = Number(idxStr);
 			if (idx !== currentIndex) {
-				for (const v of choices) {
-					if (v) used.add(v);
-				}
+				for (const v of sel) used.add(v);
 			}
 		}
 		return used;
 	}
 
-	function getSkilledPickerUsed(index: number, pickerIndex: number): Set<string> {
-		const used = getUsedSkilledProficiencies(index);
-		// Also exclude selections from the other 2 pickers within this same Skilled take
-		const choices = skilledChoices[index];
-		if (choices) {
-			for (let j = 0; j < 3; j++) {
-				if (j !== pickerIndex && choices[j]) {
-					used.add(choices[j]);
-				}
-			}
+	function toggleSkilledProficiency(index: number, profId: string) {
+		const current = skilledSelections[index] ?? new Set<string>();
+		const newSet = new Set(current);
+		if (newSet.has(profId)) {
+			newSet.delete(profId);
+		} else if (newSet.size < 3) {
+			newSet.add(profId);
 		}
-		return used;
-	}
-
-	function selectSkilledProficiency(index: number, pickerIndex: number, profId: string) {
-		const current = skilledChoices[index] ?? ['', '', ''] as [string, string, string];
-		const updated = [...current] as [string, string, string];
-		updated[pickerIndex] = updated[pickerIndex] === profId ? '' : profId;
-		skilledChoices = { ...skilledChoices, [index]: updated };
+		skilledSelections = { ...skilledSelections, [index]: newSet };
 	}
 
 	function resetSkilledConfig(index: number) {
-		const newConfig = { ...skilledChoices };
+		const newConfig = { ...skilledSelections };
 		delete newConfig[index];
-		skilledChoices = newConfig;
+		skilledSelections = newConfig;
 	}
 
 	function isSkilledConfigComplete(index: number): boolean {
-		const choices = skilledChoices[index];
-		if (!choices) return false;
-		return choices[0] !== '' && choices[1] !== '' && choices[2] !== '';
+		const sel = skilledSelections[index];
+		return !!sel && sel.size === 3;
 	}
 
 	function buildSkilledChoices(index: number): FeatChoiceSelection[] {
-		const choices = skilledChoices[index];
-		if (!choices) return [];
+		const sel = skilledSelections[index];
+		if (!sel) return [];
+		const arr = Array.from(sel);
 		return [
-			{ choiceId: 'proficiency-1', selectedValue: choices[0] },
-			{ choiceId: 'proficiency-2', selectedValue: choices[1] },
-			{ choiceId: 'proficiency-3', selectedValue: choices[2] }
+			{ choiceId: 'proficiency-1', selectedValue: arr[0] ?? '' },
+			{ choiceId: 'proficiency-2', selectedValue: arr[1] ?? '' },
+			{ choiceId: 'proficiency-3', selectedValue: arr[2] ?? '' }
 		];
 	}
 
 	const allProficiencyOptions = $derived.by(() => {
-		const skills = ALL_SKILL_IDS.map((id) => ({ id: `skill:${id}`, label: kebabToTitle(id), group: 'Skill' }));
-		const tools = TOOL_PROFICIENCIES.map((id) => ({ id: `tool:${id}`, label: kebabToTitle(id), group: 'Tool' }));
+		const skills = ALL_SKILL_IDS.map((id) => ({
+			id: `skill:${id}`,
+			label: kebabToTitle(id),
+			group: 'Skill' as const,
+			description: SKILL_EXAMPLES[id] ?? '',
+			abilityAbbr: ABILITY_NAMES[SKILL_ABILITIES[id as SkillId]]?.slice(0, 3).toUpperCase() ?? ''
+		}));
+		const tools = TOOL_PROFICIENCIES.map((id) => ({
+			id: `tool:${id}`,
+			label: kebabToTitle(id),
+			group: 'Tool' as const,
+			description: 'Proficiency with this tool set.',
+			abilityAbbr: ''
+		}));
 		return [...skills, ...tools];
 	});
 
@@ -365,6 +396,12 @@
 		};
 	}
 
+	function featHasAbilityChoice(featId: string | undefined): boolean {
+		if (!featId) return false;
+		const feat = getFeatDef(featId);
+		return !!feat?.abilityScoreIncrease;
+	}
+
 	function isComplete(): boolean {
 		for (let idx = 0; idx < decisions.length; idx++) {
 			const d = decisions[idx];
@@ -373,6 +410,7 @@
 			if (d.type === 'feat' && !d.featId) return false;
 			if (d.type === 'feat' && featHasSpellChoices(d.featId) && !isFeatConfigComplete(idx)) return false;
 			if (d.type === 'feat' && featHasSkillChoices(d.featId) && !isSkilledConfigComplete(idx)) return false;
+			if (d.type === 'feat' && featHasAbilityChoice(d.featId) && !featAbilityChoice[idx]) return false;
 		}
 		return true;
 	}
@@ -419,6 +457,16 @@
 					source: d.source,
 					choices
 				});
+				// Include feat ability score increase as a feat bonus
+				const featDef = getFeatDef(d.featId);
+				if (featDef?.abilityScoreIncrease && featAbilityChoice[idx]) {
+					levelUpBonuses.push({
+						ability: featAbilityChoice[idx],
+						value: featDef.abilityScoreIncrease.value,
+						source: d.source,
+						sourceType: 'feat'
+					});
+				}
 			}
 		}
 
@@ -602,41 +650,89 @@
 									</div>
 
 									<p class="text-xs text-muted-foreground italic">You always have the chosen level 1 spell prepared. You can cast it once without a spell slot per Long Rest.</p>
+
+									<div>
+										<p class="mb-1.5 text-xs font-medium text-muted-foreground">Spellcasting Ability</p>
+										<div class="flex gap-2">
+											{#each ['int', 'wis', 'cha'] as ab}
+												<button
+													type="button"
+													class="rounded-md border px-3 py-1.5 text-sm transition-colors
+														{config?.spellcastingAbility === ab ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}"
+													onclick={() => setSpellcastingAbility(i, ab)}
+												>
+													{ABILITY_NAMES[ab as AbilityId]}
+												</button>
+											{/each}
+										</div>
+									</div>
 								{/if}
 							</Card.Content>
 						</Card.Root>
 					{/if}
 
+					<!-- Feat Ability Score Picker (Epic Boon section) -->
+					{#if featHasAbilityChoice(decision.featId) && decision.featId}
+						{@const selectedFeatDef = getFeatDef(decision.featId)}
+						{@const asiDef = selectedFeatDef?.abilityScoreIncrease}
+						{#if asiDef}
+							<Card.Root class="mt-3">
+								<Card.Header class="pb-2">
+									<Card.Title class="text-sm">Ability Score Increase — +{asiDef.value} to one ability (max {asiDef.max ?? 20})</Card.Title>
+								</Card.Header>
+								<Card.Content>
+									<div class="flex flex-wrap gap-2">
+										{#each asiDef.abilities as ab}
+											{@const current = scores[ab]}
+											{@const capped = current >= (asiDef.max ?? 20)}
+											<button
+												type="button"
+												disabled={capped}
+												class="rounded-md border px-3 py-1.5 text-sm transition-colors
+													{featAbilityChoice[i] === ab ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}
+													{capped ? 'opacity-40 cursor-not-allowed' : ''}"
+												onclick={() => { featAbilityChoice = { ...featAbilityChoice, [i]: ab }; }}
+											>
+												{ABILITY_NAMES[ab]}
+												<span class="ml-1 text-xs text-muted-foreground">{current}</span>
+											</button>
+										{/each}
+									</div>
+								</Card.Content>
+							</Card.Root>
+						{/if}
+					{/if}
+
 					<!-- Skilled Configuration Panel (Epic Boon section) -->
 					{#if featHasSkillChoices(decision.featId)}
-						{@const skilledPicks = skilledChoices[i] ?? ['', '', '']}
+						{@const usedProfs = getUsedSkilledProficiencies(i)}
+						{@const currentSel = skilledSelections[i] ?? new Set()}
 						<Card.Root class="mt-3">
 							<Card.Header class="pb-2">
 								<Card.Title class="text-sm">Skilled — Choose 3 Proficiencies</Card.Title>
+								<Badge variant="secondary" class="w-fit text-xs">{currentSel.size} / 3 selected</Badge>
 							</Card.Header>
-							<Card.Content class="space-y-3">
-								{#each [0, 1, 2] as pickerIndex}
-									{@const pickerUsed = getSkilledPickerUsed(i, pickerIndex)}
-									<div>
-										<p class="mb-1.5 text-xs font-medium text-muted-foreground">Proficiency {pickerIndex + 1}</p>
-										<div class="flex flex-wrap gap-1.5">
-											{#each allProficiencyOptions as prof}
-												{@const isSelected = skilledPicks[pickerIndex] === prof.id}
-												{@const isUsedElsewhere = !isSelected && pickerUsed.has(prof.id)}
-												<button
-													type="button"
-													class="rounded-md border px-2 py-1 text-xs transition-colors
-														{isSelected ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}
-														{isUsedElsewhere ? 'opacity-40 cursor-not-allowed' : ''}"
-													disabled={isUsedElsewhere}
-													onclick={() => selectSkilledProficiency(i, pickerIndex, prof.id)}
-												>
-													{prof.label}
-												</button>
-											{/each}
-										</div>
-									</div>
-								{/each}
+							<Card.Content>
+								<div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="listbox">
+									{#each allProficiencyOptions as prof}
+										{@const isSelected = currentSel.has(prof.id)}
+										{@const isUsedElsewhere = !isSelected && usedProfs.has(prof.id)}
+										<SelectionCard
+											selected={isSelected}
+											disabled={isUsedElsewhere || (!isSelected && currentSel.size >= 3)}
+											onclick={() => toggleSkilledProficiency(i, prof.id)}
+											compact
+										>
+											<div class="flex items-center gap-2 pr-6">
+												<span class="font-medium text-sm">{prof.label}</span>
+												{#if prof.abilityAbbr}
+													<span class="text-xs text-muted-foreground">({prof.abilityAbbr})</span>
+												{/if}
+											</div>
+											<p class="mt-0.5 text-xs text-muted-foreground">{prof.description}</p>
+										</SelectionCard>
+									{/each}
+								</div>
 							</Card.Content>
 						</Card.Root>
 					{/if}
@@ -856,41 +952,89 @@
 										</div>
 
 										<p class="text-xs text-muted-foreground italic">You always have the chosen level 1 spell prepared. You can cast it once without a spell slot per Long Rest.</p>
+
+										<div>
+											<p class="mb-1.5 text-xs font-medium text-muted-foreground">Spellcasting Ability</p>
+											<div class="flex gap-2">
+												{#each ['int', 'wis', 'cha'] as ab}
+													<button
+														type="button"
+														class="rounded-md border px-3 py-1.5 text-sm transition-colors
+															{config?.spellcastingAbility === ab ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}"
+														onclick={() => setSpellcastingAbility(i, ab)}
+													>
+														{ABILITY_NAMES[ab as AbilityId]}
+													</button>
+												{/each}
+											</div>
+										</div>
 									{/if}
 								</Card.Content>
 							</Card.Root>
 						{/if}
 
+						<!-- Feat Ability Score Picker -->
+						{#if featHasAbilityChoice(decision.featId) && decision.featId}
+							{@const selectedFeatDef = getFeatDef(decision.featId)}
+							{@const asiDef = selectedFeatDef?.abilityScoreIncrease}
+							{#if asiDef}
+								<Card.Root class="mt-3">
+									<Card.Header class="pb-2">
+										<Card.Title class="text-sm">Ability Score Increase — +{asiDef.value} to one ability (max {asiDef.max ?? 20})</Card.Title>
+									</Card.Header>
+									<Card.Content>
+										<div class="flex flex-wrap gap-2">
+											{#each asiDef.abilities as ab}
+												{@const current = scores[ab]}
+												{@const capped = current >= (asiDef.max ?? 20)}
+												<button
+													type="button"
+													disabled={capped}
+													class="rounded-md border px-3 py-1.5 text-sm transition-colors
+														{featAbilityChoice[i] === ab ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}
+														{capped ? 'opacity-40 cursor-not-allowed' : ''}"
+													onclick={() => { featAbilityChoice = { ...featAbilityChoice, [i]: ab }; }}
+												>
+													{ABILITY_NAMES[ab]}
+													<span class="ml-1 text-xs text-muted-foreground">{current}</span>
+												</button>
+											{/each}
+										</div>
+									</Card.Content>
+								</Card.Root>
+							{/if}
+						{/if}
+
 						<!-- Skilled Configuration Panel -->
 						{#if featHasSkillChoices(decision.featId)}
-							{@const skilledPicks = skilledChoices[i] ?? ['', '', '']}
+							{@const usedProfs = getUsedSkilledProficiencies(i)}
+							{@const currentSel = skilledSelections[i] ?? new Set()}
 							<Card.Root class="mt-3">
 								<Card.Header class="pb-2">
 									<Card.Title class="text-sm">Skilled — Choose 3 Proficiencies</Card.Title>
+									<Badge variant="secondary" class="w-fit text-xs">{currentSel.size} / 3 selected</Badge>
 								</Card.Header>
-								<Card.Content class="space-y-3">
-									{#each [0, 1, 2] as pickerIndex}
-										{@const pickerUsed = getSkilledPickerUsed(i, pickerIndex)}
-										<div>
-											<p class="mb-1.5 text-xs font-medium text-muted-foreground">Proficiency {pickerIndex + 1}</p>
-											<div class="flex flex-wrap gap-1.5">
-												{#each allProficiencyOptions as prof}
-													{@const isSelected = skilledPicks[pickerIndex] === prof.id}
-													{@const isUsedElsewhere = !isSelected && pickerUsed.has(prof.id)}
-													<button
-														type="button"
-														class="rounded-md border px-2 py-1 text-xs transition-colors
-															{isSelected ? 'border-primary bg-accent font-medium' : 'border-border hover:bg-accent/50'}
-															{isUsedElsewhere ? 'opacity-40 cursor-not-allowed' : ''}"
-														disabled={isUsedElsewhere}
-														onclick={() => selectSkilledProficiency(i, pickerIndex, prof.id)}
-													>
-														{prof.label}
-													</button>
-												{/each}
-											</div>
-										</div>
-									{/each}
+								<Card.Content>
+									<div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="listbox">
+										{#each allProficiencyOptions as prof}
+											{@const isSelected = currentSel.has(prof.id)}
+											{@const isUsedElsewhere = !isSelected && usedProfs.has(prof.id)}
+											<SelectionCard
+												selected={isSelected}
+												disabled={isUsedElsewhere || (!isSelected && currentSel.size >= 3)}
+												onclick={() => toggleSkilledProficiency(i, prof.id)}
+												compact
+											>
+												<div class="flex items-center gap-2 pr-6">
+													<span class="font-medium text-sm">{prof.label}</span>
+													{#if prof.abilityAbbr}
+														<span class="text-xs text-muted-foreground">({prof.abilityAbbr})</span>
+													{/if}
+												</div>
+												<p class="mt-0.5 text-xs text-muted-foreground">{prof.description}</p>
+											</SelectionCard>
+										{/each}
+									</div>
 								</Card.Content>
 							</Card.Root>
 						{/if}

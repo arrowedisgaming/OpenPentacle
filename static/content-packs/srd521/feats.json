@@ -46,7 +46,8 @@
       { "id": "spell-list", "type": "spell-list", "label": "Spell List", "options": ["cleric", "druid", "wizard"] },
       { "id": "cantrip-1", "type": "cantrip", "label": "Cantrip 1", "dependsOn": "spell-list" },
       { "id": "cantrip-2", "type": "cantrip", "label": "Cantrip 2", "dependsOn": "spell-list" },
-      { "id": "spell-1", "type": "spell", "label": "Level 1 Spell", "dependsOn": "spell-list" }
+      { "id": "spell-1", "type": "spell", "label": "Level 1 Spell", "dependsOn": "spell-list" },
+      { "id": "spellcasting-ability", "type": "spell-list", "label": "Spellcasting Ability", "options": ["int", "wis", "cha"] }
     ],
     "repeatable": true
   },
