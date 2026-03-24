@@ -13,7 +13,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
-	import { Sword, Wand2, Shield, Heart, Cross, Flame, Music, Leaf, Skull, BookOpen, Zap, Target, Star, Sparkles, ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { Sword, Wand2, Shield, Heart, Cross, Flame, Music, Leaf, Skull, BookOpen, Zap, Target, Star, Sparkles, ChevronDown, ChevronUp, Search } from 'lucide-svelte';
 	import { rovingTabindex } from '$lib/actions/roving-tabindex.js';
 
 	const { pack, systemId } = $derived($page.data as { pack: any; systemId: string });
@@ -61,10 +61,16 @@
 	// Track feature choice selections: featureId -> choiceId -> selectedOptionIds
 	let featureSelections = $state<Record<string, Record<string, string[]>>>({});
 
+	// Search filters for feature choices with many options: "featureId:choiceId" -> search text
+	let featureSearchFilters = $state<Record<string, string>>({});
+
+	const SEARCH_THRESHOLD = 10; // Show search box when 10+ options
+
 	// Reset selections when class changes
 	$effect(() => {
 		if (selectedClassId) {
 			featureSelections = {};
+			featureSearchFilters = {};
 		}
 	});
 
@@ -223,7 +229,7 @@
 		<!-- Selected class details + level picker -->
 		{#if selectedClass}
 			<div class="mt-6 xl:mt-4 xl:w-2/5">
-				<div class="xl:sticky xl:top-4">
+				<div class="xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] xl:overflow-y-auto xl:rounded-lg">
 					<DetailPanel title={selectedClass.name}>
 						<p class="text-sm text-muted-foreground">{selectedClass.description}</p>
 
@@ -270,29 +276,53 @@
 							<div class="space-y-4">
 								{#each featuresWithChoices as feature}
 									{#each feature.choices ?? [] as choice}
+										{@const searchKey = `${feature.id}:${choice.id}`}
+										{@const searchText = featureSearchFilters[searchKey]?.toLowerCase() ?? ''}
+										{@const showSearch = choice.options.length >= SEARCH_THRESHOLD}
+										{@const selectedIds = getSelectedOptions(feature.id, choice.id)}
+										{@const filteredOptions = searchText
+											? choice.options.filter((o) => o.name.toLowerCase().includes(searchText) || selectedIds.includes(o.id))
+											: choice.options}
 										<div>
 											<div class="mb-1.5 flex items-center gap-2">
 												<span class="text-sm font-medium">{choice.name}</span>
 												<Badge variant="outline" class="text-[10px] px-1.5 py-0">Lv{feature.level}</Badge>
 												<span class="text-xs text-muted-foreground">
-													{getSelectedOptions(feature.id, choice.id).length}/{choice.count}
+													{selectedIds.length}/{choice.count}
 												</span>
 											</div>
 											<p class="mb-2 text-xs text-muted-foreground">{choice.description}</p>
-											<div class="grid gap-1.5 sm:grid-cols-2">
-												{#each choice.options as option}
-													{@const isSelected = getSelectedOptions(feature.id, choice.id).includes(option.id)}
+
+											{#if showSearch}
+												<div class="relative mb-2">
+													<Search class="absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+													<input
+														type="text"
+														placeholder="Filter {choice.name.toLowerCase()}..."
+														value={featureSearchFilters[searchKey] ?? ''}
+														oninput={(e) => { featureSearchFilters[searchKey] = (e.target as HTMLInputElement).value; }}
+														class="w-full rounded-md border border-border bg-background px-2.5 py-1.5 pl-7 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+													/>
+												</div>
+											{/if}
+
+											<div class="flex flex-wrap gap-1.5">
+												{#each filteredOptions as option}
+													{@const isSelected = selectedIds.includes(option.id)}
 													<button
 														class="rounded-md border px-2.5 py-1.5 text-left text-xs transition-colors
 															{isSelected ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:border-muted-foreground/50'}"
 														onclick={() => toggleFeatureOption(feature.id, choice.id, option.id, choice.count)}
 													>
 														<span class="font-medium">{option.name}</span>
-														{#if option.description}
+														{#if isSelected && option.description}
 															<p class="mt-0.5 text-muted-foreground leading-relaxed">{option.description}</p>
 														{/if}
 													</button>
 												{/each}
+												{#if searchText && filteredOptions.length === 0}
+													<p class="text-xs text-muted-foreground py-1">No matches for "{featureSearchFilters[searchKey]}"</p>
+												{/if}
 											</div>
 										</div>
 									{/each}

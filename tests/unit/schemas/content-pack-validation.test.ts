@@ -152,11 +152,67 @@ describe('SRD 5.2.1 Content Pack', () => {
 			}
 		});
 
-		it('should have species layer with multiple options', () => {
-			const speciesLayer = (origins as { id: string; options: unknown[] }[])
+		it('should have all 9 SRD 5.2.1 species', () => {
+			const speciesLayer = (origins as { id: string; options: { id: string }[] }[])
 				.find(l => l.id === 'species');
 			expect(speciesLayer).toBeDefined();
-			expect(speciesLayer!.options.length).toBeGreaterThanOrEqual(4);
+			expect(speciesLayer!.options).toHaveLength(9);
+			const ids = speciesLayer!.options.map(o => o.id).sort();
+			expect(ids).toEqual([
+				'dragonborn', 'dwarf', 'elf', 'gnome', 'goliath',
+				'halfling', 'human', 'orc', 'tiefling'
+			]);
+		});
+
+		it('should have no abilityScoreChanges on any species (2024 rule)', () => {
+			const speciesLayer = (origins as { id: string; options: { name: string; abilityScoreChanges: unknown[] }[] }[])
+				.find(l => l.id === 'species');
+			for (const opt of speciesLayer!.options) {
+				expect(opt.abilityScoreChanges).toEqual([]);
+			}
+		});
+
+		it('should have sizeChoices for Human and Tiefling', () => {
+			const speciesLayer = (origins as { id: string; options: { id: string; sizeChoices?: string[] }[] }[])
+				.find(l => l.id === 'species');
+			const human = speciesLayer!.options.find(o => o.id === 'human');
+			const tiefling = speciesLayer!.options.find(o => o.id === 'tiefling');
+			expect(human!.sizeChoices).toEqual(['Medium', 'Small']);
+			expect(tiefling!.sizeChoices).toEqual(['Medium', 'Small']);
+		});
+
+		it('should have subOptionLabel for species with sub-options', () => {
+			const speciesLayer = (origins as { id: string; options: { id: string; subOptionLabel?: string; subOptions?: unknown[] }[] }[])
+				.find(l => l.id === 'species');
+			const withSubs = speciesLayer!.options.filter(o => o.subOptions && o.subOptions.length > 0);
+			for (const opt of withSubs) {
+				expect(opt.subOptionLabel).toBeTruthy();
+			}
+		});
+
+		it('should have spellcastingAbilityChoices on lineage species spells', () => {
+			const speciesLayer = (origins as { id: string; options: { id: string; subOptions?: { id: string; spells?: { spellcastingAbility: string; spellcastingAbilityChoices?: string[] }[] }[] }[] }[])
+				.find(l => l.id === 'species');
+			const elf = speciesLayer!.options.find(o => o.id === 'elf');
+			for (const sub of elf!.subOptions!) {
+				for (const spell of sub.spells!) {
+					expect(spell.spellcastingAbility).toBe('choice');
+					expect(spell.spellcastingAbilityChoices).toEqual(['int', 'wis', 'cha']);
+				}
+			}
+		});
+
+		it('should have damageResistance on Dragonborn and Tiefling sub-options', () => {
+			const speciesLayer = (origins as { id: string; options: { id: string; subOptions?: { id: string; damageResistance?: string }[] }[] }[])
+				.find(l => l.id === 'species');
+			const dragonborn = speciesLayer!.options.find(o => o.id === 'dragonborn');
+			for (const sub of dragonborn!.subOptions!) {
+				expect(sub.damageResistance).toBeTruthy();
+			}
+			const tiefling = speciesLayer!.options.find(o => o.id === 'tiefling');
+			for (const sub of tiefling!.subOptions!) {
+				expect(sub.damageResistance).toBeTruthy();
+			}
 		});
 
 		it('should have valid speeds for all origin options', () => {

@@ -2,19 +2,592 @@
   {
     "id": "species",
     "name": "Species",
-    "description": "Choose your character's species. Your species determines physical traits, natural abilities, and cultural tendencies.",
+    "description": "Choose your character's species. Your species determines physical traits, special abilities, and the set of game traits you gain from being one of those life forms.",
     "order": 0,
     "options": [
+      {
+        "id": "dragonborn",
+        "name": "Dragonborn",
+        "description": "Dragonborn are part of a lineage that stems from a dragon progenitor. Their draconic ancestry grants them a breath weapon and damage resistance.",
+        "size": "Medium",
+        "speed": 30,
+        "abilityScoreChanges": [],
+        "darkvision": 60,
+        "traits": [
+          {
+            "id": "dragonborn-draconic-ancestry",
+            "name": "Draconic Ancestry",
+            "description": "Your lineage stems from a dragon progenitor. Choose the kind of dragon from the Draconic Ancestors table. Your choice affects your Breath Weapon and Damage Resistance traits as well as your appearance."
+          },
+          {
+            "id": "dragonborn-breath-weapon",
+            "name": "Breath Weapon",
+            "description": "When you take the Attack action on your turn, you can replace one of your attacks with an exhalation of magical energy in either a 15-foot Cone or a 30-foot Line that is 5 feet wide. Each creature in that area must make a Dexterity saving throw (DC 8 plus your Constitution modifier and Proficiency Bonus). On a failed save, a creature takes 1d10 damage of the type determined by your Draconic Ancestry. On a successful save, a creature takes half as much damage. This damage increases to 2d10 at level 5, 3d10 at level 11, and 4d10 at level 17. You can use this Breath Weapon a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest.",
+            "mechanicalEffect": "breath_weapon:1d10:prof_bonus_uses:long_rest"
+          },
+          {
+            "id": "dragonborn-damage-resistance",
+            "name": "Damage Resistance",
+            "description": "You have Resistance to the damage type determined by your Draconic Ancestry trait."
+          },
+          {
+            "id": "dragonborn-darkvision",
+            "name": "Darkvision",
+            "description": "You have Darkvision with a range of 60 feet.",
+            "mechanicalEffect": "darkvision:60"
+          },
+          {
+            "id": "dragonborn-draconic-flight",
+            "name": "Draconic Flight",
+            "description": "When you reach character level 5, you can channel draconic magic to give yourself temporary flight. As a Bonus Action, you sprout spectral wings on your back that last for 10 minutes or until you retract the wings (no action required) or have the Incapacitated condition. During that time, you have a Fly Speed equal to your Speed. Your wings appear to be made of the same energy as your Breath Weapon. Once you use this trait, you can't use it again until you finish a Long Rest.",
+            "mechanicalEffect": "fly_speed:equal_to_speed:level_5:long_rest"
+          }
+        ],
+        "proficiencies": [],
+        "languages": ["Common", "Draconic"],
+        "subOptionLabel": "Draconic Ancestry",
+        "subOptions": [
+          {
+            "id": "black-dragon",
+            "name": "Black Dragon",
+            "description": "Your draconic ancestor was a Black Dragon. Your breath weapon and damage resistance are Acid.",
+            "traits": [],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "damageResistance": "acid"
+          },
+          {
+            "id": "blue-dragon",
+            "name": "Blue Dragon",
+            "description": "Your draconic ancestor was a Blue Dragon. Your breath weapon and damage resistance are Lightning.",
+            "traits": [],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "damageResistance": "lightning"
+          },
+          {
+            "id": "brass-dragon",
+            "name": "Brass Dragon",
+            "description": "Your draconic ancestor was a Brass Dragon. Your breath weapon and damage resistance are Fire.",
+            "traits": [],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "damageResistance": "fire"
+          },
+          {
+            "id": "bronze-dragon",
+            "name": "Bronze Dragon",
+            "description": "Your draconic ancestor was a Bronze Dragon. Your breath weapon and damage resistance are Lightning.",
+            "traits": [],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "damageResistance": "lightning"
+          },
+          {
+            "id": "copper-dragon",
+            "name": "Copper Dragon",
+            "description": "Your draconic ancestor was a Copper Dragon. Your breath weapon and damage resistance are Acid.",
+            "traits": [],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "damageResistance": "acid"
+          },
+          {
+            "id": "gold-dragon",
+            "name": "Gold Dragon",
+            "description": "Your draconic ancestor was a Gold Dragon. Your breath weapon and damage resistance are Fire.",
+            "traits": [],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "damageResistance": "fire"
+          },
+          {
+            "id": "green-dragon",
+            "name": "Green Dragon",
+            "description": "Your draconic ancestor was a Green Dragon. Your breath weapon and damage resistance are Poison.",
+            "traits": [],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "damageResistance": "poison"
+          },
+          {
+            "id": "red-dragon",
+            "name": "Red Dragon",
+            "description": "Your draconic ancestor was a Red Dragon. Your breath weapon and damage resistance are Fire.",
+            "traits": [],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "damageResistance": "fire"
+          },
+          {
+            "id": "silver-dragon",
+            "name": "Silver Dragon",
+            "description": "Your draconic ancestor was a Silver Dragon. Your breath weapon and damage resistance are Cold.",
+            "traits": [],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "damageResistance": "cold"
+          },
+          {
+            "id": "white-dragon",
+            "name": "White Dragon",
+            "description": "Your draconic ancestor was a White Dragon. Your breath weapon and damage resistance are Cold.",
+            "traits": [],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "damageResistance": "cold"
+          }
+        ]
+      },
+      {
+        "id": "dwarf",
+        "name": "Dwarf",
+        "description": "Dwarves are stout folk who often dwell in cities carved into mountains and deep underground. Hardy and stalwart, they are known for their resilience and connection to stone.",
+        "size": "Medium",
+        "speed": 30,
+        "abilityScoreChanges": [],
+        "darkvision": 120,
+        "traits": [
+          {
+            "id": "dwarf-darkvision",
+            "name": "Darkvision",
+            "description": "You have Darkvision with a range of 120 feet.",
+            "mechanicalEffect": "darkvision:120"
+          },
+          {
+            "id": "dwarf-dwarven-resilience",
+            "name": "Dwarven Resilience",
+            "description": "You have Resistance to Poison damage. You also have Advantage on saving throws you make to avoid or end the Poisoned condition.",
+            "mechanicalEffect": "resistance:poison;advantage:saving-throw:poisoned"
+          },
+          {
+            "id": "dwarf-dwarven-toughness",
+            "name": "Dwarven Toughness",
+            "description": "Your Hit Point maximum increases by 1, and it increases by 1 again whenever you gain a level.",
+            "mechanicalEffect": "hp_per_level:1"
+          },
+          {
+            "id": "dwarf-stonecunning",
+            "name": "Stonecunning",
+            "description": "As a Bonus Action, you gain Tremorsense with a range of 60 feet for 10 minutes. You must be on a stone surface or touching a stone surface to use this Tremorsense. The stone can be natural or worked. You can use this Bonus Action a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest.",
+            "mechanicalEffect": "tremorsense:60:prof_bonus_uses:long_rest"
+          }
+        ],
+        "proficiencies": [],
+        "languages": ["Common", "Dwarvish"]
+      },
+      {
+        "id": "elf",
+        "name": "Elf",
+        "description": "Elves are a magical people of otherworldly grace, living in places of ethereal beauty. They are part of a lineage that grants them supernatural abilities tied to the Feywild.",
+        "size": "Medium",
+        "speed": 30,
+        "abilityScoreChanges": [],
+        "darkvision": 60,
+        "traits": [
+          {
+            "id": "elf-darkvision",
+            "name": "Darkvision",
+            "description": "You have Darkvision with a range of 60 feet.",
+            "mechanicalEffect": "darkvision:60"
+          },
+          {
+            "id": "elf-elven-lineage",
+            "name": "Elven Lineage",
+            "description": "You are part of a lineage that grants you supernatural abilities. Choose a lineage from the Elven Lineages table. You gain the level 1 benefit of that lineage. When you reach character levels 3 and 5, you learn a higher-level spell, as shown on the table. You always have that spell prepared. You can cast it once without a spell slot, and you regain the ability to cast it in that way when you finish a Long Rest. You can also cast the spell using any spell slots you have of the appropriate level. Intelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the lineage)."
+          },
+          {
+            "id": "elf-fey-ancestry",
+            "name": "Fey Ancestry",
+            "description": "You have Advantage on saving throws you make to avoid or end the Charmed condition.",
+            "mechanicalEffect": "advantage:saving-throw:charmed"
+          },
+          {
+            "id": "elf-keen-senses",
+            "name": "Keen Senses",
+            "description": "You have proficiency in the Insight, Perception, or Survival skill.",
+            "mechanicalEffect": "skill_proficiency_choice:1:insight,perception,survival"
+          },
+          {
+            "id": "elf-trance",
+            "name": "Trance",
+            "description": "You don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours if you spend those hours in a trancelike meditation, during which you retain consciousness."
+          }
+        ],
+        "proficiencies": [
+          {
+            "type": "skill",
+            "value": "choice",
+            "isChoice": true,
+            "choices": ["insight", "perception", "survival"],
+            "choiceCount": 1
+          }
+        ],
+        "languages": ["Common", "Elvish"],
+        "subOptionLabel": "Elven Lineage",
+        "subOptions": [
+          {
+            "id": "drow",
+            "name": "Drow",
+            "description": "The range of your Darkvision increases to 120 feet. You also know the Dancing Lights cantrip.",
+            "traits": [
+              {
+                "id": "drow-darkvision-increase",
+                "name": "Enhanced Darkvision",
+                "description": "The range of your Darkvision increases to 120 feet.",
+                "mechanicalEffect": "darkvision:120"
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "darkvision": 120,
+            "spells": [
+              {
+                "spellId": "dancing-lights",
+                "level": 1,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "faerie-fire",
+                "level": 3,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "darkness",
+                "level": 5,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              }
+            ]
+          },
+          {
+            "id": "high-elf",
+            "name": "High Elf",
+            "description": "You know the Prestidigitation cantrip. Whenever you finish a Long Rest, you can replace that cantrip with a different cantrip from the Wizard spell list.",
+            "traits": [
+              {
+                "id": "high-elf-cantrip-swap",
+                "name": "Wizard Cantrip",
+                "description": "You know the Prestidigitation cantrip. Whenever you finish a Long Rest, you can replace that cantrip with a different cantrip from the Wizard spell list."
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "spells": [
+              {
+                "spellId": "prestidigitation",
+                "level": 1,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "detect-magic",
+                "level": 3,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "misty-step",
+                "level": 5,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              }
+            ]
+          },
+          {
+            "id": "wood-elf",
+            "name": "Wood Elf",
+            "description": "Your Speed increases to 35 feet. You also know the Druidcraft cantrip.",
+            "traits": [
+              {
+                "id": "wood-elf-fleet-of-foot",
+                "name": "Fleet of Foot",
+                "description": "Your Speed increases to 35 feet.",
+                "mechanicalEffect": "speed:35"
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "speed": 35,
+            "spells": [
+              {
+                "spellId": "druidcraft",
+                "level": 1,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "longstrider",
+                "level": 3,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "pass-without-trace",
+                "level": 5,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "gnome",
+        "name": "Gnome",
+        "description": "Gnomes are magical folk created by gods of the Feywild. They are small, clever, and possess an innate cunning that helps them resist magical effects.",
+        "size": "Small",
+        "speed": 30,
+        "abilityScoreChanges": [],
+        "darkvision": 60,
+        "traits": [
+          {
+            "id": "gnome-darkvision",
+            "name": "Darkvision",
+            "description": "You have Darkvision with a range of 60 feet.",
+            "mechanicalEffect": "darkvision:60"
+          },
+          {
+            "id": "gnome-gnomish-cunning",
+            "name": "Gnomish Cunning",
+            "description": "You have Advantage on Intelligence, Wisdom, and Charisma saving throws.",
+            "mechanicalEffect": "advantage:saving-throw:int,wis,cha"
+          },
+          {
+            "id": "gnome-gnomish-lineage",
+            "name": "Gnomish Lineage",
+            "description": "You are part of a lineage that grants you supernatural abilities. Choose one of the following options; whichever you choose, Intelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the lineage)."
+          }
+        ],
+        "proficiencies": [],
+        "languages": ["Common", "Gnomish"],
+        "subOptionLabel": "Gnomish Lineage",
+        "subOptions": [
+          {
+            "id": "forest-gnome",
+            "name": "Forest Gnome",
+            "description": "You know the Minor Illusion cantrip. You also always have the Speak with Animals spell prepared. You can cast it without a spell slot a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest. You can also use any spell slots you have to cast the spell.",
+            "traits": [
+              {
+                "id": "forest-gnome-speak-with-animals",
+                "name": "Speak with Animals",
+                "description": "You always have the Speak with Animals spell prepared. You can cast it without a spell slot a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest.",
+                "mechanicalEffect": "always_prepared:speak-with-animals:prof_bonus_uses:long_rest"
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "spells": [
+              {
+                "spellId": "minor-illusion",
+                "level": 1,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "speak-with-animals",
+                "level": 1,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              }
+            ]
+          },
+          {
+            "id": "rock-gnome",
+            "name": "Rock Gnome",
+            "description": "You know the Mending and Prestidigitation cantrips. In addition, you can spend 10 minutes casting Prestidigitation to create a Tiny clockwork device (AC 5, 1 HP), such as a toy, fire starter, or music box. When you create the device, you determine its function by choosing one effect from Prestidigitation; the device produces that effect whenever you or another creature takes a Bonus Action to activate it with a touch. You can have three such devices in existence at a time, and each one falls apart 8 hours after its creation or when you dismantle it with a touch as a Utilize action.",
+            "traits": [
+              {
+                "id": "rock-gnome-tinker",
+                "name": "Tinker",
+                "description": "You can spend 10 minutes casting Prestidigitation to create a Tiny clockwork device (AC 5, 1 HP), such as a toy, fire starter, or music box. When you create the device, you determine its function by choosing one effect from Prestidigitation. You can have three such devices in existence at a time, and each one falls apart 8 hours after its creation or when you dismantle it with a touch as a Utilize action."
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "spells": [
+              {
+                "spellId": "mending",
+                "level": 1,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "prestidigitation",
+                "level": 1,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "goliath",
+        "name": "Goliath",
+        "description": "Goliaths are descended from Giants. They are tall, powerful folk who dwell in mountainous regions and value competition and fair play.",
+        "size": "Medium",
+        "speed": 35,
+        "abilityScoreChanges": [],
+        "traits": [
+          {
+            "id": "goliath-giant-ancestry",
+            "name": "Giant Ancestry",
+            "description": "You are descended from Giants. Choose one of the following benefits — a supernatural boon from your ancestry; you can use the chosen benefit a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
+          },
+          {
+            "id": "goliath-large-form",
+            "name": "Large Form",
+            "description": "Starting at character level 5, you can change your size to Large as a Bonus Action if you're in a big enough space. This transformation lasts for 10 minutes or until you end it (no action required). For that duration, you have Advantage on Strength checks, and your Speed increases by 10 feet. Once you use this trait, you can't use it again until you finish a Long Rest.",
+            "mechanicalEffect": "large_form:level_5:long_rest"
+          },
+          {
+            "id": "goliath-powerful-build",
+            "name": "Powerful Build",
+            "description": "You have Advantage on any ability check you make to end the Grappled condition. You also count as one size larger when determining your carrying capacity.",
+            "mechanicalEffect": "advantage:grapple_escape;carrying_capacity:one_size_larger"
+          }
+        ],
+        "proficiencies": [],
+        "languages": ["Common", "Giant"],
+        "subOptionLabel": "Giant Ancestry",
+        "subOptions": [
+          {
+            "id": "cloud-giant",
+            "name": "Cloud Giant (Cloud's Jaunt)",
+            "description": "As a Bonus Action, you magically teleport up to 30 feet to an unoccupied space you can see.",
+            "traits": [
+              {
+                "id": "cloud-giant-jaunt",
+                "name": "Cloud's Jaunt",
+                "description": "As a Bonus Action, you magically teleport up to 30 feet to an unoccupied space you can see. You can use this a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest.",
+                "mechanicalEffect": "teleport:30:bonus_action:prof_bonus_uses:long_rest"
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": []
+          },
+          {
+            "id": "fire-giant",
+            "name": "Fire Giant (Fire's Burn)",
+            "description": "When you hit a target with an attack roll and deal damage to it, you can also deal 1d10 Fire damage to that target.",
+            "traits": [
+              {
+                "id": "fire-giant-burn",
+                "name": "Fire's Burn",
+                "description": "When you hit a target with an attack roll and deal damage to it, you can also deal 1d10 Fire damage to that target. You can use this a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest.",
+                "mechanicalEffect": "extra_damage:1d10:fire:prof_bonus_uses:long_rest"
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": []
+          },
+          {
+            "id": "frost-giant",
+            "name": "Frost Giant (Frost's Chill)",
+            "description": "When you hit a target with an attack roll and deal damage to it, you can also deal 1d6 Cold damage to that target and reduce its Speed by 10 feet until the start of your next turn.",
+            "traits": [
+              {
+                "id": "frost-giant-chill",
+                "name": "Frost's Chill",
+                "description": "When you hit a target with an attack roll and deal damage to it, you can also deal 1d6 Cold damage to that target and reduce its Speed by 10 feet until the start of your next turn. You can use this a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest.",
+                "mechanicalEffect": "extra_damage:1d6:cold:speed_reduce:10:prof_bonus_uses:long_rest"
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": []
+          },
+          {
+            "id": "hill-giant",
+            "name": "Hill Giant (Hill's Tumble)",
+            "description": "When you hit a Large or smaller creature with an attack roll and deal damage to it, you can give that target the Prone condition.",
+            "traits": [
+              {
+                "id": "hill-giant-tumble",
+                "name": "Hill's Tumble",
+                "description": "When you hit a Large or smaller creature with an attack roll and deal damage to it, you can give that target the Prone condition. You can use this a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest.",
+                "mechanicalEffect": "prone_on_hit:large_or_smaller:prof_bonus_uses:long_rest"
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": []
+          },
+          {
+            "id": "stone-giant",
+            "name": "Stone Giant (Stone's Endurance)",
+            "description": "When you take damage, you can take a Reaction to roll 1d12. Add your Constitution modifier to the number rolled and reduce the damage by that total.",
+            "traits": [
+              {
+                "id": "stone-giant-endurance",
+                "name": "Stone's Endurance",
+                "description": "When you take damage, you can take a Reaction to roll 1d12. Add your Constitution modifier to the number rolled and reduce the damage by that total. You can use this a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest.",
+                "mechanicalEffect": "damage_reduction:1d12+con:reaction:prof_bonus_uses:long_rest"
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": []
+          },
+          {
+            "id": "storm-giant",
+            "name": "Storm Giant (Storm's Thunder)",
+            "description": "When you take damage from a creature within 60 feet of you, you can take a Reaction to deal 1d8 Thunder damage to that creature.",
+            "traits": [
+              {
+                "id": "storm-giant-thunder",
+                "name": "Storm's Thunder",
+                "description": "When you take damage from a creature within 60 feet of you, you can take a Reaction to deal 1d8 Thunder damage to that creature. You can use this a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest.",
+                "mechanicalEffect": "retaliatory_damage:1d8:thunder:60ft:reaction:prof_bonus_uses:long_rest"
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": []
+          }
+        ]
+      },
+      {
+        "id": "halfling",
+        "name": "Halfling",
+        "description": "Halflings are small, resourceful folk who enjoy the comforts of home but possess a surprising courage and natural stealth.",
+        "size": "Small",
+        "speed": 30,
+        "abilityScoreChanges": [],
+        "traits": [
+          {
+            "id": "halfling-brave",
+            "name": "Brave",
+            "description": "You have Advantage on saving throws you make to avoid or end the Frightened condition.",
+            "mechanicalEffect": "advantage:saving-throw:frightened"
+          },
+          {
+            "id": "halfling-halfling-nimbleness",
+            "name": "Halfling Nimbleness",
+            "description": "You can move through the space of any creature that is a size larger than you, but you can't stop in the same space."
+          },
+          {
+            "id": "halfling-lucky",
+            "name": "Lucky",
+            "description": "When you roll a 1 on the d20 of a D20 Test, you can reroll the die, and you must use the new roll.",
+            "mechanicalEffect": "reroll:1:d20_test"
+          },
+          {
+            "id": "halfling-naturally-stealthy",
+            "name": "Naturally Stealthy",
+            "description": "You can take the Hide action even when you are obscured only by a creature that is at least one size larger than you."
+          }
+        ],
+        "proficiencies": [],
+        "languages": ["Common", "Halfling"]
+      },
       {
         "id": "human",
         "name": "Human",
         "description": "Humans are the most adaptable and ambitious people among the common species. Whatever drives them, humans are the innovators, the achievers, and the pioneers of the worlds.",
         "size": "Medium",
         "speed": 30,
-        "abilityScoreChanges": [
-          { "ability": "choice", "value": 2, "choiceCount": 1 },
-          { "ability": "choice", "value": 1, "choiceCount": 1 }
-        ],
+        "abilityScoreChanges": [],
+        "sizeChoices": ["Medium", "Small"],
         "traits": [
           {
             "id": "human-resourceful",
@@ -30,7 +603,7 @@
           {
             "id": "human-versatile",
             "name": "Versatile",
-            "description": "You gain an Origin feat of your choice."
+            "description": "You gain an Origin feat of your choice (see \"Feats\"). Skilled is recommended."
           }
         ],
         "proficiencies": [
@@ -51,275 +624,192 @@
         "languages": ["Common", "Choice"]
       },
       {
-        "id": "elf",
-        "name": "Elf",
-        "description": "Elves are a magical people of otherworldly grace, living in places of ethereal beauty, in the midst of ancient forests or in silvery spires glittering with faerie light.",
+        "id": "orc",
+        "name": "Orc",
+        "description": "Orcs are hardy, powerful folk who trace their creation to the god Gruumsh. They are known for their physical strength, endurance, and fierce determination.",
         "size": "Medium",
         "speed": 30,
-        "abilityScoreChanges": [
-          { "ability": "choice", "value": 2, "choiceCount": 1 },
-          { "ability": "choice", "value": 1, "choiceCount": 1 }
-        ],
-        "darkvision": 60,
+        "abilityScoreChanges": [],
+        "darkvision": 120,
         "traits": [
           {
-            "id": "elf-darkvision",
+            "id": "orc-adrenaline-rush",
+            "name": "Adrenaline Rush",
+            "description": "You can take the Dash action as a Bonus Action. When you do so, you gain a number of Temporary Hit Points equal to your Proficiency Bonus. You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Short or Long Rest.",
+            "mechanicalEffect": "dash:bonus_action:temp_hp:prof_bonus:prof_bonus_uses:short_rest"
+          },
+          {
+            "id": "orc-darkvision",
             "name": "Darkvision",
-            "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
-            "mechanicalEffect": "darkvision:60"
+            "description": "You have Darkvision with a range of 120 feet.",
+            "mechanicalEffect": "darkvision:120"
           },
           {
-            "id": "elf-keen-senses",
-            "name": "Keen Senses",
-            "description": "You have proficiency in the Perception skill.",
-            "mechanicalEffect": "skill_proficiency:perception"
-          },
-          {
-            "id": "elf-fey-ancestry",
-            "name": "Fey Ancestry",
-            "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
-            "mechanicalEffect": "advantage:saving-throw:charmed;immunity:magical-sleep"
-          },
-          {
-            "id": "elf-trance",
-            "name": "Trance",
-            "description": "Elves do not sleep. Instead they meditate deeply, remaining semi-conscious, for 4 hours a day. While meditating, you dream after a fashion; such dreams are actually mental exercises that have become reflexive after years of practice. After resting in this way, you gain the same benefit a human does from 8 hours of sleep."
-          }
-        ],
-        "proficiencies": [
-          {
-            "type": "skill",
-            "value": "perception"
-          }
-        ],
-        "languages": ["Common", "Elvish"],
-        "subOptions": [
-          {
-            "id": "high-elf",
-            "name": "High Elf",
-            "description": "As a high elf, you have a keen mind and a mastery of at least the basics of magic.",
-            "traits": [
-              {
-                "id": "high-elf-cantrip",
-                "name": "Cantrip",
-                "description": "You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it."
-              },
-              {
-                "id": "high-elf-extra-language",
-                "name": "Extra Language",
-                "description": "You can speak, read, and write one extra language of your choice."
-              }
-            ],
-            "abilityScoreChanges": [],
-            "proficiencies": [
-              {
-                "type": "weapon",
-                "value": "longsword"
-              },
-              {
-                "type": "weapon",
-                "value": "shortsword"
-              },
-              {
-                "type": "weapon",
-                "value": "shortbow"
-              },
-              {
-                "type": "weapon",
-                "value": "longbow"
-              }
-            ],
-            "spells": [
-              {
-                "spellId": "choice-wizard-cantrip",
-                "level": 1,
-                "spellcastingAbility": "int"
-              }
-            ]
-          },
-          {
-            "id": "wood-elf",
-            "name": "Wood Elf",
-            "description": "As a wood elf, you have keen senses and intuition, and your fleet feet carry you quickly and stealthily through your native forests.",
-            "traits": [
-              {
-                "id": "wood-elf-fleet-of-foot",
-                "name": "Fleet of Foot",
-                "description": "Your base walking speed increases to 35 feet.",
-                "mechanicalEffect": "speed:35"
-              },
-              {
-                "id": "wood-elf-mask-of-the-wild",
-                "name": "Mask of the Wild",
-                "description": "You can attempt to hide even when you are only lightly obscured by foliage, heavy rain, falling snow, mist, and other natural phenomena."
-              }
-            ],
-            "abilityScoreChanges": [],
-            "proficiencies": [
-              {
-                "type": "weapon",
-                "value": "longsword"
-              },
-              {
-                "type": "weapon",
-                "value": "shortsword"
-              },
-              {
-                "type": "weapon",
-                "value": "shortbow"
-              },
-              {
-                "type": "weapon",
-                "value": "longbow"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "dwarf",
-        "name": "Dwarf",
-        "description": "Bold and hardy, dwarves are known as skilled warriors, miners, and workers of stone and metal. Though they stand well under 5 feet tall, dwarves are so broad and compact that they can weigh as much as a human standing nearly two feet taller.",
-        "size": "Medium",
-        "speed": 30,
-        "abilityScoreChanges": [
-          { "ability": "choice", "value": 2, "choiceCount": 1 },
-          { "ability": "choice", "value": 1, "choiceCount": 1 }
-        ],
-        "darkvision": 60,
-        "traits": [
-          {
-            "id": "dwarf-darkvision",
-            "name": "Darkvision",
-            "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
-            "mechanicalEffect": "darkvision:60"
-          },
-          {
-            "id": "dwarf-dwarven-resilience",
-            "name": "Dwarven Resilience",
-            "description": "You have advantage on saving throws against poison, and you have resistance against poison damage.",
-            "mechanicalEffect": "advantage:saving-throw:poison;resistance:poison"
-          },
-          {
-            "id": "dwarf-stonecunning",
-            "name": "Stonecunning",
-            "description": "Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check."
-          },
-          {
-            "id": "dwarf-dwarven-combat-training",
-            "name": "Dwarven Combat Training",
-            "description": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer."
-          }
-        ],
-        "proficiencies": [
-          { "type": "weapon", "value": "battleaxe" },
-          { "type": "weapon", "value": "handaxe" },
-          { "type": "weapon", "value": "light-hammer" },
-          { "type": "weapon", "value": "warhammer" },
-          {
-            "type": "tool",
-            "value": "choice",
-            "isChoice": true,
-            "choices": ["smith-tools", "brewer-supplies", "mason-tools"],
-            "choiceCount": 1
-          }
-        ],
-        "languages": ["Common", "Dwarvish"],
-        "subOptions": [
-          {
-            "id": "hill-dwarf",
-            "name": "Hill Dwarf",
-            "description": "As a hill dwarf, you have keen senses, deep intuition, and a resilience that few other folk can match.",
-            "traits": [
-              {
-                "id": "hill-dwarf-dwarven-toughness",
-                "name": "Dwarven Toughness",
-                "description": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level.",
-                "mechanicalEffect": "hp_per_level:1"
-              }
-            ],
-            "abilityScoreChanges": [],
-            "proficiencies": []
-          },
-          {
-            "id": "mountain-dwarf",
-            "name": "Mountain Dwarf",
-            "description": "As a mountain dwarf, you are strong and hardy, accustomed to a difficult life in rugged terrain.",
-            "traits": [
-              {
-                "id": "mountain-dwarf-dwarven-armor-training",
-                "name": "Dwarven Armor Training",
-                "description": "You have proficiency with light and medium armor."
-              }
-            ],
-            "abilityScoreChanges": [],
-            "proficiencies": [
-              { "type": "armor", "value": "light" },
-              { "type": "armor", "value": "medium" }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "halfling",
-        "name": "Halfling",
-        "description": "The comforts of home are the goals of most halflings' lives: a place to settle in peace and quiet, far from marauding monsters and clashing armies. Others form nomadic bands that travel constantly, lured by the open road and the wide horizon.",
-        "size": "Small",
-        "speed": 30,
-        "abilityScoreChanges": [
-          { "ability": "choice", "value": 2, "choiceCount": 1 },
-          { "ability": "choice", "value": 1, "choiceCount": 1 }
-        ],
-        "traits": [
-          {
-            "id": "halfling-lucky",
-            "name": "Lucky",
-            "description": "When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll.",
-            "mechanicalEffect": "reroll:1:attack,ability-check,saving-throw"
-          },
-          {
-            "id": "halfling-brave",
-            "name": "Brave",
-            "description": "You have advantage on saving throws against being frightened.",
-            "mechanicalEffect": "advantage:saving-throw:frightened"
-          },
-          {
-            "id": "halfling-nimble",
-            "name": "Halfling Nimbleness",
-            "description": "You can move through the space of any creature that is of a size larger than yours."
+            "id": "orc-relentless-endurance",
+            "name": "Relentless Endurance",
+            "description": "When you are reduced to 0 Hit Points but not killed outright, you can drop to 1 Hit Point instead. Once you use this trait, you can't do so again until you finish a Long Rest.",
+            "mechanicalEffect": "drop_to_1hp:long_rest"
           }
         ],
         "proficiencies": [],
-        "languages": ["Common", "Halfling"],
-        "subOptions": [
+        "languages": ["Common", "Orc"]
+      },
+      {
+        "id": "tiefling",
+        "name": "Tiefling",
+        "description": "Tieflings are the recipients of a legacy that grants them supernatural abilities tied to fiendish power. They possess an otherworldly presence and innate magical talents.",
+        "size": "Medium",
+        "speed": 30,
+        "abilityScoreChanges": [],
+        "darkvision": 60,
+        "sizeChoices": ["Medium", "Small"],
+        "traits": [
           {
-            "id": "lightfoot-halfling",
-            "name": "Lightfoot Halfling",
-            "description": "As a lightfoot halfling, you can easily hide from notice, even using other people as cover. Lightfoots are inclined to get along with others and prone to fits of wanderlust.",
-            "traits": [
-              {
-                "id": "lightfoot-naturally-stealthy",
-                "name": "Naturally Stealthy",
-                "description": "You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you."
-              }
-            ],
-            "abilityScoreChanges": [],
-            "proficiencies": []
+            "id": "tiefling-darkvision",
+            "name": "Darkvision",
+            "description": "You have Darkvision with a range of 60 feet.",
+            "mechanicalEffect": "darkvision:60"
           },
           {
-            "id": "stout-halfling",
-            "name": "Stout Halfling",
-            "description": "As a stout halfling, you are hardier than average and have some resistance to poison. Some say that stouts have dwarven blood.",
+            "id": "tiefling-fiendish-legacy",
+            "name": "Fiendish Legacy",
+            "description": "You are the recipient of a legacy that grants you supernatural abilities. Choose a legacy from the Fiendish Legacies table. You gain the level 1 benefit of the chosen legacy. When you reach character levels 3 and 5, you learn a higher-level spell, as shown on the table. You always have that spell prepared. You can cast it once without a spell slot, and you regain the ability to cast it in that way when you finish a Long Rest. You can also cast the spell using any spell slots you have of the appropriate level. Intelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the legacy)."
+          },
+          {
+            "id": "tiefling-otherworldly-presence",
+            "name": "Otherworldly Presence",
+            "description": "You know the Thaumaturgy cantrip. When you cast it with this trait, the spell uses the same spellcasting ability you use for your Fiendish Legacy trait."
+          }
+        ],
+        "proficiencies": [],
+        "languages": ["Common", "Infernal"],
+        "subOptionLabel": "Fiendish Legacy",
+        "subOptions": [
+          {
+            "id": "abyssal",
+            "name": "Abyssal",
+            "description": "You have Resistance to Poison damage. You also know the Poison Spray cantrip.",
             "traits": [
               {
-                "id": "stout-resilience",
-                "name": "Stout Resilience",
-                "description": "You have advantage on saving throws against poison, and you have resistance against poison damage.",
-                "mechanicalEffect": "advantage:saving-throw:poison;resistance:poison"
+                "id": "abyssal-poison-resistance",
+                "name": "Poison Resistance",
+                "description": "You have Resistance to Poison damage.",
+                "mechanicalEffect": "resistance:poison"
               }
             ],
             "abilityScoreChanges": [],
-            "proficiencies": []
+            "proficiencies": [],
+            "damageResistance": "poison",
+            "spells": [
+              {
+                "spellId": "thaumaturgy",
+                "level": 1,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "poison-spray",
+                "level": 1,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "ray-of-sickness",
+                "level": 3,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "hold-person",
+                "level": 5,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              }
+            ]
+          },
+          {
+            "id": "chthonic",
+            "name": "Chthonic",
+            "description": "You have Resistance to Necrotic damage. You also know the Chill Touch cantrip.",
+            "traits": [
+              {
+                "id": "chthonic-necrotic-resistance",
+                "name": "Necrotic Resistance",
+                "description": "You have Resistance to Necrotic damage.",
+                "mechanicalEffect": "resistance:necrotic"
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "damageResistance": "necrotic",
+            "spells": [
+              {
+                "spellId": "thaumaturgy",
+                "level": 1,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "chill-touch",
+                "level": 1,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "false-life",
+                "level": 3,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "ray-of-enfeeblement",
+                "level": 5,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              }
+            ]
+          },
+          {
+            "id": "infernal",
+            "name": "Infernal",
+            "description": "You have Resistance to Fire damage. You also know the Fire Bolt cantrip.",
+            "traits": [
+              {
+                "id": "infernal-fire-resistance",
+                "name": "Fire Resistance",
+                "description": "You have Resistance to Fire damage.",
+                "mechanicalEffect": "resistance:fire"
+              }
+            ],
+            "abilityScoreChanges": [],
+            "proficiencies": [],
+            "damageResistance": "fire",
+            "spells": [
+              {
+                "spellId": "thaumaturgy",
+                "level": 1,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "fire-bolt",
+                "level": 1,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "hellish-rebuke",
+                "level": 3,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              },
+              {
+                "spellId": "darkness",
+                "level": 5,
+                "spellcastingAbility": "choice",
+                "spellcastingAbilityChoices": ["int", "wis", "cha"]
+              }
+            ]
           }
         ]
       }

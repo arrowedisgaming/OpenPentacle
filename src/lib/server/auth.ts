@@ -45,6 +45,8 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 		providers.push(Discord({
 			clientId: env.AUTH_DISCORD_ID,
 			clientSecret: env.AUTH_DISCORD_SECRET,
+			// Use POST body auth instead of Basic header — avoids encoding issues on Cloudflare Workers
+			client: { token_endpoint_auth_method: 'client_secret_post' },
 		}));
 	}
 

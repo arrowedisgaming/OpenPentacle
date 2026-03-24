@@ -52,7 +52,8 @@ const originProficiencySchema = z.object({
 const originSpellSchema = z.object({
 	spellId: z.string().min(1),
 	level: z.number().int().min(1),
-	spellcastingAbility: abilityIdSchema
+	spellcastingAbility: z.union([abilityIdSchema, z.literal('choice')]),
+	spellcastingAbilityChoices: z.array(abilityIdSchema).optional()
 });
 
 const originSubOptionSchema = z.object({
@@ -62,7 +63,10 @@ const originSubOptionSchema = z.object({
 	traits: z.array(traitSchema),
 	abilityScoreChanges: z.array(originAbilityChangeSchema),
 	proficiencies: z.array(originProficiencySchema),
-	spells: z.array(originSpellSchema).optional()
+	spells: z.array(originSpellSchema).optional(),
+	speed: z.number().int().positive().optional(),
+	darkvision: z.number().int().positive().optional(),
+	damageResistance: damageTypeSchema.optional()
 });
 
 const originOptionSchema = z.object({
@@ -76,7 +80,9 @@ const originOptionSchema = z.object({
 	proficiencies: z.array(originProficiencySchema),
 	languages: z.array(z.string()),
 	subOptions: z.array(originSubOptionSchema).optional(),
-	darkvision: z.number().int().positive().optional()
+	darkvision: z.number().int().positive().optional(),
+	sizeChoices: z.array(sizeSchema).optional(),
+	subOptionLabel: z.string().optional()
 });
 
 const originLayerSchema = z.object({

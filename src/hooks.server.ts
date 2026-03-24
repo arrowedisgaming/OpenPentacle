@@ -17,7 +17,7 @@ const initDatabase: Handle = async ({ event, resolve }) => {
 		setDatabase(createD1Database(d1));
 
 		// Expose Cloudflare secrets to process.env so Auth.js can find them
-		for (const key of ['AUTH_SECRET', 'AUTH_GOOGLE_ID', 'AUTH_GOOGLE_SECRET', 'AUTH_DISCORD_ID', 'AUTH_DISCORD_SECRET']) {
+		for (const key of ['AUTH_SECRET', 'AUTH_GOOGLE_ID', 'AUTH_GOOGLE_SECRET', 'AUTH_DISCORD_ID', 'AUTH_DISCORD_SECRET', 'AUTH_URL']) {
 			if (platformEnv[key] && !process.env[key]) {
 				process.env[key] = platformEnv[key];
 			}
@@ -138,12 +138,9 @@ const ensureUser: Handle = async ({ event, resolve }) => {
 				.get();
 
 			if (existing) {
-				// User exists but JWT may have a different ID — update DB to match
-				if (existing.id !== userId) {
-					await db.update(schema.users)
-						.set({ id: userId })
-						.where(eq(schema.users.email, email));
-				}
+				// User row exists for this email — no changes needed.
+				// If JWT ID differs from DB ID, the DB ID is authoritative
+				// (changing it would break FK references on characters).
 			} else {
 				await db.insert(schema.users).values({
 					id: userId,
@@ -153,8 +150,8 @@ const ensureUser: Handle = async ({ event, resolve }) => {
 				});
 			}
 			ensuredEmails.add(email);
-		} catch {
-			// Non-fatal
+		} catch (err) {
+			console.error('ensureUser error:', err);
 		}
 	}
 

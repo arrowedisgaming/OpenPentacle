@@ -8,9 +8,10 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Swords, Sparkles, BookOpen, ArrowRight } from 'lucide-svelte';
 
-	// Check for in-progress wizard state
+	// Check for in-progress wizard state (subscribe reactively via $wizardStore)
+	const wizardState = $derived($wizardStore);
 	const inProgress = $derived.by(() => {
-		const char = wizardStore.getCharacter();
+		const char = wizardState.character;
 		if (!char) return null;
 		const state = { systemId: char.systemId, name: char.name, classId: char.classes?.[0]?.classId };
 		if (!state.systemId) return null;

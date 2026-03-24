@@ -4,6 +4,35 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.7.0] - 2026-03-24
+
+### Added
+- SRD 5.2.1 species: all 9 species (Dragonborn, Dwarf, Elf, Gnome, Goliath, Halfling, Human, Orc, Tiefling)
+- Species sub-option choices: Draconic Ancestry, Elven Lineage, Gnomish Lineage, Giant Ancestry, Fiendish Legacy
+- Spellcasting ability choice for lineage species (Elf, Gnome, Tiefling): Int/Wis/Cha
+- Size choice for Human and Tiefling (Medium or Small)
+- Skill proficiency choice on origin page (Elf Keen Senses, Human Skillful)
+- Species spells displayed in detail panel grouped by character level
+- Damage resistance display on sub-option cards and detail panel
+- Search filter for class feature choices with 10+ options (Weapon Mastery, Invocations, Expertise)
+- Compact pill layout for feature choices — descriptions expand only when selected
+- Feat effect descriptions shown in ASI & Feats review section (Magic Initiate, Skilled, etc.)
+- Engine: speed/darkvision sub-option overrides, Dwarven Toughness HP, size/darkvision/resistance tracking
+- 11 new tests: 5 species schema + 6 engine tests for species-derived fields
+
+### Changed
+- Species data updated from 2014 subraces to 2024 SRD 5.2.1 lineage/ancestry/legacy system
+- Ability score bonuses removed from all species (now backgrounds-only per 2024 rules)
+- Origin wizard: 3-column grid, dynamic sub-option labels, responsive layout for 10+ sub-options
+- Class detail panel scrolls independently on xl screens (no more wasted left-column space)
+
+### Fixed
+- "Start Over" button on create page now works (reactive store subscription fix)
+- Feat lookup for background feats with suffixed IDs (e.g., magic-initiate-wizard)
+- Character save error now shows actual API/database error details
+- ensureUser hook no longer silently swallows database errors
+- Save error improved with cause chain for FK constraint debugging
+
 ## [0.6.0] - 2026-03-23
 
 ### Added

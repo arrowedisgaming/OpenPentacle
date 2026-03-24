@@ -69,6 +69,10 @@ export interface OriginOption {
 	languages: string[];
 	subOptions?: OriginSubOption[]; // e.g., Elf → High Elf / Wood Elf
 	darkvision?: number;
+	/** Available size choices when the player picks (e.g., Human/Tiefling: Medium or Small) */
+	sizeChoices?: Size[];
+	/** Label for sub-option picker (e.g., "Draconic Ancestry", "Elven Lineage") */
+	subOptionLabel?: string;
 }
 
 /** Ability score change from an origin */
@@ -78,7 +82,7 @@ export interface OriginAbilityChange {
 	choiceCount?: number; // How many abilities to pick (if ability === 'choice')
 }
 
-/** Sub-option within an origin (e.g., Elf subraces) */
+/** Sub-option within an origin (e.g., Elven Lineage, Draconic Ancestry) */
 export interface OriginSubOption {
 	id: string;
 	name: string;
@@ -87,6 +91,12 @@ export interface OriginSubOption {
 	abilityScoreChanges: OriginAbilityChange[];
 	proficiencies: OriginProficiency[];
 	spells?: OriginSpell[];
+	/** Override parent speed (e.g., Wood Elf → 35) */
+	speed?: number;
+	/** Override parent darkvision (e.g., Drow → 120) */
+	darkvision?: number;
+	/** Damage resistance granted by this sub-option (e.g., Dragonborn ancestry type) */
+	damageResistance?: DamageType;
 }
 
 /** A trait granted by an origin, class feature, etc. */
@@ -110,7 +120,9 @@ export interface OriginProficiency {
 export interface OriginSpell {
 	spellId: string;
 	level: number; // Character level at which this is gained
-	spellcastingAbility: AbilityId;
+	spellcastingAbility: AbilityId | 'choice';
+	/** Available abilities when spellcastingAbility is 'choice' (e.g., ['int','wis','cha']) */
+	spellcastingAbilityChoices?: AbilityId[];
 }
 
 // ─── Classes ─────────────────────────────────────────────────

@@ -602,4 +602,129 @@ describe('computeSheet', () => {
 			expect(sheet.classSummary).toBe('homebrew-warrior 1');
 		});
 	});
+
+	describe('Species-derived fields', () => {
+		it('resolves speed from sub-option override (Wood Elf)', () => {
+			const elfWithSubOptions: OriginLayer = {
+				id: 'species', name: 'Species', description: '', order: 0,
+				options: [{
+					id: 'elf', name: 'Elf', description: '', size: 'Medium', speed: 30,
+					abilityScoreChanges: [], traits: [], proficiencies: [], languages: [],
+					subOptions: [
+						{ id: 'wood-elf', name: 'Wood Elf', description: '', traits: [],
+						  abilityScoreChanges: [], proficiencies: [], speed: 35 }
+					]
+				}]
+			};
+			const data = makeFighter({
+				origins: [{ layerId: 'species', optionId: 'elf', subOptionId: 'wood-elf', choices: [] }],
+			});
+			const testPack = makeContentPack({ origins: [elfWithSubOptions] });
+			const sheet = computeSheet(data, testPack);
+			expect(sheet.speed).toBe(35);
+		});
+
+		it('resolves darkvision from sub-option override (Drow)', () => {
+			const elfWithDrow: OriginLayer = {
+				id: 'species', name: 'Species', description: '', order: 0,
+				options: [{
+					id: 'elf', name: 'Elf', description: '', size: 'Medium', speed: 30,
+					abilityScoreChanges: [], traits: [], proficiencies: [], languages: [],
+					darkvision: 60,
+					subOptions: [
+						{ id: 'drow', name: 'Drow', description: '', traits: [],
+						  abilityScoreChanges: [], proficiencies: [], darkvision: 120 }
+					]
+				}]
+			};
+			const data = makeFighter({
+				origins: [{ layerId: 'species', optionId: 'elf', subOptionId: 'drow', choices: [] }],
+			});
+			const testPack = makeContentPack({ origins: [elfWithDrow] });
+			const sheet = computeSheet(data, testPack);
+			expect(sheet.darkvision).toBe(120);
+		});
+
+		it('applies Dwarven Toughness bonus HP per level', () => {
+			const dwarfOrigin: OriginLayer = {
+				id: 'species', name: 'Species', description: '', order: 0,
+				options: [{
+					id: 'dwarf', name: 'Dwarf', description: '', size: 'Medium', speed: 30,
+					abilityScoreChanges: [], proficiencies: [], languages: [],
+					traits: [{
+						id: 'dwarven-toughness', name: 'Dwarven Toughness',
+						description: '+1 HP per level',
+						mechanicalEffect: 'hp_per_level:1'
+					}]
+				}]
+			};
+			const data = makeFighter({
+				origins: [{ layerId: 'species', optionId: 'dwarf', choices: [] }],
+				level: 5,
+				classes: [{ classId: 'fighter', level: 5, hitDie: '1d10', featureChoices: [] }],
+			});
+			const testPack = makeContentPack({ origins: [dwarfOrigin] });
+			const sheetWithDwarf = computeSheet(data, testPack);
+
+			// Same character without dwarf
+			const dataHuman = makeFighter({
+				origins: [{ layerId: 'species', optionId: 'human', choices: [] }],
+				level: 5,
+				classes: [{ classId: 'fighter', level: 5, hitDie: '1d10', featureChoices: [] }],
+			});
+			const sheetWithHuman = computeSheet(dataHuman, makeContentPack());
+
+			// Dwarf should have exactly 5 more HP (1 per level)
+			expect(sheetWithDwarf.maxHP).toBe(sheetWithHuman.maxHP + 5);
+		});
+
+		it('resolves size from OriginChoice', () => {
+			const humanWithSizeChoice: OriginLayer = {
+				id: 'species', name: 'Species', description: '', order: 0,
+				options: [{
+					id: 'human', name: 'Human', description: '', size: 'Medium', speed: 30,
+					abilityScoreChanges: [], traits: [], proficiencies: [], languages: [],
+					sizeChoices: ['Medium', 'Small']
+				}]
+			};
+			const data = makeFighter({
+				origins: [{
+					layerId: 'species', optionId: 'human', choices: [
+						{ choiceId: 'size', selectedValues: ['Small'] }
+					]
+				}],
+			});
+			const testPack = makeContentPack({ origins: [humanWithSizeChoice] });
+			const sheet = computeSheet(data, testPack);
+			expect(sheet.size).toBe('Small');
+		});
+
+		it('resolves damage resistance from sub-option', () => {
+			const dragonbornOrigin: OriginLayer = {
+				id: 'species', name: 'Species', description: '', order: 0,
+				options: [{
+					id: 'dragonborn', name: 'Dragonborn', description: '', size: 'Medium', speed: 30,
+					abilityScoreChanges: [], traits: [], proficiencies: [], languages: [],
+					subOptions: [
+						{ id: 'red-dragon', name: 'Red Dragon', description: '', traits: [],
+						  abilityScoreChanges: [], proficiencies: [], damageResistance: 'fire' }
+					]
+				}]
+			};
+			const data = makeFighter({
+				origins: [{ layerId: 'species', optionId: 'dragonborn', subOptionId: 'red-dragon', choices: [] }],
+			});
+			const testPack = makeContentPack({ origins: [dragonbornOrigin] });
+			const sheet = computeSheet(data, testPack);
+			expect(sheet.damageResistances).toEqual(['fire']);
+		});
+
+		it('defaults to Medium size and 0 darkvision when no origin', () => {
+			const data = makeFighter({ origins: [] });
+			const sheet = computeSheet(data, makeContentPack());
+			expect(sheet.size).toBe('Medium');
+			expect(sheet.darkvision).toBe(0);
+			expect(sheet.damageResistances).toEqual([]);
+		});
+	});
 });

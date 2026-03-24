@@ -9,6 +9,8 @@
 	import { abilityModifier, allAbilityModifiers, formatModifier, totalAbilityScore } from '$lib/engine/ability-scores.js';
 	import { SKILL_EXAMPLES } from '$lib/engine/skills.js';
 	import { calculateMaxHP } from '$lib/engine/hit-points.js';
+	import { getOriginBonusHPPerLevel } from '$lib/engine/character-sheet.js';
+	import type { OriginOption, OriginSubOption } from '$lib/types/content-pack.js';
 	import { proficiencyBonus } from '$lib/engine/proficiency.js';
 	import { getClassFeaturesUpToLevel, getSubclassFeaturesUpToLevel } from '$lib/engine/class-progression.js';
 	import { kebabToTitle } from '$lib/utils/format.js';
@@ -66,6 +68,12 @@
 		}
 		return null;
 	});
+	const originSubOption = $derived.by(() => {
+		const opt = originOption();
+		const subId = character?.origins[0]?.subOptionId;
+		if (!opt || !subId) return null;
+		return opt.subOptions?.find((s) => s.id === subId) ?? null;
+	});
 	const backgroundDef = $derived(
 		character?.background ? pack.backgrounds.find((b) => b.id === character.background!.backgroundId) : null
 	);
@@ -73,7 +81,13 @@
 	const computedHP = $derived(() => {
 		if (!character?.classes || !character.abilityScores) return 0;
 		const conTotal = totalAbilityScore(character.abilityScores, 'con');
-		return calculateMaxHP(character.classes, conTotal);
+		const opt = originOption();
+		const sub = originSubOption;
+		const bonusHPPerLevel = getOriginBonusHPPerLevel(
+			opt ?? undefined,
+			sub ?? undefined
+		);
+		return calculateMaxHP(character.classes, conTotal, bonusHPPerLevel);
 	});
 
 	const profBonus = $derived(proficiencyBonus(character?.level ?? 1));
@@ -102,10 +116,19 @@
 	});
 
 	// Feat selections with resolved definitions
+	/** Find feat definition, handling suffixed IDs like "magic-initiate-wizard" */
+	function findFeatDef(featId: string): FeatDefinition | undefined {
+		// Try exact match first
+		const exact = pack.feats.find((f: FeatDefinition) => f.id === featId);
+		if (exact) return exact;
+		// Try matching repeatable feats by prefix (e.g., "magic-initiate-wizard" → "magic-initiate")
+		return pack.feats.find((f: FeatDefinition) => f.repeatable && featId.startsWith(f.id + '-'));
+	}
+
 	const featSelections = $derived(() => {
 		if (!character) return [];
 		return character.feats.map((feat) => {
-			const def = pack.feats.find((f: FeatDefinition) => f.id === feat.featId);
+			const def = findFeatDef(feat.featId);
 			let sourceLabel = feat.source;
 			if (feat.source === 'background') {
 				sourceLabel = 'Background';
@@ -213,7 +236,9 @@
 				wizardStore.reset();
 				goto('/characters?saved=local');
 			} else {
-				error = 'Failed to save character. Please try again.';
+				const errBody = await res.json().catch(() => null);
+				const detail = errBody?.message ? `: ${errBody.message}` : '';
+				error = `Failed to save character${detail}`;
 			}
 		} catch {
 			error = 'Network error. Character data saved locally.';
@@ -260,7 +285,7 @@
 									({subclassDef()!.name})
 								{/if}
 								{#if originOption()}
-									&middot; {originOption()?.name}
+									&middot; {originOption()?.name}{#if originSubOption} ({originSubOption?.name}){/if}
 								{/if}
 							</p>
 						</div>
@@ -380,18 +405,32 @@
 								<Collapsible.Root>
 									<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
 										<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
-										<span class="text-sm font-medium">{def?.name ?? kebabToTitle(feat.featId)}</span>
+										<span class="text-sm font-medium">{kebabToTitle(feat.featId)}</span>
 										<Badge variant="outline" class="text-[10px] px-1.5 py-0">{sourceLabel}</Badge>
 									</Collapsible.Trigger>
 									<Collapsible.Content>
-										{#if def?.description}
-											<p class="mt-1 ml-5.5 text-xs text-muted-foreground">{def.description}</p>
-										{/if}
-										{#if feat.choices.length > 0}
-											<div class="mt-1 ml-5.5 flex flex-wrap gap-1 mb-2">
-												{#each feat.choices as choice}
-													<Badge variant="secondary" class="text-[10px]">{formatFeatChoice(choice, def)}</Badge>
-												{/each}
+										{#if def}
+											<div class="mt-1 ml-5.5 mb-2 space-y-2">
+												{#if def.description}
+													<p class="text-xs text-muted-foreground">{def.description}</p>
+												{/if}
+												{#if def.effects && def.effects.length > 0}
+													<ul class="space-y-1.5">
+														{#each def.effects as effect}
+															<li class="text-xs">
+																<span class="font-medium">{effect.name}.</span>
+																<span class="text-muted-foreground"> {effect.description}</span>
+															</li>
+														{/each}
+													</ul>
+												{/if}
+												{#if feat.choices.length > 0}
+													<div class="flex flex-wrap gap-1">
+														{#each feat.choices as choice}
+															<Badge variant="secondary" class="text-[10px]">{formatFeatChoice(choice, def)}</Badge>
+														{/each}
+													</div>
+												{/if}
 											</div>
 										{/if}
 									</Collapsible.Content>
