@@ -15,6 +15,10 @@
 	Skip to content
 </a>
 
+<div class="sticky top-0 z-[60] bg-amber-500 px-4 py-1.5 text-center text-xs font-semibold text-amber-950 shadow-sm">
+	ALPHA — This app is under active development. Expect bugs, missing features, and data loss.
+</div>
+
 <div class="flex min-h-screen flex-col bg-background text-foreground">
 	<AppHeader />
 	<main id="main-content" class="flex-1">
