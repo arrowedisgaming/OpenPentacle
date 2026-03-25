@@ -4,6 +4,29 @@ import type { AbilityId } from '$lib/types/common.js';
 
 const EPIC_BOON_MIN_LEVEL = 19;
 
+export type FeatSpellConfig = {
+	spellList: string;
+	cantrips: Set<string>;
+	spell: string;
+	spellcastingAbility: string;
+};
+
+/** Find feat definition, handling suffixed IDs like "magic-initiate-wizard" → "magic-initiate" */
+export function findFeatDef(feats: FeatDefinition[], featId: string): FeatDefinition | undefined {
+	const exact = feats.find((f) => f.id === featId);
+	if (exact) return exact;
+	return feats.find((f) => f.repeatable && featId.startsWith(f.id + '-'));
+}
+
+/** Extract suffix hint from feat ID: "magic-initiate-wizard" → { baseFeatId: "magic-initiate", hint: "wizard" } */
+export function parseFeatIdHint(feats: FeatDefinition[], featId: string): { baseFeatId: string; hint: string | null } {
+	const exact = feats.find((f) => f.id === featId);
+	if (exact) return { baseFeatId: featId, hint: null };
+	const match = feats.find((f) => f.repeatable && featId.startsWith(f.id + '-'));
+	if (match) return { baseFeatId: match.id, hint: featId.slice(match.id.length + 1) };
+	return { baseFeatId: featId, hint: null };
+}
+
 export const FEAT_CATEGORY_LABELS: Record<string, string> = {
 	origin: 'Origin Feat',
 	general: 'General Feat',

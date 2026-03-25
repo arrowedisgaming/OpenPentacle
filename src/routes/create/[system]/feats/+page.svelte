@@ -13,7 +13,7 @@
 	import { proficiencyBonus } from '$lib/engine/proficiency.js';
 	import { getASILevels, isEpicBoonLevel } from '$lib/engine/class-progression.js';
 	import { SKILL_EXAMPLES } from '$lib/engine/skills.js';
-	import { getAvailableFeats, FEAT_CATEGORY_LABELS } from '$lib/engine/feats.js';
+	import { getAvailableFeats, FEAT_CATEGORY_LABELS, findFeatDef as findFeatDefEngine, type FeatSpellConfig } from '$lib/engine/feats.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
 	import SelectionCard from '$lib/components/ui/selection-card/SelectionCard.svelte';
 	import WizardNav from '$lib/components/wizard/WizardNav.svelte';
@@ -117,7 +117,6 @@
 	let featAbilityChoice = $state<Record<number, AbilityId>>({});
 
 	// ─── Magic Initiate Configuration ───────────────────────
-	type FeatSpellConfig = { spellList: string; cantrips: Set<string>; spell: string; spellcastingAbility: string };
 	let featChoicesConfig = $state<Record<number, FeatSpellConfig>>({});
 
 	const packSpells: SpellDefinition[] = $derived(pack?.spells ?? []);
@@ -127,7 +126,7 @@
 	}
 
 	function getFeatDef(featId: string): FeatDefinition | undefined {
-		return feats.find((f) => f.id === featId);
+		return findFeatDefEngine(feats, featId);
 	}
 
 	function featHasSpellChoices(featId: string | undefined): boolean {
@@ -141,7 +140,7 @@
 		const used = new Set<string>();
 		// Check previously saved feats on the character (from prior levels / background)
 		for (const f of character?.feats ?? []) {
-			if (f.featId === 'magic-initiate') {
+			if (f.featId === 'magic-initiate' || f.featId.startsWith('magic-initiate-')) {
 				const listChoice = f.choices?.find((c) => c.choiceId === 'spell-list');
 				if (listChoice) used.add(listChoice.selectedValue);
 			}
@@ -322,7 +321,7 @@
 		character?.feats?.find((f) => f.source === 'background')?.featId ?? ''
 	);
 	const backgroundFeatDef = $derived(
-		backgroundFeatId ? feats.find((f) => f.id === backgroundFeatId) : null
+		backgroundFeatId ? findFeatDefEngine(feats, backgroundFeatId) : null
 	);
 
 	// Recompute when reached ASI levels change (e.g. back-nav changed level)
@@ -639,14 +638,45 @@
 										<div class="grid gap-1.5 sm:grid-cols-2">
 											{#each availCantrips as spell}
 												{@const isSelected = config?.cantrips.has(spell.id) ?? false}
+												{@const isSpellExpanded = expandedFeatId === `spell-${spell.id}`}
 												<SelectionCard
 													selected={isSelected}
 													disabled={!isSelected && (config?.cantrips.size ?? 0) >= 2}
 													onclick={() => toggleCantrip(i, spell.id)}
 													compact
 												>
-													<span class="text-sm font-medium">{spell.name}</span>
-													<Badge variant="secondary" class="ml-2 text-xs capitalize">{spell.school}</Badge>
+													<div class="flex items-center gap-2 pr-6">
+														<span class="text-sm font-medium">{spell.name}</span>
+														<Badge variant="secondary" class="text-xs capitalize">{spell.school}</Badge>
+														{#if spell.concentration}
+															<Badge variant="outline" class="text-xs">C</Badge>
+														{/if}
+													</div>
+													<p class="{isSpellExpanded ? '' : 'line-clamp-2'} mt-1 text-xs text-muted-foreground">{spell.description}</p>
+													<div class="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+														<span>
+															{spell.castingTime} &middot; {spell.range} &middot; {spell.duration}
+															&middot; {[
+																spell.components.verbal ? 'V' : '',
+																spell.components.somatic ? 'S' : '',
+																spell.components.material ? 'M' : ''
+															].filter(Boolean).join(', ') || '\u2014'}{#if spell.components.materialCost}&nbsp;({spell.components.materialCost} gp){/if}
+														</span>
+														<button
+															type="button"
+															onclick={(e) => toggleFeatExpand(`spell-${spell.id}`, e)}
+															class="ml-auto inline-flex items-center gap-0.5 text-primary/60 hover:text-primary"
+														>
+															{#if isSpellExpanded}
+																<ChevronUp class="size-3.5" />
+															{:else}
+																<ChevronDown class="size-3.5" />
+															{/if}
+														</button>
+													</div>
+													{#if isSpellExpanded && spell.components.material && spell.components.materialDescription}
+														<p class="mt-1 text-xs text-muted-foreground italic">Materials: {spell.components.materialDescription}</p>
+													{/if}
 												</SelectionCard>
 											{/each}
 										</div>
@@ -657,13 +687,44 @@
 										<div class="grid gap-1.5 sm:grid-cols-2">
 											{#each availLevel1 as spell}
 												{@const isSelected = config?.spell === spell.id}
+												{@const isSpellExpanded = expandedFeatId === `spell-${spell.id}`}
 												<SelectionCard
 													selected={isSelected}
 													onclick={() => setFeatSpell(i, spell.id)}
 													compact
 												>
-													<span class="text-sm font-medium">{spell.name}</span>
-													<Badge variant="secondary" class="ml-2 text-xs capitalize">{spell.school}</Badge>
+													<div class="flex items-center gap-2 pr-6">
+														<span class="text-sm font-medium">{spell.name}</span>
+														<Badge variant="secondary" class="text-xs capitalize">{spell.school}</Badge>
+														{#if spell.concentration}
+															<Badge variant="outline" class="text-xs">C</Badge>
+														{/if}
+													</div>
+													<p class="{isSpellExpanded ? '' : 'line-clamp-2'} mt-1 text-xs text-muted-foreground">{spell.description}</p>
+													<div class="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+														<span>
+															{spell.castingTime} &middot; {spell.range} &middot; {spell.duration}
+															&middot; {[
+																spell.components.verbal ? 'V' : '',
+																spell.components.somatic ? 'S' : '',
+																spell.components.material ? 'M' : ''
+															].filter(Boolean).join(', ') || '\u2014'}{#if spell.components.materialCost}&nbsp;({spell.components.materialCost} gp){/if}
+														</span>
+														<button
+															type="button"
+															onclick={(e) => toggleFeatExpand(`spell-${spell.id}`, e)}
+															class="ml-auto inline-flex items-center gap-0.5 text-primary/60 hover:text-primary"
+														>
+															{#if isSpellExpanded}
+																<ChevronUp class="size-3.5" />
+															{:else}
+																<ChevronDown class="size-3.5" />
+															{/if}
+														</button>
+													</div>
+													{#if isSpellExpanded && spell.components.material && spell.components.materialDescription}
+														<p class="mt-1 text-xs text-muted-foreground italic">Materials: {spell.components.materialDescription}</p>
+													{/if}
 												</SelectionCard>
 											{/each}
 										</div>
@@ -1010,14 +1071,45 @@
 											<div class="grid gap-1.5 sm:grid-cols-2">
 												{#each availCantrips as spell}
 													{@const isSelected = config?.cantrips.has(spell.id) ?? false}
+													{@const isSpellExpanded = expandedFeatId === `spell-${spell.id}`}
 													<SelectionCard
 														selected={isSelected}
 														disabled={!isSelected && (config?.cantrips.size ?? 0) >= 2}
 														onclick={() => toggleCantrip(i, spell.id)}
 														compact
 													>
-														<span class="text-sm font-medium">{spell.name}</span>
-														<Badge variant="secondary" class="ml-2 text-xs capitalize">{spell.school}</Badge>
+														<div class="flex items-center gap-2 pr-6">
+															<span class="text-sm font-medium">{spell.name}</span>
+															<Badge variant="secondary" class="text-xs capitalize">{spell.school}</Badge>
+															{#if spell.concentration}
+																<Badge variant="outline" class="text-xs">C</Badge>
+															{/if}
+														</div>
+														<p class="{isSpellExpanded ? '' : 'line-clamp-2'} mt-1 text-xs text-muted-foreground">{spell.description}</p>
+														<div class="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+															<span>
+																{spell.castingTime} &middot; {spell.range} &middot; {spell.duration}
+																&middot; {[
+																	spell.components.verbal ? 'V' : '',
+																	spell.components.somatic ? 'S' : '',
+																	spell.components.material ? 'M' : ''
+																].filter(Boolean).join(', ') || '\u2014'}{#if spell.components.materialCost}&nbsp;({spell.components.materialCost} gp){/if}
+															</span>
+															<button
+																type="button"
+																onclick={(e) => toggleFeatExpand(`spell-${spell.id}`, e)}
+																class="ml-auto inline-flex items-center gap-0.5 text-primary/60 hover:text-primary"
+															>
+																{#if isSpellExpanded}
+																	<ChevronUp class="size-3.5" />
+																{:else}
+																	<ChevronDown class="size-3.5" />
+																{/if}
+															</button>
+														</div>
+														{#if isSpellExpanded && spell.components.material && spell.components.materialDescription}
+															<p class="mt-1 text-xs text-muted-foreground italic">Materials: {spell.components.materialDescription}</p>
+														{/if}
 													</SelectionCard>
 												{/each}
 											</div>
@@ -1028,13 +1120,44 @@
 											<div class="grid gap-1.5 sm:grid-cols-2">
 												{#each availLevel1 as spell}
 													{@const isSelected = config?.spell === spell.id}
+													{@const isSpellExpanded = expandedFeatId === `spell-${spell.id}`}
 													<SelectionCard
 														selected={isSelected}
 														onclick={() => setFeatSpell(i, spell.id)}
 														compact
 													>
-														<span class="text-sm font-medium">{spell.name}</span>
-														<Badge variant="secondary" class="ml-2 text-xs capitalize">{spell.school}</Badge>
+														<div class="flex items-center gap-2 pr-6">
+															<span class="text-sm font-medium">{spell.name}</span>
+															<Badge variant="secondary" class="text-xs capitalize">{spell.school}</Badge>
+															{#if spell.concentration}
+																<Badge variant="outline" class="text-xs">C</Badge>
+															{/if}
+														</div>
+														<p class="{isSpellExpanded ? '' : 'line-clamp-2'} mt-1 text-xs text-muted-foreground">{spell.description}</p>
+														<div class="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+															<span>
+																{spell.castingTime} &middot; {spell.range} &middot; {spell.duration}
+																&middot; {[
+																	spell.components.verbal ? 'V' : '',
+																	spell.components.somatic ? 'S' : '',
+																	spell.components.material ? 'M' : ''
+																].filter(Boolean).join(', ') || '\u2014'}{#if spell.components.materialCost}&nbsp;({spell.components.materialCost} gp){/if}
+															</span>
+															<button
+																type="button"
+																onclick={(e) => toggleFeatExpand(`spell-${spell.id}`, e)}
+																class="ml-auto inline-flex items-center gap-0.5 text-primary/60 hover:text-primary"
+															>
+																{#if isSpellExpanded}
+																	<ChevronUp class="size-3.5" />
+																{:else}
+																	<ChevronDown class="size-3.5" />
+																{/if}
+															</button>
+														</div>
+														{#if isSpellExpanded && spell.components.material && spell.components.materialDescription}
+															<p class="mt-1 text-xs text-muted-foreground italic">Materials: {spell.components.materialDescription}</p>
+														{/if}
 													</SelectionCard>
 												{/each}
 											</div>

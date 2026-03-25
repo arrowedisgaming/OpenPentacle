@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.7.2] - 2026-03-25
+
+### Added
+- Origin feat configuration on background page — Magic Initiate cantrips/spell/ability and Skilled proficiency choices now happen during background selection instead of being deferred to the ASI & Feats step
+- Reusable `MagicInitiateConfig` and `SkilledConfig` wizard components for feat configuration
+- Spell detail cards with description, casting time, range, duration, components, and expand/collapse — matching the spells wizard step pattern
+- Engine functions `findFeatDef()` and `parseFeatIdHint()` for resolving suffixed feat IDs (e.g., `magic-initiate-cleric` → `magic-initiate`)
+- `FeatSpellConfig` type exported from engine for shared use
+
+### Fixed
+- "Magic Initiate Wizard" phantom feat name — background page now properly resolves suffixed feat IDs via prefix matching instead of falling back to kebab-to-title conversion
+- Origin feat choices now work for level 1 characters — previously the ASI & Feats step was conditional (level 4+) so level 1 characters could never configure Magic Initiate or Skilled choices
+- Background-granted Magic Initiate locks spell list per SRD (Acolyte → Cleric, Sage → Wizard) with grayed-out but visible selection
+- Spell school badge no longer overlaps checkmark on selected spell cards
+- Feat config state properly preserved when navigating back to background step
+- Review page and feats page now use consistent prefix-matching feat lookup
+
 ## [0.7.0] - 2026-03-24
 
 ### Added

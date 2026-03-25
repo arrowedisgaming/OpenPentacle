@@ -3,18 +3,22 @@
 	import { goto } from '$app/navigation';
 	import { onDestroy } from 'svelte';
 	import { wizardStore } from '$lib/stores/wizard.js';
-	import type { BackgroundDefinition } from '$lib/types/content-pack.js';
-	import type { AbilityBonus } from '$lib/types/character.js';
+	import type { BackgroundDefinition, SpellDefinition } from '$lib/types/content-pack.js';
+	import type { AbilityBonus, FeatChoiceSelection } from '$lib/types/character.js';
 	import type { AbilityId } from '$lib/types/common.js';
 	import { ABILITY_NAMES } from '$lib/types/common.js';
 	import { kebabToTitle } from '$lib/utils/format.js';
 	import { allAbilityTotals, allAbilityModifiers } from '$lib/engine/ability-scores.js';
 	import { formatModifier } from '$lib/utils/format.js';
+	import { findFeatDef, parseFeatIdHint } from '$lib/engine/feats.js';
+	import type { FeatSpellConfig } from '$lib/engine/feats.js';
 	import type { ContentPack } from '$lib/types/content-pack.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
 	import SelectionCard from '$lib/components/ui/selection-card/SelectionCard.svelte';
 	import DetailPanel from '$lib/components/ui/detail-panel/DetailPanel.svelte';
 	import WizardNav from '$lib/components/wizard/WizardNav.svelte';
+	import MagicInitiateConfig from '$lib/components/wizard/MagicInitiateConfig.svelte';
+	import SkilledConfig from '$lib/components/wizard/SkilledConfig.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
@@ -137,26 +141,116 @@
 	const previewModifiers = $derived(previewAbilityScores ? allAbilityModifiers(previewAbilityScores) : null);
 	const previewAbilities: AbilityId[] = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
-	// Resolve feat name from pack
-	const resolvedFeatName = $derived.by(() => {
+	// Resolve feat definition and hint from pack
+	const resolvedFeat = $derived.by(() => {
 		if (!selectedBg?.feat || !pack) return null;
 		const p = pack as ContentPack;
-		const feat = p.feats?.find((f: any) => f.id === selectedBg.feat);
-		return feat?.name ?? kebabToTitle(selectedBg.feat);
+		const { baseFeatId, hint } = parseFeatIdHint(p.feats ?? [], selectedBg.feat);
+		const def = findFeatDef(p.feats ?? [], selectedBg.feat);
+		return { def, baseFeatId, hint };
+	});
+	const resolvedFeatName = $derived(resolvedFeat?.def?.name ?? null);
+
+	// Spells from pack (for Magic Initiate config)
+	const packSpells: SpellDefinition[] = $derived((pack as ContentPack)?.spells ?? []);
+
+	// --- Origin feat configuration state ---
+	const featHasSpellChoices = $derived(
+		resolvedFeat?.def?.choices?.some((c) => c.type === 'spell-list') ?? false
+	);
+	const featHasSkillChoices = $derived(
+		resolvedFeat?.def?.choices?.some((c) => c.type === 'skill-or-tool') ?? false
+	);
+	const featNeedsConfig = $derived(featHasSpellChoices || featHasSkillChoices);
+
+	// Initialize feat config from existing character data (for back-navigation)
+	function initFeatConfig(): { mi: FeatSpellConfig; skilled: Set<string> } {
+		const existingFeat = wizardStore.getCharacter()?.feats?.find((f) => f.source === 'background');
+		if (!existingFeat?.choices?.length) {
+			return { mi: { spellList: '', cantrips: new Set(), spell: '', spellcastingAbility: '' }, skilled: new Set() };
+		}
+		const choices = existingFeat.choices;
+		const spellListChoice = choices.find((c) => c.choiceId === 'spell-list');
+		if (spellListChoice) {
+			return {
+				mi: {
+					spellList: spellListChoice.selectedValue,
+					cantrips: new Set([choices.find((c) => c.choiceId === 'cantrip-1')?.selectedValue, choices.find((c) => c.choiceId === 'cantrip-2')?.selectedValue].filter(Boolean) as string[]),
+					spell: choices.find((c) => c.choiceId === 'spell-1')?.selectedValue ?? '',
+					spellcastingAbility: choices.find((c) => c.choiceId === 'spellcasting-ability')?.selectedValue ?? ''
+				},
+				skilled: new Set()
+			};
+		}
+		const profChoices = choices.filter((c) => c.choiceId.startsWith('proficiency-'));
+		if (profChoices.length) {
+			return {
+				mi: { spellList: '', cantrips: new Set(), spell: '', spellcastingAbility: '' },
+				skilled: new Set(profChoices.map((c) => c.selectedValue).filter(Boolean))
+			};
+		}
+		return { mi: { spellList: '', cantrips: new Set(), spell: '', spellcastingAbility: '' }, skilled: new Set() };
+	}
+
+	const initFeat = initFeatConfig();
+	let miConfig = $state<FeatSpellConfig>(initFeat.mi);
+	let skilledSelections = $state<Set<string>>(initFeat.skilled);
+
+	// Reset feat config when user actively changes background (not on first render)
+	let prevBgForFeat = $state(selectedId);
+	$effect(() => {
+		if (selectedId && selectedId !== prevBgForFeat) {
+			miConfig = { spellList: '', cantrips: new Set(), spell: '', spellcastingAbility: '' };
+			skilledSelections = new Set();
+			prevBgForFeat = selectedId;
+		}
 	});
 
+	function isFeatConfigComplete(): boolean {
+		if (!featNeedsConfig) return true;
+		if (featHasSpellChoices) {
+			return !!miConfig.spellList && miConfig.cantrips.size === 2 && !!miConfig.spell && !!miConfig.spellcastingAbility;
+		}
+		if (featHasSkillChoices) {
+			return skilledSelections.size === 3;
+		}
+		return true;
+	}
+
+	function buildOriginFeatChoices(): FeatChoiceSelection[] {
+		if (featHasSpellChoices) {
+			const cantrips = Array.from(miConfig.cantrips);
+			return [
+				{ choiceId: 'spell-list', selectedValue: miConfig.spellList },
+				{ choiceId: 'cantrip-1', selectedValue: cantrips[0] ?? '' },
+				{ choiceId: 'cantrip-2', selectedValue: cantrips[1] ?? '' },
+				{ choiceId: 'spell-1', selectedValue: miConfig.spell },
+				{ choiceId: 'spellcasting-ability', selectedValue: miConfig.spellcastingAbility }
+			];
+		}
+		if (featHasSkillChoices) {
+			const arr = Array.from(skilledSelections);
+			return [
+				{ choiceId: 'proficiency-1', selectedValue: arr[0] ?? '' },
+				{ choiceId: 'proficiency-2', selectedValue: arr[1] ?? '' },
+				{ choiceId: 'proficiency-3', selectedValue: arr[2] ?? '' }
+			];
+		}
+		return [];
+	}
+
 	function proceed() {
-		if (!selectedId || !asiComplete()) return;
+		if (!selectedId || !asiComplete() || !isFeatConfigComplete()) return;
 
 		// Store background bonuses in originBonuses (filter out old background bonuses first)
 		const existingOriginBonuses = (wizardStore.getCharacter()?.abilityScores?.originBonuses ?? [])
 			.filter((b) => b.sourceType !== 'background');
 		const bgBonuses = buildBackgroundBonuses();
 
-		// Auto-assign background feat (not a choice — backgrounds grant a specific feat)
+		// Assign background feat with populated choices
 		const bgDef = backgrounds.find((b) => b.id === selectedId);
 		const feats = bgDef?.feat
-			? [{ featId: bgDef.feat, source: 'background', choices: [] as { choiceId: string; selectedValue: string }[] }]
+			? [{ featId: bgDef.feat, source: 'background', choices: buildOriginFeatChoices() }]
 			: [];
 
 		wizardStore.updateCharacter({
@@ -191,7 +285,7 @@
 		backLabel="Back"
 		nextLabel="Next: Skills"
 		onNext={proceed}
-		nextDisabled={!selectedId || !asiComplete()}
+		nextDisabled={!selectedId || !asiComplete() || !isFeatConfigComplete()}
 		compact
 	/>
 
@@ -236,10 +330,39 @@
 					{/if}
 					{#if selectedBg.feat}
 						<p><span class="font-medium">Origin Feat:</span> {resolvedFeatName}</p>
+						{#if resolvedFeat?.def}
+							<div class="mt-2 space-y-1">
+								{#each resolvedFeat.def.effects as effect}
+									<p class="text-xs text-muted-foreground">
+										<span class="font-medium text-foreground/80">{effect.name}.</span> {effect.description}
+									</p>
+								{/each}
+							</div>
+						{/if}
 					{/if}
 				</div>
 			</DetailPanel>
 		</div>
+
+		<!-- Origin Feat Configuration -->
+		{#if selectedBg.feat && featNeedsConfig}
+			{#if featHasSpellChoices}
+				<div class="mt-4">
+					<MagicInitiateConfig
+						spells={packSpells}
+						spellListOptions={resolvedFeat?.def?.choices?.find((c) => c.type === 'spell-list')?.options ?? ['cleric', 'druid', 'wizard']}
+						lockedSpellList={resolvedFeat?.hint ?? undefined}
+						bind:config={miConfig}
+					/>
+				</div>
+			{:else if featHasSkillChoices}
+				<div class="mt-4">
+					<SkilledConfig
+						bind:selections={skilledSelections}
+					/>
+				</div>
+			{/if}
+		{/if}
 
 		<!-- Ability Score Increases -->
 		{#if hasAbilityChoice}
@@ -342,6 +465,6 @@
 		backLabel="Back"
 		nextLabel="Next: Skills"
 		onNext={proceed}
-		nextDisabled={!selectedId || !asiComplete()}
+		nextDisabled={!selectedId || !asiComplete() || !isFeatConfigComplete()}
 	/>
 </div>

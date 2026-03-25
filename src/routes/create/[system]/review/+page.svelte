@@ -14,6 +14,7 @@
 	import { proficiencyBonus } from '$lib/engine/proficiency.js';
 	import { getClassFeaturesUpToLevel, getSubclassFeaturesUpToLevel } from '$lib/engine/class-progression.js';
 	import { kebabToTitle } from '$lib/utils/format.js';
+	import { findFeatDef as findFeatDefEngine } from '$lib/engine/feats.js';
 	import type { ContentPack } from '$lib/types/content-pack.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
 	import WizardNav from '$lib/components/wizard/WizardNav.svelte';
@@ -116,13 +117,8 @@
 	});
 
 	// Feat selections with resolved definitions
-	/** Find feat definition, handling suffixed IDs like "magic-initiate-wizard" */
 	function findFeatDef(featId: string): FeatDefinition | undefined {
-		// Try exact match first
-		const exact = pack.feats.find((f: FeatDefinition) => f.id === featId);
-		if (exact) return exact;
-		// Try matching repeatable feats by prefix (e.g., "magic-initiate-wizard" → "magic-initiate")
-		return pack.feats.find((f: FeatDefinition) => f.repeatable && featId.startsWith(f.id + '-'));
+		return findFeatDefEngine(pack.feats ?? [], featId);
 	}
 
 	const featSelections = $derived(() => {
@@ -469,7 +465,7 @@
 						{/each}
 
 						{#if backgroundDef.feat}
-							{@const featDef = pack.feats.find(f => f.id === backgroundDef.feat)}
+							{@const featDef = findFeatDefEngine(pack.feats ?? [], backgroundDef.feat)}
 							<Badge variant="outline" class="text-xs">Feat: {featDef?.name ?? kebabToTitle(backgroundDef.feat)}</Badge>
 						{/if}
 					</div>
