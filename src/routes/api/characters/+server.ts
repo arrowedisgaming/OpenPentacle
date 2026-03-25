@@ -51,6 +51,22 @@ export const POST: RequestHandler = async (event) => {
 
 	try {
 		const db = getDb();
+
+		// Ensure user row exists (Auth.js JWT strategy doesn't create DB rows)
+		const existingUser = await db
+			.select({ id: schema.users.id })
+			.from(schema.users)
+			.where(eq(schema.users.id, session.user.id))
+			.get();
+		if (!existingUser) {
+			await db.insert(schema.users).values({
+				id: session.user.id,
+				name: session.user.name ?? null,
+				email: session.user.email ?? null,
+				image: session.user.image ?? null,
+			});
+		}
+
 		await db.insert(schema.characters).values({
 			id,
 			userId: session.user.id,
