@@ -10,7 +10,9 @@
 			<Separator orientation="vertical" class="h-4" />
 			<a href="/licensing" class="hover:text-foreground">Licensing</a>
 			<Separator orientation="vertical" class="h-4" />
-			<span>Open source &middot; GPL-3.0</span>
+			<a href="https://github.com/arrowedisgaming/OpenPentacle/blob/main/CHANGELOG.md#{__APP_CHANGELOG_ANCHOR__}" target="_blank" rel="noopener noreferrer" class="hover:text-foreground">v{__APP_VERSION__}</a>
+			<Separator orientation="vertical" class="h-4" />
+			<a href="https://github.com/arrowedisgaming/OpenPentacle" target="_blank" rel="noopener noreferrer" class="hover:text-foreground">Open source</a> &middot; GPL-3.0
 		</div>
 	</div>
 </footer>
