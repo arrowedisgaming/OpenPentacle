@@ -40,9 +40,12 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 	response.headers.set('X-Content-Type-Options', 'nosniff');
 	response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
 	response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+	if (event.request.headers.get('x-forwarded-proto') === 'https' || event.url.protocol === 'https:') {
+		response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+	}
 	response.headers.set(
 		'Content-Security-Policy',
-		"default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://lh3.googleusercontent.com https://cdn.discordapp.com; connect-src 'self' https://cloudflareinsights.com"
+		"default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://lh3.googleusercontent.com https://cdn.discordapp.com; connect-src 'self' https://cloudflareinsights.com; frame-ancestors 'none'"
 	);
 	return response;
 };
@@ -86,20 +89,28 @@ if (typeof globalThis.setInterval === 'function') {
 	}
 }
 
+const SHARE_RATE_LIMIT_MAX = 10;
+
 const rateLimiting: Handle = async ({ event, resolve }) => {
-	if (!event.url.pathname.startsWith('/api/')) return resolve(event);
+	const path = event.url.pathname;
+	const isApi = path.startsWith('/api/');
+	const isShare = path.startsWith('/api/share/') || path.startsWith('/share/');
+
+	if (!isApi && !isShare) return resolve(event);
 
 	const ip = event.getClientAddress();
 	const now = Date.now();
+	const key = isShare ? `share:${ip}` : ip;
+	const max = isShare ? SHARE_RATE_LIMIT_MAX : RATE_LIMIT_MAX;
 
-	let entry = rateLimitMap.get(ip);
+	let entry = rateLimitMap.get(key);
 	if (!entry || entry.resetAt <= now) {
 		entry = { count: 0, resetAt: now + RATE_LIMIT_WINDOW_MS };
-		rateLimitMap.set(ip, entry);
+		rateLimitMap.set(key, entry);
 	}
 
 	entry.count++;
-	if (entry.count > RATE_LIMIT_MAX) {
+	if (entry.count > max) {
 		return json(
 			{ message: 'Too many requests' },
 			{

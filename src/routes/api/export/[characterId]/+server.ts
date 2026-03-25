@@ -10,6 +10,9 @@ export const GET: RequestHandler = async (event) => {
 	}
 
 	const format = event.url.searchParams.get('format') ?? 'json';
+	if (format !== 'json') {
+		throw error(400, 'Unsupported export format');
+	}
 
 	const db = getDb();
 	const character = await db
@@ -27,16 +30,12 @@ export const GET: RequestHandler = async (event) => {
 		throw error(404, 'Character not found');
 	}
 
-	if (format === 'json') {
-		const data = JSON.parse(character.data);
-		return new Response(JSON.stringify(data, null, 2), {
-			headers: {
-				'Content-Type': 'application/json',
-				'Content-Disposition': `attachment; filename="${character.name.replace(/[^a-zA-Z0-9]/g, '_')}.json"`
-			}
-		});
-	}
-
-	// PDF export will be implemented in Phase 4
-	throw error(400, 'PDF export is not yet available');
+	const data = JSON.parse(character.data);
+	const safeName = character.name.slice(0, 50).replace(/[^a-zA-Z0-9]/g, '_') || 'character';
+	return new Response(JSON.stringify(data, null, 2), {
+		headers: {
+			'Content-Type': 'application/json',
+			'Content-Disposition': `attachment; filename="${safeName}.json"`
+		}
+	});
 };

@@ -205,3 +205,19 @@ The health check hits `/api/health` every 30 seconds. If it fails, the logs will
 ### Sessions lost after restart
 
 This happens if `AUTH_SECRET` changes between restarts. The entrypoint script persists the auto-generated secret to `/data/.auth_secret`. If you're providing `AUTH_SECRET` via environment, make sure it stays the same.
+
+---
+
+## Security Notes
+
+### Cookie security
+
+Auth.js sets `SameSite=Lax` on session cookies by default. This prevents CSRF attacks from third-party sites while still allowing normal navigation links. The cookies are also `HttpOnly` (not accessible to JavaScript) and `Secure` (HTTPS-only in production).
+
+### Port binding
+
+The Docker Compose file binds to `127.0.0.1` (localhost only) by default. If you need the app accessible from other machines on your network, use a reverse proxy (see above) rather than changing the port binding.
+
+### HSTS
+
+The app sends a `Strict-Transport-Security` header. If you're running behind a reverse proxy that handles TLS, this tells browsers to always use HTTPS for your domain after the first visit.

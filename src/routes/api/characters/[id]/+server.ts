@@ -13,7 +13,14 @@ export const GET: RequestHandler = async (event) => {
 
 	const db = getDb();
 	const character = await db
-		.select()
+		.select({
+			id: schema.characters.id,
+			name: schema.characters.name,
+			systemId: schema.characters.systemId,
+			classSummary: schema.characters.classSummary,
+			level: schema.characters.level,
+			data: schema.characters.data
+		})
 		.from(schema.characters)
 		.where(
 			and(
@@ -33,7 +40,11 @@ export const GET: RequestHandler = async (event) => {
 	}
 
 	return json({
-		...character,
+		id: character.id,
+		name: character.name,
+		systemId: character.systemId,
+		classSummary: character.classSummary,
+		level: character.level,
 		data
 	});
 };

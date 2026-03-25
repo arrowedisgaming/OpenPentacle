@@ -90,7 +90,9 @@ export async function getOpen5eSpells(documentKeys: string[]): Promise<SpellDefi
 					// Skip individual spells that fail to map
 				}
 			}
-			console.log(`[Open5E] ${key}: ${mapped.length}/${rawSpells.length} spells mapped`);
+			if (process.env.NODE_ENV === 'development') {
+				console.log(`[Open5E] ${key}: ${mapped.length}/${rawSpells.length} spells mapped`);
+			}
 			await setCachedSpells(key, rawSpells[0]?.document?.display_name ?? key, mapped);
 			allSpells.push(...mapped);
 		} catch (err) {

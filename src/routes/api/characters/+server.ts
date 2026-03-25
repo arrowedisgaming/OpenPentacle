@@ -90,7 +90,6 @@ export const POST: RequestHandler = async (event) => {
 		return json({ id }, { status: 201 });
 	} catch (err: any) {
 		console.error('Character save error:', err);
-		const cause = err.cause?.message ?? '';
-		throw error(500, `Save failed: ${err.message}${cause ? ` (${cause})` : ''}`);
+		throw error(500, 'Failed to save character');
 	}
 };

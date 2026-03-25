@@ -2,7 +2,6 @@ import { SvelteKitAuth } from '@auth/sveltekit';
 import Google from '@auth/sveltekit/providers/google';
 import Discord from '@auth/sveltekit/providers/discord';
 import Credentials from '@auth/sveltekit/providers/credentials';
-import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { eq } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import { getDb, schema } from './db/index.js';

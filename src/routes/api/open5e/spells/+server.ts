@@ -22,8 +22,6 @@ export const GET: RequestHandler = async (event) => {
 		return json([]);
 	}
 
-	console.log(`[Open5E] Fetching spells for sources: ${sources.join(', ')}`);
 	const spells = await getOpen5eSpells(sources);
-	console.log(`[Open5E] Returning ${spells.length} spells`);
 	return json(spells);
 };

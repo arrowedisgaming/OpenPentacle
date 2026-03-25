@@ -2,7 +2,7 @@ services:
   app:
     build: .
     ports:
-      - "${PORT:-3000}:3000"
+      - "127.0.0.1:${PORT:-3000}:3000"
     volumes:
       - app-data:/data
     environment:
