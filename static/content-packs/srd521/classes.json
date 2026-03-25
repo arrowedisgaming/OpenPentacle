@@ -584,7 +584,7 @@
       {
         "id": "path-of-the-berserker",
         "name": "Path of the Berserker",
-        "description": "For some Barbarians, rage is a means to an end \u2014 that end being violence. The Path of the Berserker is a path of untrammeled fury, slick with blood.",
+        "description": "For some Barbarians, rage is a means to an end — that end being violence. The Path of the Berserker is a path of untrammeled fury, slick with blood.",
         "features": [
           {
             "id": "frenzy",
@@ -709,7 +709,7 @@
       "type": "full",
       "ritual": true,
       "spellList": "bard",
-      "preparedCaster": false,
+      "preparedCaster": true,
       "cantrips": true
     },
     "progression": [
@@ -731,10 +731,10 @@
           }
         ],
         "cantripsKnown": 2,
-        "spellsKnown": 4,
         "spellSlots": [
           2
-        ]
+        ],
+        "preparedSpells": 4
       },
       {
         "level": 2,
@@ -854,10 +854,10 @@
           }
         ],
         "cantripsKnown": 2,
-        "spellsKnown": 5,
         "spellSlots": [
           3
-        ]
+        ],
+        "preparedSpells": 5
       },
       {
         "level": 3,
@@ -871,11 +871,11 @@
           }
         ],
         "cantripsKnown": 2,
-        "spellsKnown": 6,
         "spellSlots": [
           4,
           2
-        ]
+        ],
+        "preparedSpells": 6
       },
       {
         "level": 4,
@@ -889,11 +889,11 @@
           }
         ],
         "cantripsKnown": 3,
-        "spellsKnown": 7,
         "spellSlots": [
           4,
           3
-        ]
+        ],
+        "preparedSpells": 7
       },
       {
         "level": 5,
@@ -907,24 +907,24 @@
           }
         ],
         "cantripsKnown": 3,
-        "spellsKnown": 8,
         "spellSlots": [
           4,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 9
       },
       {
         "level": 6,
         "proficiencyBonus": 3,
         "features": [],
         "cantripsKnown": 3,
-        "spellsKnown": 9,
         "spellSlots": [
           4,
           3,
           3
-        ]
+        ],
+        "preparedSpells": 10
       },
       {
         "level": 7,
@@ -938,13 +938,13 @@
           }
         ],
         "cantripsKnown": 3,
-        "spellsKnown": 10,
         "spellSlots": [
           4,
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 11
       },
       {
         "level": 8,
@@ -958,13 +958,13 @@
           }
         ],
         "cantripsKnown": 3,
-        "spellsKnown": 11,
         "spellSlots": [
           4,
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 12
       },
       {
         "level": 9,
@@ -1078,14 +1078,14 @@
           }
         ],
         "cantripsKnown": 3,
-        "spellsKnown": 12,
         "spellSlots": [
           4,
           3,
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 14
       },
       {
         "level": 10,
@@ -1099,21 +1099,20 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 14,
         "spellSlots": [
           4,
           3,
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 15
       },
       {
         "level": 11,
         "proficiencyBonus": 4,
         "features": [],
         "cantripsKnown": 4,
-        "spellsKnown": 15,
         "spellSlots": [
           4,
           3,
@@ -1121,7 +1120,8 @@
           3,
           2,
           1
-        ]
+        ],
+        "preparedSpells": 16
       },
       {
         "level": 12,
@@ -1135,7 +1135,6 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 15,
         "spellSlots": [
           4,
           3,
@@ -1143,14 +1142,14 @@
           3,
           2,
           1
-        ]
+        ],
+        "preparedSpells": 16
       },
       {
         "level": 13,
         "proficiencyBonus": 5,
         "features": [],
         "cantripsKnown": 4,
-        "spellsKnown": 16,
         "spellSlots": [
           4,
           3,
@@ -1159,14 +1158,14 @@
           2,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 17
       },
       {
         "level": 14,
         "proficiencyBonus": 5,
         "features": [],
         "cantripsKnown": 4,
-        "spellsKnown": 18,
         "spellSlots": [
           4,
           3,
@@ -1175,14 +1174,14 @@
           2,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 17
       },
       {
         "level": 15,
         "proficiencyBonus": 5,
         "features": [],
         "cantripsKnown": 4,
-        "spellsKnown": 19,
         "spellSlots": [
           4,
           3,
@@ -1192,7 +1191,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 18
       },
       {
         "level": 16,
@@ -1206,7 +1206,6 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 19,
         "spellSlots": [
           4,
           3,
@@ -1216,14 +1215,14 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 18
       },
       {
         "level": 17,
         "proficiencyBonus": 6,
         "features": [],
         "cantripsKnown": 4,
-        "spellsKnown": 20,
         "spellSlots": [
           4,
           3,
@@ -1234,7 +1233,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 19
       },
       {
         "level": 18,
@@ -1248,7 +1248,6 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 22,
         "spellSlots": [
           4,
           3,
@@ -1259,7 +1258,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 20
       },
       {
         "level": 19,
@@ -1273,7 +1273,6 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 22,
         "spellSlots": [
           4,
           3,
@@ -1284,7 +1283,8 @@
           1,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 21
       },
       {
         "level": 20,
@@ -1298,7 +1298,6 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 22,
         "spellSlots": [
           4,
           3,
@@ -1309,7 +1308,8 @@
           2,
           1,
           1
-        ]
+        ],
+        "preparedSpells": 22
       }
     ],
     "subclasses": [
@@ -1814,7 +1814,7 @@
       {
         "id": "life-domain",
         "name": "Life Domain",
-        "description": "The Life Domain focuses on the vibrant positive energy \u2014 one of the fundamental forces of the multiverse \u2014 that sustains all life.",
+        "description": "The Life Domain focuses on the vibrant positive energy — one of the fundamental forces of the multiverse — that sustains all life.",
         "features": [
           {
             "id": "disciple-of-life",
@@ -3810,7 +3810,10 @@
             ]
           }
         ],
-        "preparedSpells": 2
+        "preparedSpells": 2,
+        "spellSlots": [
+          2
+        ]
       },
       {
         "level": 2,
@@ -4311,7 +4314,7 @@
       "type": "half",
       "ritual": false,
       "spellList": "ranger",
-      "preparedCaster": false,
+      "preparedCaster": true,
       "cantrips": false
     },
     "progression": [
@@ -4522,7 +4525,11 @@
               }
             ]
           }
-        ]
+        ],
+        "spellSlots": [
+          2
+        ],
+        "preparedSpells": 2
       },
       {
         "level": 2,
@@ -4581,10 +4588,10 @@
             ]
           }
         ],
-        "spellsKnown": 2,
         "spellSlots": [
           2
-        ]
+        ],
+        "preparedSpells": 3
       },
       {
         "level": 3,
@@ -4597,10 +4604,10 @@
             "level": 3
           }
         ],
-        "spellsKnown": 3,
         "spellSlots": [
           3
-        ]
+        ],
+        "preparedSpells": 4
       },
       {
         "level": 4,
@@ -4613,10 +4620,10 @@
             "level": 4
           }
         ],
-        "spellsKnown": 3,
         "spellSlots": [
           3
-        ]
+        ],
+        "preparedSpells": 5
       },
       {
         "level": 5,
@@ -4629,11 +4636,11 @@
             "level": 5
           }
         ],
-        "spellsKnown": 4,
         "spellSlots": [
           4,
           2
-        ]
+        ],
+        "preparedSpells": 6
       },
       {
         "level": 6,
@@ -4646,21 +4653,21 @@
             "level": 6
           }
         ],
-        "spellsKnown": 4,
         "spellSlots": [
           4,
           2
-        ]
+        ],
+        "preparedSpells": 6
       },
       {
         "level": 7,
         "proficiencyBonus": 3,
         "features": [],
-        "spellsKnown": 5,
         "spellSlots": [
           4,
           3
-        ]
+        ],
+        "preparedSpells": 7
       },
       {
         "level": 8,
@@ -4673,11 +4680,11 @@
             "level": 8
           }
         ],
-        "spellsKnown": 5,
         "spellSlots": [
           4,
           3
-        ]
+        ],
+        "preparedSpells": 7
       },
       {
         "level": 9,
@@ -4790,12 +4797,12 @@
             ]
           }
         ],
-        "spellsKnown": 6,
         "spellSlots": [
           4,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 9
       },
       {
         "level": 10,
@@ -4808,23 +4815,23 @@
             "level": 10
           }
         ],
-        "spellsKnown": 6,
         "spellSlots": [
           4,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 9
       },
       {
         "level": 11,
         "proficiencyBonus": 4,
         "features": [],
-        "spellsKnown": 7,
         "spellSlots": [
           4,
           3,
           3
-        ]
+        ],
+        "preparedSpells": 10
       },
       {
         "level": 12,
@@ -4837,12 +4844,12 @@
             "level": 12
           }
         ],
-        "spellsKnown": 7,
         "spellSlots": [
           4,
           3,
           3
-        ]
+        ],
+        "preparedSpells": 10
       },
       {
         "level": 13,
@@ -4855,13 +4862,13 @@
             "level": 13
           }
         ],
-        "spellsKnown": 8,
         "spellSlots": [
           4,
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 11
       },
       {
         "level": 14,
@@ -4874,25 +4881,25 @@
             "level": 14
           }
         ],
-        "spellsKnown": 8,
         "spellSlots": [
           4,
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 11
       },
       {
         "level": 15,
         "proficiencyBonus": 5,
         "features": [],
-        "spellsKnown": 9,
         "spellSlots": [
           4,
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 12
       },
       {
         "level": 16,
@@ -4905,13 +4912,13 @@
             "level": 16
           }
         ],
-        "spellsKnown": 9,
         "spellSlots": [
           4,
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 12
       },
       {
         "level": 17,
@@ -4924,14 +4931,14 @@
             "level": 17
           }
         ],
-        "spellsKnown": 10,
         "spellSlots": [
           4,
           3,
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 14
       },
       {
         "level": 18,
@@ -4944,14 +4951,14 @@
             "level": 18
           }
         ],
-        "spellsKnown": 10,
         "spellSlots": [
           4,
           3,
           3,
           3,
           1
-        ]
+        ],
+        "preparedSpells": 14
       },
       {
         "level": 19,
@@ -4964,14 +4971,14 @@
             "level": 19
           }
         ],
-        "spellsKnown": 10,
         "spellSlots": [
           4,
           3,
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 15
       },
       {
         "level": 20,
@@ -4984,14 +4991,14 @@
             "level": 20
           }
         ],
-        "spellsKnown": 11,
         "spellSlots": [
           4,
           3,
           3,
           3,
           2
-        ]
+        ],
+        "preparedSpells": 15
       }
     ],
     "subclasses": [
@@ -5009,25 +5016,65 @@
           {
             "id": "hunters-prey",
             "name": "Hunter's Prey",
-            "description": "You gain one of the following features of your choice: Colossus Slayer (once per turn when you hit a creature with a weapon, the creature takes an extra 1d8 damage if it's below its hit point maximum), Giant Killer (when a Large or larger creature within 5 feet of you hits or misses you with an attack, you can take a Reaction to attack that creature), or Horde Breaker (once per turn when you make an attack, you can make another attack with the same weapon against a different creature within 5 feet of the original target).",
-            "level": 3
+            "description": "You gain one of the following features of your choice. Whenever you finish a Short or Long Rest, you can replace the chosen option with the other one.",
+            "level": 3,
+            "choices": [
+              {
+                "id": "hunters-prey",
+                "name": "Hunter's Prey",
+                "description": "Choose one of the following features.",
+                "options": [
+                  {
+                    "id": "colossus-slayer",
+                    "name": "Colossus Slayer",
+                    "description": "Your tenacity can wear down even the most resilient foes. When you hit a creature with a weapon, the weapon deals an extra 1d8 damage to the target if it's missing any of its Hit Points. You can deal this extra damage only once per turn."
+                  },
+                  {
+                    "id": "horde-breaker",
+                    "name": "Horde Breaker",
+                    "description": "Once on each of your turns when you make an attack with a weapon, you can make another attack with the same weapon against a different creature that is within 5 feet of the original target, that is within the weapon's range, and that you haven't attacked this turn."
+                  }
+                ],
+                "count": 1
+              }
+            ]
           },
           {
             "id": "defensive-tactics",
             "name": "Defensive Tactics",
-            "description": "You gain one of the following features of your choice: Escape the Horde (Opportunity Attacks have Disadvantage against you), Multiattack Defense (when a creature hits you with an attack, you gain +4 to AC against all subsequent attacks that creature makes during the current turn), or Steel Will (you have Advantage on saving throws against the Frightened condition).",
-            "level": 7
+            "description": "You gain one of the following features of your choice. Whenever you finish a Short or Long Rest, you can replace the chosen option with the other one.",
+            "level": 7,
+            "choices": [
+              {
+                "id": "defensive-tactics",
+                "name": "Defensive Tactics",
+                "description": "Choose one of the following features.",
+                "options": [
+                  {
+                    "id": "escape-the-horde",
+                    "name": "Escape the Horde",
+                    "description": "Opportunity Attacks have Disadvantage against you."
+                  },
+                  {
+                    "id": "multiattack-defense",
+                    "name": "Multiattack Defense",
+                    "description": "When a creature hits you with an attack roll, that creature has Disadvantage on all other attack rolls against you this turn."
+                  }
+                ],
+                "count": 1
+              }
+            ]
           },
           {
             "id": "superior-hunters-prey",
             "name": "Superior Hunter's Prey",
-            "description": "You gain one of the following features of your choice: Volley (you can use your action to make a ranged attack against any number of creatures within 10 feet of a point you can see within your weapon's range, using a separate attack roll for each), or Whirlwind Attack (you can use your action to make a melee attack against any number of creatures within 5 feet of you, with a separate attack roll for each).",
+            "description": "Once per turn when you deal damage to a creature marked by your Hunter's Mark, you can also deal that spell's extra damage to a different creature that you can see within 30 feet of the first creature.",
             "level": 11
           },
           {
             "id": "superior-hunters-defense",
             "name": "Superior Hunter's Defense",
-            "description": "You gain one of the following features of your choice: Evasion, Stand Against the Tide (when a hostile creature misses you with a melee attack, you can use your Reaction to force that creature to repeat the same attack against another creature), or Uncanny Dodge (when an attacker you can see hits you with an attack, you can halve the attack's damage against you).",
+            "description": "When you take damage, you can take a Reaction to give yourself Resistance to that damage and any other damage of the same type until the end of the current turn.",
             "level": 15
           }
         ]
@@ -5938,7 +5985,7 @@
       "type": "full",
       "ritual": false,
       "spellList": "sorcerer",
-      "preparedCaster": false,
+      "preparedCaster": true,
       "cantrips": true
     },
     "progression": [
@@ -5960,10 +6007,10 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 2,
         "spellSlots": [
           2
-        ]
+        ],
+        "preparedSpells": 2
       },
       {
         "level": 2,
@@ -6043,13 +6090,13 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 3,
         "spellSlots": [
           3
         ],
         "classSpecific": {
           "sorceryPoints": 2
-        }
+        },
+        "preparedSpells": 3
       },
       {
         "level": 3,
@@ -6063,14 +6110,14 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 4,
         "spellSlots": [
           4,
           2
         ],
         "classSpecific": {
           "sorceryPoints": 3
-        }
+        },
+        "preparedSpells": 6
       },
       {
         "level": 4,
@@ -6084,14 +6131,14 @@
           }
         ],
         "cantripsKnown": 5,
-        "spellsKnown": 5,
         "spellSlots": [
           4,
           3
         ],
         "classSpecific": {
           "sorceryPoints": 4
-        }
+        },
+        "preparedSpells": 7
       },
       {
         "level": 5,
@@ -6105,7 +6152,6 @@
           }
         ],
         "cantripsKnown": 5,
-        "spellsKnown": 6,
         "spellSlots": [
           4,
           3,
@@ -6113,14 +6159,14 @@
         ],
         "classSpecific": {
           "sorceryPoints": 5
-        }
+        },
+        "preparedSpells": 9
       },
       {
         "level": 6,
         "proficiencyBonus": 3,
         "features": [],
         "cantripsKnown": 5,
-        "spellsKnown": 7,
         "spellSlots": [
           4,
           3,
@@ -6128,7 +6174,8 @@
         ],
         "classSpecific": {
           "sorceryPoints": 6
-        }
+        },
+        "preparedSpells": 10
       },
       {
         "level": 7,
@@ -6142,7 +6189,6 @@
           }
         ],
         "cantripsKnown": 5,
-        "spellsKnown": 8,
         "spellSlots": [
           4,
           3,
@@ -6151,7 +6197,8 @@
         ],
         "classSpecific": {
           "sorceryPoints": 7
-        }
+        },
+        "preparedSpells": 11
       },
       {
         "level": 8,
@@ -6165,7 +6212,6 @@
           }
         ],
         "cantripsKnown": 5,
-        "spellsKnown": 9,
         "spellSlots": [
           4,
           3,
@@ -6174,14 +6220,14 @@
         ],
         "classSpecific": {
           "sorceryPoints": 8
-        }
+        },
+        "preparedSpells": 12
       },
       {
         "level": 9,
         "proficiencyBonus": 4,
         "features": [],
         "cantripsKnown": 5,
-        "spellsKnown": 10,
         "spellSlots": [
           4,
           3,
@@ -6191,7 +6237,8 @@
         ],
         "classSpecific": {
           "sorceryPoints": 9
-        }
+        },
+        "preparedSpells": 14
       },
       {
         "level": 10,
@@ -6265,7 +6312,6 @@
           }
         ],
         "cantripsKnown": 6,
-        "spellsKnown": 11,
         "spellSlots": [
           4,
           3,
@@ -6275,14 +6321,14 @@
         ],
         "classSpecific": {
           "sorceryPoints": 10
-        }
+        },
+        "preparedSpells": 15
       },
       {
         "level": 11,
         "proficiencyBonus": 4,
         "features": [],
         "cantripsKnown": 6,
-        "spellsKnown": 12,
         "spellSlots": [
           4,
           3,
@@ -6293,7 +6339,8 @@
         ],
         "classSpecific": {
           "sorceryPoints": 11
-        }
+        },
+        "preparedSpells": 16
       },
       {
         "level": 12,
@@ -6307,7 +6354,6 @@
           }
         ],
         "cantripsKnown": 6,
-        "spellsKnown": 12,
         "spellSlots": [
           4,
           3,
@@ -6318,14 +6364,14 @@
         ],
         "classSpecific": {
           "sorceryPoints": 12
-        }
+        },
+        "preparedSpells": 16
       },
       {
         "level": 13,
         "proficiencyBonus": 5,
         "features": [],
         "cantripsKnown": 6,
-        "spellsKnown": 13,
         "spellSlots": [
           4,
           3,
@@ -6337,14 +6383,14 @@
         ],
         "classSpecific": {
           "sorceryPoints": 13
-        }
+        },
+        "preparedSpells": 17
       },
       {
         "level": 14,
         "proficiencyBonus": 5,
         "features": [],
         "cantripsKnown": 6,
-        "spellsKnown": 13,
         "spellSlots": [
           4,
           3,
@@ -6356,14 +6402,14 @@
         ],
         "classSpecific": {
           "sorceryPoints": 14
-        }
+        },
+        "preparedSpells": 17
       },
       {
         "level": 15,
         "proficiencyBonus": 5,
         "features": [],
         "cantripsKnown": 6,
-        "spellsKnown": 14,
         "spellSlots": [
           4,
           3,
@@ -6376,7 +6422,8 @@
         ],
         "classSpecific": {
           "sorceryPoints": 15
-        }
+        },
+        "preparedSpells": 18
       },
       {
         "level": 16,
@@ -6390,7 +6437,6 @@
           }
         ],
         "cantripsKnown": 6,
-        "spellsKnown": 14,
         "spellSlots": [
           4,
           3,
@@ -6403,7 +6449,8 @@
         ],
         "classSpecific": {
           "sorceryPoints": 16
-        }
+        },
+        "preparedSpells": 18
       },
       {
         "level": 17,
@@ -6477,7 +6524,6 @@
           }
         ],
         "cantripsKnown": 6,
-        "spellsKnown": 15,
         "spellSlots": [
           4,
           3,
@@ -6491,14 +6537,14 @@
         ],
         "classSpecific": {
           "sorceryPoints": 17
-        }
+        },
+        "preparedSpells": 19
       },
       {
         "level": 18,
         "proficiencyBonus": 6,
         "features": [],
         "cantripsKnown": 6,
-        "spellsKnown": 15,
         "spellSlots": [
           4,
           3,
@@ -6512,7 +6558,8 @@
         ],
         "classSpecific": {
           "sorceryPoints": 18
-        }
+        },
+        "preparedSpells": 20
       },
       {
         "level": 19,
@@ -6526,7 +6573,6 @@
           }
         ],
         "cantripsKnown": 6,
-        "spellsKnown": 15,
         "spellSlots": [
           4,
           3,
@@ -6540,7 +6586,8 @@
         ],
         "classSpecific": {
           "sorceryPoints": 19
-        }
+        },
+        "preparedSpells": 21
       },
       {
         "level": 20,
@@ -6554,7 +6601,6 @@
           }
         ],
         "cantripsKnown": 6,
-        "spellsKnown": 15,
         "spellSlots": [
           4,
           3,
@@ -6568,7 +6614,8 @@
         ],
         "classSpecific": {
           "sorceryPoints": 20
-        }
+        },
+        "preparedSpells": 22
       }
     ],
     "subclasses": [
@@ -6685,7 +6732,7 @@
       "type": "pact",
       "ritual": false,
       "spellList": "warlock",
-      "preparedCaster": false,
+      "preparedCaster": true,
       "cantrips": true
     },
     "progression": [
@@ -6842,14 +6889,14 @@
           }
         ],
         "cantripsKnown": 2,
-        "spellsKnown": 2,
         "spellSlots": [
           1
         ],
         "classSpecific": {
           "slotLevel": 1,
           "invocationsKnown": 1
-        }
+        },
+        "preparedSpells": 2
       },
       {
         "level": 2,
@@ -6863,14 +6910,14 @@
           }
         ],
         "cantripsKnown": 2,
-        "spellsKnown": 3,
         "spellSlots": [
           2
         ],
         "classSpecific": {
           "slotLevel": 1,
           "invocationsKnown": 3
-        }
+        },
+        "preparedSpells": 3
       },
       {
         "level": 3,
@@ -6884,14 +6931,14 @@
           }
         ],
         "cantripsKnown": 2,
-        "spellsKnown": 4,
         "spellSlots": [
           2
         ],
         "classSpecific": {
           "slotLevel": 2,
           "invocationsKnown": 3
-        }
+        },
+        "preparedSpells": 4
       },
       {
         "level": 4,
@@ -6905,56 +6952,56 @@
           }
         ],
         "cantripsKnown": 3,
-        "spellsKnown": 5,
         "spellSlots": [
           2
         ],
         "classSpecific": {
           "slotLevel": 2,
           "invocationsKnown": 3
-        }
+        },
+        "preparedSpells": 5
       },
       {
         "level": 5,
         "proficiencyBonus": 3,
         "features": [],
         "cantripsKnown": 3,
-        "spellsKnown": 6,
         "spellSlots": [
           2
         ],
         "classSpecific": {
           "slotLevel": 3,
           "invocationsKnown": 5
-        }
+        },
+        "preparedSpells": 6
       },
       {
         "level": 6,
         "proficiencyBonus": 3,
         "features": [],
         "cantripsKnown": 3,
-        "spellsKnown": 7,
         "spellSlots": [
           2
         ],
         "classSpecific": {
           "slotLevel": 3,
           "invocationsKnown": 5
-        }
+        },
+        "preparedSpells": 7
       },
       {
         "level": 7,
         "proficiencyBonus": 3,
         "features": [],
         "cantripsKnown": 3,
-        "spellsKnown": 8,
         "spellSlots": [
           2
         ],
         "classSpecific": {
           "slotLevel": 4,
           "invocationsKnown": 6
-        }
+        },
+        "preparedSpells": 8
       },
       {
         "level": 8,
@@ -6968,14 +7015,14 @@
           }
         ],
         "cantripsKnown": 3,
-        "spellsKnown": 9,
         "spellSlots": [
           2
         ],
         "classSpecific": {
           "slotLevel": 4,
           "invocationsKnown": 6
-        }
+        },
+        "preparedSpells": 9
       },
       {
         "level": 9,
@@ -6989,28 +7036,28 @@
           }
         ],
         "cantripsKnown": 3,
-        "spellsKnown": 10,
         "spellSlots": [
           2
         ],
         "classSpecific": {
           "slotLevel": 5,
           "invocationsKnown": 7
-        }
+        },
+        "preparedSpells": 10
       },
       {
         "level": 10,
         "proficiencyBonus": 4,
         "features": [],
         "cantripsKnown": 4,
-        "spellsKnown": 10,
         "spellSlots": [
           2
         ],
         "classSpecific": {
           "slotLevel": 5,
           "invocationsKnown": 7
-        }
+        },
+        "preparedSpells": 10
       },
       {
         "level": 11,
@@ -7024,14 +7071,14 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 11,
         "spellSlots": [
           3
         ],
         "classSpecific": {
           "slotLevel": 5,
           "invocationsKnown": 7
-        }
+        },
+        "preparedSpells": 11
       },
       {
         "level": 12,
@@ -7045,14 +7092,14 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 11,
         "spellSlots": [
           3
         ],
         "classSpecific": {
           "slotLevel": 5,
           "invocationsKnown": 8
-        }
+        },
+        "preparedSpells": 11
       },
       {
         "level": 13,
@@ -7066,28 +7113,28 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 12,
         "spellSlots": [
           3
         ],
         "classSpecific": {
           "slotLevel": 5,
           "invocationsKnown": 8
-        }
+        },
+        "preparedSpells": 12
       },
       {
         "level": 14,
         "proficiencyBonus": 5,
         "features": [],
         "cantripsKnown": 4,
-        "spellsKnown": 12,
         "spellSlots": [
           3
         ],
         "classSpecific": {
           "slotLevel": 5,
           "invocationsKnown": 8
-        }
+        },
+        "preparedSpells": 12
       },
       {
         "level": 15,
@@ -7101,14 +7148,14 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 13,
         "spellSlots": [
           3
         ],
         "classSpecific": {
           "slotLevel": 5,
           "invocationsKnown": 9
-        }
+        },
+        "preparedSpells": 13
       },
       {
         "level": 16,
@@ -7122,14 +7169,14 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 13,
         "spellSlots": [
           3
         ],
         "classSpecific": {
           "slotLevel": 5,
           "invocationsKnown": 9
-        }
+        },
+        "preparedSpells": 13
       },
       {
         "level": 17,
@@ -7143,28 +7190,28 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 14,
         "spellSlots": [
           4
         ],
         "classSpecific": {
           "slotLevel": 5,
           "invocationsKnown": 9
-        }
+        },
+        "preparedSpells": 14
       },
       {
         "level": 18,
         "proficiencyBonus": 6,
         "features": [],
         "cantripsKnown": 4,
-        "spellsKnown": 14,
         "spellSlots": [
           4
         ],
         "classSpecific": {
           "slotLevel": 5,
           "invocationsKnown": 10
-        }
+        },
+        "preparedSpells": 14
       },
       {
         "level": 19,
@@ -7178,14 +7225,14 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 15,
         "spellSlots": [
           4
         ],
         "classSpecific": {
           "slotLevel": 5,
           "invocationsKnown": 10
-        }
+        },
+        "preparedSpells": 15
       },
       {
         "level": 20,
@@ -7199,21 +7246,21 @@
           }
         ],
         "cantripsKnown": 4,
-        "spellsKnown": 15,
         "spellSlots": [
           4
         ],
         "classSpecific": {
           "slotLevel": 5,
           "invocationsKnown": 10
-        }
+        },
+        "preparedSpells": 15
       }
     ],
     "subclasses": [
       {
         "id": "fiend-patron",
         "name": "Fiend Patron",
-        "description": "Your pact draws on the Lower Planes, the realms of perdition. You might forge a bargain with a demon lord, an archdevil, or another fiend. That patron's aims are evil \u2014 the corruption or destruction of all things \u2014 and your path is defined by the extent to which you strive against those aims.",
+        "description": "Your pact draws on the Lower Planes, the realms of perdition. You might forge a bargain with a demon lord, an archdevil, or another fiend. That patron's aims are evil — the corruption or destruction of all things — and your path is defined by the extent to which you strive against those aims.",
         "features": [
           {
             "id": "dark-ones-blessing",

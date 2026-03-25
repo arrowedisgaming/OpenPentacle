@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.7.4] - 2026-03-25
+
+### Fixed
+- Ranger, Bard, Sorcerer, and Warlock now use SRD 5.2.1 prepared-spell model (was still using 2014 "spells known")
+- Ranger L1 spellcasting fully functional — was missing spell slots and spell count entirely
+- Paladin L1 now has spell slots (was missing `spellSlots: [2]`)
+- Hunter subclass features updated to SRD 5.2.1: Hunter's Prey (L3) and Defensive Tactics (L7) now have interactive choice UI; L11/L15 updated to single-ability format
+- Cantrips counter hidden on spell page for classes with no cantrips (Ranger, Paladin)
+- Subclass feature choices now persist when navigating back to the subclass step
+- Subclass step validates that all required feature choices are made before proceeding
+
 ## [0.7.3] - 2026-03-25
 
 ### Fixed

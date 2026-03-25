@@ -390,7 +390,7 @@
 	<!-- Sticky spell counter bar (top-14 = below h-14 header) -->
 	<div class="sticky top-14 z-20 -mx-4 px-4 py-2 bg-background/95 backdrop-blur-sm border-b border-border/50 mt-4">
 		<div class="flex items-center justify-center gap-6">
-			{#if !(isSpellbookCaster && spellPhase === 'prepare')}
+			{#if !(isSpellbookCaster && spellPhase === 'prepare') && maxCantrips > 0}
 				<div class="text-center">
 					<div class="text-xs text-muted-foreground">Cantrips</div>
 					<div class="text-lg font-bold tabular-nums {selectedCantrips >= maxCantrips ? 'text-primary' : ''}">
