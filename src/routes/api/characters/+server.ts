@@ -52,17 +52,25 @@ export const POST: RequestHandler = async (event) => {
 	try {
 		const db = getDb();
 
-		// Ensure user row exists (Auth.js JWT strategy doesn't create DB rows)
+		// Ensure user row exists (Auth.js JWT strategy doesn't create DB rows).
+		// A user may sign in via multiple providers (Google + Discord) sharing the
+		// same email. Each provider produces a different user ID, but the email
+		// column has a unique constraint. If the ID doesn't exist but the email
+		// does, we insert a new row without the email to avoid the unique conflict.
 		const existingUser = await db
 			.select({ id: schema.users.id })
 			.from(schema.users)
 			.where(eq(schema.users.id, session.user.id))
 			.get();
 		if (!existingUser) {
+			const email = session.user.email ?? null;
+			const emailTaken = email
+				? !!(await db.select({ id: schema.users.id }).from(schema.users).where(eq(schema.users.email, email)).get())
+				: false;
 			await db.insert(schema.users).values({
 				id: session.user.id,
 				name: session.user.name ?? null,
-				email: session.user.email ?? null,
+				email: emailTaken ? null : email,
 				image: session.user.image ?? null,
 			});
 		}

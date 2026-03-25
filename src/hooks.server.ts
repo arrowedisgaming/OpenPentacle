@@ -137,10 +137,14 @@ const ensureUser: Handle = async ({ event, resolve }) => {
 				.get();
 
 			if (!existing) {
+				const email = session.user?.email ?? null;
+				const emailTaken = email
+					? !!(await db.select({ id: schema.users.id }).from(schema.users).where(eq(schema.users.email, email)).get())
+					: false;
 				await db.insert(schema.users).values({
 					id: userId,
 					name: session.user?.name ?? null,
-					email: session.user?.email ?? null,
+					email: emailTaken ? null : email,
 					image: session.user?.image ?? null,
 				});
 			}
