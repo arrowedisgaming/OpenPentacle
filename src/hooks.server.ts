@@ -121,35 +121,30 @@ const rateLimiting: Handle = async ({ event, resolve }) => {
 import { eq } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
-const ensuredEmails = new Set<string>();
+const ensuredUserIds = new Set<string>();
 
 const ensureUser: Handle = async ({ event, resolve }) => {
 	const session = await event.locals.auth?.();
-	const email = session?.user?.email;
 	const userId = session?.user?.id;
 
-	if (email && userId && !ensuredEmails.has(email)) {
+	if (userId && !ensuredUserIds.has(userId)) {
 		try {
 			const db = getDb();
 			const existing = await db
 				.select({ id: schema.users.id })
 				.from(schema.users)
-				.where(eq(schema.users.email, email))
+				.where(eq(schema.users.id, userId))
 				.get();
 
-			if (existing) {
-				// User row exists for this email — no changes needed.
-				// If JWT ID differs from DB ID, the DB ID is authoritative
-				// (changing it would break FK references on characters).
-			} else {
+			if (!existing) {
 				await db.insert(schema.users).values({
 					id: userId,
 					name: session.user?.name ?? null,
-					email,
+					email: session.user?.email ?? null,
 					image: session.user?.image ?? null,
 				});
 			}
-			ensuredEmails.add(email);
+			ensuredUserIds.add(userId);
 		} catch (err) {
 			console.error('ensureUser error:', err);
 		}
