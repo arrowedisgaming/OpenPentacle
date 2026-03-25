@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.7.3] - 2026-03-25
+
+### Fixed
+- Discord OAuth sign-in now creates user rows (previously skipped when email was missing)
+- Character save endpoint ensures user row exists before insert (no longer relies on hook)
+- Multi-provider sign-in with shared email no longer fails on unique constraint
+
 ## [0.7.2] - 2026-03-25
 
 ### Added
