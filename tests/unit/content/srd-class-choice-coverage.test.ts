@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import type { ClassDefinition } from '$lib/types/content-pack.js';
+import { resolveFeatureChoiceProficiencies } from '$lib/engine/class-progression.js';
 
 interface ExpectedChoice {
 	classId: string;
@@ -21,58 +23,69 @@ function readJson<T>(path: string): T {
 }
 
 describe('SRD 5.2.1 class choice coverage', () => {
+	const classes = readJson<ClassDefinition[]>(CLASSES_PATH);
+
 	it('covers expected SRD class choices in structured class feature choices', () => {
 		const expected = readJson<ExpectedChoice[]>(EXPECTED_PATH);
-		const classes = readJson<any[]>(CLASSES_PATH);
 
 		for (const item of expected) {
 			const classDef = classes.find((c) => c.id === item.classId);
 			expect(classDef, `Missing class for ${item.citation}`).toBeDefined();
 
-			const row = classDef.progression.find((p: any) => p.level === item.level);
+			const row = classDef!.progression.find((p) => p.level === item.level);
 			expect(row, `Missing level ${item.level} for ${item.classId}`).toBeDefined();
 
-			const feature = row.features.find(
-				(f: any) => f.id === item.featureIdOrName || f.name === item.featureIdOrName
+			const feature = row!.features.find(
+				(f) => f.id === item.featureIdOrName || f.name === item.featureIdOrName
 			);
 			expect(feature, `Missing feature ${item.featureIdOrName} (${item.citation})`).toBeDefined();
-			expect(Array.isArray(feature.choices) && feature.choices.length > 0).toBe(true);
+			expect(Array.isArray(feature!.choices) && feature!.choices!.length > 0).toBe(true);
 
-			const choice = feature.choices.find(
-				(c: any) => c.id === item.choiceIdOrName || c.name === item.choiceIdOrName
+			const choice = feature!.choices!.find(
+				(c) => c.id === item.choiceIdOrName || c.name === item.choiceIdOrName
 			);
 			expect(choice, `Missing choice ${item.choiceIdOrName} (${item.citation})`).toBeDefined();
-			expect(choice.count).toBe(item.count);
+			expect(choice!.count).toBe(item.count);
 
-			const optionIds = new Set((choice.options ?? []).map((o: any) => o.id));
+			const optionIds = new Set(choice!.options.map((o) => o.id));
 			for (const expectedOptionId of item.options) {
 				expect(optionIds.has(expectedOptionId), `Missing option ${expectedOptionId} (${item.citation})`).toBe(true);
 			}
 		}
 	});
 
-	it('creator and level-up flows render feature choices from structured data', () => {
-		const classPage = readFileSync(
-			join(ROOT, 'src', 'routes', 'create', '[system]', 'class', '+page.svelte'),
-			'utf-8'
-		);
-		const subclassPage = readFileSync(
-			join(ROOT, 'src', 'routes', 'create', '[system]', 'subclass', '+page.svelte'),
-			'utf-8'
-		);
-		const levelUpPage = readFileSync(
-			join(ROOT, 'src', 'routes', 'sheet', '[id]', 'level-up', '+page.svelte'),
-			'utf-8'
-		);
+	it('resolves Protector grants (martial weapons + heavy armor)', () => {
+		const cleric = classes.find((c) => c.id === 'cleric')!;
+		const grants = resolveFeatureChoiceProficiencies(cleric, [
+			{ featureId: 'divine-order', choiceId: 'divine-order', selectedOptionIds: ['protector'] }
+		]);
+		expect(grants).toEqual([
+			{ type: 'weapon', value: 'martial', source: 'class:cleric:feature:divine-order' },
+			{ type: 'armor', value: 'heavy', source: 'class:cleric:feature:divine-order' }
+		]);
+	});
 
-		expect(classPage.includes('featuresWithChoices')).toBe(true);
-		expect(classPage.includes('feature.choices')).toBe(true);
+	it('resolves Warden grants (martial weapons + medium armor)', () => {
+		const druid = classes.find((c) => c.id === 'druid')!;
+		const grants = resolveFeatureChoiceProficiencies(druid, [
+			{ featureId: 'primal-order', choiceId: 'primal-order', selectedOptionIds: ['warden'] }
+		]);
+		expect(grants).toEqual([
+			{ type: 'weapon', value: 'martial', source: 'class:druid:feature:primal-order' },
+			{ type: 'armor', value: 'medium', source: 'class:druid:feature:primal-order' }
+		]);
+	});
 
-		expect(subclassPage.includes('feature.choices')).toBe(true);
-		expect(subclassPage.includes('featureChoices')).toBe(true);
+	it('returns no grants for options without grants field', () => {
+		const cleric = classes.find((c) => c.id === 'cleric')!;
+		const grants = resolveFeatureChoiceProficiencies(cleric, [
+			{ featureId: 'divine-order', choiceId: 'divine-order', selectedOptionIds: ['thaumaturge'] }
+		]);
+		expect(grants).toEqual([]);
+	});
 
-		expect(levelUpPage.includes('newFeaturesWithChoices')).toBe(true);
-		expect(levelUpPage.includes('buildNewFeatureChoices')).toBe(true);
-		expect(levelUpPage.includes('featureChoices:')).toBe(true);
+	it('returns no grants for empty feature choices', () => {
+		const cleric = classes.find((c) => c.id === 'cleric')!;
+		expect(resolveFeatureChoiceProficiencies(cleric, [])).toEqual([]);
 	});
 });

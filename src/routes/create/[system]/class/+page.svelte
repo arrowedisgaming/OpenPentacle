@@ -4,7 +4,7 @@
 	import { wizardStore } from '$lib/stores/wizard.js';
 	import type { ClassDefinition, ClassFeature, SystemId } from '$lib/types/content-pack.js';
 	import type { FeatureChoiceSelection } from '$lib/types/character.js';
-	import { getSubclassLevel, getClassFeaturesUpToLevel, getASILevels } from '$lib/engine/class-progression.js';
+	import { getSubclassLevel, getClassFeaturesUpToLevel, getASILevels, resolveFeatureChoiceProficiencies } from '$lib/engine/class-progression.js';
 	import { buildClassSelection } from '$lib/wizard/class-step.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
 	import SelectionCard from '$lib/components/ui/selection-card/SelectionCard.svelte';
@@ -108,36 +108,6 @@
 			}
 		}
 		return result;
-	}
-
-	function resolveFeatureChoiceProficiencies(
-		classDef: ClassDefinition,
-		featureChoices: FeatureChoiceSelection[]
-	): { type: 'armor' | 'weapon'; value: string; source: string }[] {
-		const extra: { type: 'armor' | 'weapon'; value: string; source: string }[] = [];
-
-		for (const fc of featureChoices) {
-			// Find the matching feature in class progression
-			for (const prog of classDef.progression) {
-				const feature = prog.features.find((f) => f.id === fc.featureId);
-				if (!feature?.choices) continue;
-				const choice = feature.choices.find((c) => c.id === fc.choiceId);
-				if (!choice) continue;
-				for (const optionId of fc.selectedOptionIds) {
-					const option = choice.options.find((o) => o.id === optionId);
-					if (!option?.grants) continue;
-					for (const grant of option.grants) {
-						extra.push({
-							type: grant.type,
-							value: grant.value,
-							source: `class:${classDef.id}:feature:${fc.featureId}`
-						});
-					}
-				}
-			}
-		}
-
-		return extra;
 	}
 
 	let expandedFeature = $state<string | null>(null);

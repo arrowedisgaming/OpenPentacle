@@ -12,7 +12,7 @@
 	import { averageHitDieRoll, parseDice } from '$lib/engine/hit-points.js';
 	import { totalAbilityScore, abilityModifier } from '$lib/engine/ability-scores.js';
 	import { calculateMaxHP } from '$lib/engine/hit-points.js';
-	import { getMaxSpellLevel } from '$lib/engine/class-progression.js';
+	import { getMaxSpellLevel, resolveFeatureChoiceProficiencies } from '$lib/engine/class-progression.js';
 	import { formatSpellLevel, kebabToTitle, formatModifier } from '$lib/utils/format.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
 	import SelectionCard from '$lib/components/ui/selection-card/SelectionCard.svelte';
@@ -498,9 +498,18 @@
 		// Compute new HP
 		const newHP = data.hitPoints.maximum + hpGain();
 
+		// Resolve proficiency grants from new feature choices
+		const newGrantProficiencies = classDef
+			? resolveFeatureChoiceProficiencies(classDef, newFeatureChoices)
+			: [];
+		const updatedProficiencies = newGrantProficiencies.length > 0
+			? [...data.proficiencies, ...newGrantProficiencies]
+			: data.proficiencies;
+
 		const updatedData: CharacterData = {
 			...data,
 			level: newLevel,
+			proficiencies: updatedProficiencies,
 			classes: updatedClasses,
 			abilityScores: {
 				...data.abilityScores,

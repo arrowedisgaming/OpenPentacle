@@ -1,4 +1,5 @@
 import type { ClassDefinition, ClassFeature, SubclassDefinition } from '$lib/types/content-pack.js';
+import type { FeatureChoiceSelection } from '$lib/types/character.js';
 
 /** Name used for ASI features in progression data */
 const ASI_FEATURE_NAME = 'Ability Score Improvement';
@@ -107,4 +108,38 @@ export function getMaxSpellLevel(classDef: ClassDefinition, characterLevel: numb
 	// spellSlots is an array where index 0 = 1st level slots, etc.
 	// The highest spell level = length of the array
 	return row.spellSlots.length;
+}
+
+/**
+ * Resolve proficiency grants from feature choice selections.
+ * Walks the class progression to find matching features/choices/options and
+ * reads `grants` from content-pack data — no hardcoded class/feature IDs.
+ */
+export function resolveFeatureChoiceProficiencies(
+	classDef: ClassDefinition,
+	featureChoices: FeatureChoiceSelection[]
+): { type: 'armor' | 'weapon'; value: string; source: string }[] {
+	const extra: { type: 'armor' | 'weapon'; value: string; source: string }[] = [];
+
+	for (const fc of featureChoices) {
+		for (const prog of classDef.progression) {
+			const feature = prog.features.find((f) => f.id === fc.featureId);
+			if (!feature?.choices) continue;
+			const choice = feature.choices.find((c) => c.id === fc.choiceId);
+			if (!choice) continue;
+			for (const optionId of fc.selectedOptionIds) {
+				const option = choice.options.find((o) => o.id === optionId);
+				if (!option?.grants) continue;
+				for (const grant of option.grants) {
+					extra.push({
+						type: grant.type,
+						value: grant.value,
+						source: `class:${classDef.id}:feature:${fc.featureId}`
+					});
+				}
+			}
+		}
+	}
+
+	return extra;
 }
