@@ -200,11 +200,17 @@ export interface FeatureChoice {
 	count: number; // How many to pick
 }
 
+export interface FeatureChoiceOptionGrant {
+	type: 'armor' | 'weapon';
+	value: string;
+}
+
 export interface FeatureChoiceOption {
 	id: string;
 	name: string;
 	description: string;
 	effects?: Trait[];
+	grants?: FeatureChoiceOptionGrant[];
 }
 
 export interface SubclassDefinition {

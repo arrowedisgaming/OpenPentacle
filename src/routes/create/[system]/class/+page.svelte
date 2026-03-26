@@ -110,6 +110,36 @@
 		return result;
 	}
 
+	function resolveFeatureChoiceProficiencies(
+		classDef: ClassDefinition,
+		featureChoices: FeatureChoiceSelection[]
+	): { type: 'armor' | 'weapon'; value: string; source: string }[] {
+		const extra: { type: 'armor' | 'weapon'; value: string; source: string }[] = [];
+
+		for (const fc of featureChoices) {
+			// Find the matching feature in class progression
+			for (const prog of classDef.progression) {
+				const feature = prog.features.find((f) => f.id === fc.featureId);
+				if (!feature?.choices) continue;
+				const choice = feature.choices.find((c) => c.id === fc.choiceId);
+				if (!choice) continue;
+				for (const optionId of fc.selectedOptionIds) {
+					const option = choice.options.find((o) => o.id === optionId);
+					if (!option?.grants) continue;
+					for (const grant of option.grants) {
+						extra.push({
+							type: grant.type,
+							value: grant.value,
+							source: `class:${classDef.id}:feature:${fc.featureId}`
+						});
+					}
+				}
+			}
+		}
+
+		return extra;
+	}
+
 	let expandedFeature = $state<string | null>(null);
 
 	function toggleFeature(key: string) {
@@ -136,13 +166,18 @@
 
 		const latestChar = wizardStore.getCharacter();
 		const existingClass = latestChar?.classes[0];
+		const selectedClassFeatureChoices = buildFeatureChoices();
 		const nextClassSelection = buildClassSelection({
 			existingClass,
 			selectedClassId,
 			selectedLevel,
 			hitDie: selectedClass.hitDie,
-			selectedClassFeatureChoices: buildFeatureChoices()
+			selectedClassFeatureChoices
 		});
+		const featureChoiceProficiencies = resolveFeatureChoiceProficiencies(
+			selectedClass,
+			selectedClassFeatureChoices
+		);
 
 		wizardStore.updateCharacter({
 			level: selectedLevel,
@@ -162,7 +197,8 @@
 					type: 'weapon' as const,
 					value: w,
 					source: `class:${selectedClassId}`
-				}))
+				})),
+				...featureChoiceProficiencies
 			]
 		});
 		wizardStore.completeStep();
@@ -316,6 +352,7 @@
 												{#each filteredOptions as option}
 													{@const isSelected = selectedIds.includes(option.id)}
 													<button
+														aria-pressed={isSelected}
 														class="rounded-md border px-2.5 py-1.5 text-left text-xs transition-colors
 															{isSelected ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:border-muted-foreground/50'}"
 														onclick={() => toggleFeatureOption(feature.id, choice.id, option.id, choice.count)}

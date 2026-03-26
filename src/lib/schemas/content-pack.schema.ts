@@ -95,11 +95,17 @@ const originLayerSchema = z.object({
 
 // ─── Classes ─────────────────────────────────────────────────
 
+const featureChoiceOptionGrantSchema = z.object({
+	type: z.enum(['armor', 'weapon']),
+	value: z.string().min(1)
+});
+
 const featureChoiceOptionSchema = z.object({
 	id: z.string().min(1),
 	name: z.string().min(1),
 	description: z.string(),
-	effects: z.array(traitSchema).optional()
+	effects: z.array(traitSchema).optional(),
+	grants: z.array(featureChoiceOptionGrantSchema).optional()
 });
 
 const featureChoiceSchema = z.object({

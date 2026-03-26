@@ -1438,7 +1438,31 @@
             "id": "divine-order",
             "name": "Divine Order",
             "description": "You have dedicated yourself to one of the following sacred roles of your choice: Protector (you gain proficiency with Martial weapons and training with Heavy armor) or Thaumaturge (you gain one extra cantrip from the Cleric spell list and add your Wisdom modifier to Intelligence (Religion) checks).",
-            "level": 1
+            "level": 1,
+            "choices": [
+              {
+                "id": "divine-order",
+                "name": "Divine Order",
+                "description": "Choose your divine order.",
+                "options": [
+                  {
+                    "id": "protector",
+                    "name": "Protector",
+                    "description": "You gain proficiency with Martial weapons and training with Heavy armor.",
+                    "grants": [
+                      { "type": "weapon", "value": "martial" },
+                      { "type": "armor", "value": "heavy" }
+                    ]
+                  },
+                  {
+                    "id": "thaumaturge",
+                    "name": "Thaumaturge",
+                    "description": "You gain one extra Cleric cantrip and add your Wisdom modifier to Intelligence (Religion) checks."
+                  }
+                ],
+                "count": 1
+              }
+            ]
           }
         ],
         "cantripsKnown": 3,
@@ -1970,7 +1994,31 @@
             "id": "primal-order",
             "name": "Primal Order",
             "description": "You have dedicated yourself to one of the following sacred roles of your choice: Magician (you know one extra Druid cantrip and add your Wisdom modifier to Intelligence (Nature) checks) or Warden (you gain proficiency with Martial weapons and training with Medium armor).",
-            "level": 1
+            "level": 1,
+            "choices": [
+              {
+                "id": "primal-order",
+                "name": "Primal Order",
+                "description": "Choose your primal order.",
+                "options": [
+                  {
+                    "id": "magician",
+                    "name": "Magician",
+                    "description": "You know one extra Druid cantrip and add your Wisdom modifier to Intelligence (Nature) checks."
+                  },
+                  {
+                    "id": "warden",
+                    "name": "Warden",
+                    "description": "You gain proficiency with Martial weapons and training with Medium armor.",
+                    "grants": [
+                      { "type": "weapon", "value": "martial" },
+                      { "type": "armor", "value": "medium" }
+                    ]
+                  }
+                ],
+                "count": 1
+              }
+            ]
           }
         ],
         "cantripsKnown": 2,
@@ -2077,7 +2125,27 @@
             "id": "elemental-fury",
             "name": "Elemental Fury",
             "description": "The might of the elements flows through you. You gain one of the following options of your choice: Potent Spellcasting (you add your Wisdom modifier to the damage you deal with any Druid cantrip) or Primal Strike (once on each of your turns when you hit a creature with an attack roll using a weapon or an Unarmed Strike, you can deal an extra 1d8 Cold, Fire, Lightning, or Thunder damage).",
-            "level": 7
+            "level": 7,
+            "choices": [
+              {
+                "id": "elemental-fury-option",
+                "name": "Elemental Fury Option",
+                "description": "Choose one Elemental Fury option.",
+                "options": [
+                  {
+                    "id": "potent-spellcasting",
+                    "name": "Potent Spellcasting",
+                    "description": "Add your Wisdom modifier to the damage you deal with any Druid cantrip."
+                  },
+                  {
+                    "id": "primal-strike",
+                    "name": "Primal Strike",
+                    "description": "Once on each of your turns when you hit with a weapon or Unarmed Strike attack, you can deal an extra 1d8 Cold, Fire, Lightning, or Thunder damage."
+                  }
+                ],
+                "count": 1
+              }
+            ]
           }
         ],
         "cantripsKnown": 3,
@@ -4539,7 +4607,35 @@
             "id": "deft-explorer",
             "name": "Deft Explorer",
             "description": "Thanks to your travels, you gain the following benefits: you gain Expertise in one of your skill proficiencies, and you can speak, read, and write two languages of your choice.",
-            "level": 2
+            "level": 2,
+            "choices": [
+              {
+                "id": "deft-explorer-expertise",
+                "name": "Deft Explorer Expertise",
+                "description": "Choose one skill proficiency to gain Expertise in.",
+                "options": [
+                  { "id": "acrobatics", "name": "Acrobatics", "description": "Gain Expertise in Acrobatics." },
+                  { "id": "animal-handling", "name": "Animal Handling", "description": "Gain Expertise in Animal Handling." },
+                  { "id": "arcana", "name": "Arcana", "description": "Gain Expertise in Arcana." },
+                  { "id": "athletics", "name": "Athletics", "description": "Gain Expertise in Athletics." },
+                  { "id": "deception", "name": "Deception", "description": "Gain Expertise in Deception." },
+                  { "id": "history", "name": "History", "description": "Gain Expertise in History." },
+                  { "id": "insight", "name": "Insight", "description": "Gain Expertise in Insight." },
+                  { "id": "intimidation", "name": "Intimidation", "description": "Gain Expertise in Intimidation." },
+                  { "id": "investigation", "name": "Investigation", "description": "Gain Expertise in Investigation." },
+                  { "id": "medicine", "name": "Medicine", "description": "Gain Expertise in Medicine." },
+                  { "id": "nature", "name": "Nature", "description": "Gain Expertise in Nature." },
+                  { "id": "perception", "name": "Perception", "description": "Gain Expertise in Perception." },
+                  { "id": "performance", "name": "Performance", "description": "Gain Expertise in Performance." },
+                  { "id": "persuasion", "name": "Persuasion", "description": "Gain Expertise in Persuasion." },
+                  { "id": "religion", "name": "Religion", "description": "Gain Expertise in Religion." },
+                  { "id": "sleight-of-hand", "name": "Sleight of Hand", "description": "Gain Expertise in Sleight of Hand." },
+                  { "id": "stealth", "name": "Stealth", "description": "Gain Expertise in Stealth." },
+                  { "id": "survival", "name": "Survival", "description": "Gain Expertise in Survival." }
+                ],
+                "count": 1
+              }
+            ]
           },
           {
             "id": "fighting-style-ranger",

@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.7.9] - 2026-03-26
+
+### Added
+- Structured `choices` arrays on class features: Cleric Divine Order, Druid Primal Order, Druid Elemental Fury, Ranger Deft Explorer
+- `grants` field on feature choice options — proficiency grants are now content-pack driven (no hardcoded class IDs)
+- `aria-pressed` on feature choice toggle buttons for screen reader accessibility
+- Test coverage for class feature choice structure and expected options
+
+### Fixed
+- Proficiency grants from feature choices (Protector, Warden) no longer hardcoded in UI component — now read from content-pack `grants` data
+
 ## [0.7.8] - 2026-03-26
 
 ### Fixed

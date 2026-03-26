@@ -1,0 +1,38 @@
+[
+  {
+    "classId": "cleric",
+    "featureIdOrName": "divine-order",
+    "level": 1,
+    "choiceIdOrName": "divine-order",
+    "count": 1,
+    "options": ["protector", "thaumaturge"],
+    "citation": "SRD 5.2.1 Classes: Cleric, Divine Order"
+  },
+  {
+    "classId": "druid",
+    "featureIdOrName": "primal-order",
+    "level": 1,
+    "choiceIdOrName": "primal-order",
+    "count": 1,
+    "options": ["magician", "warden"],
+    "citation": "SRD 5.2.1 Classes: Druid, Primal Order"
+  },
+  {
+    "classId": "druid",
+    "featureIdOrName": "elemental-fury",
+    "level": 7,
+    "choiceIdOrName": "elemental-fury-option",
+    "count": 1,
+    "options": ["potent-spellcasting", "primal-strike"],
+    "citation": "SRD 5.2.1 Classes: Druid, Elemental Fury"
+  },
+  {
+    "classId": "ranger",
+    "featureIdOrName": "deft-explorer",
+    "level": 2,
+    "choiceIdOrName": "deft-explorer-expertise",
+    "count": 1,
+    "options": ["acrobatics", "survival"],
+    "citation": "SRD 5.2.1 Classes: Ranger, Deft Explorer"
+  }
+]
