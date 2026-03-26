@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import type { ContentPack, EquipmentDefinition } from '$lib/types/content-pack.js';
+	import { onMount } from 'svelte';
+	import type { ContentPack, SpellDefinition } from '$lib/types/content-pack.js';
 	import type { CharacterData, EquipmentSelection } from '$lib/types/character.js';
 	import { kebabToTitle } from '$lib/utils/format.js';
+	import { computePreparedSpellContext, getAvailableSpellsForPreparation } from '$lib/engine/prepared-spells.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
+	import PreparedSpellEditor from '$lib/components/edit/PreparedSpellEditor.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Alert from '$lib/components/ui/alert';
 	import { Button } from '$lib/components/ui/button';
@@ -12,7 +15,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Badge } from '$lib/components/ui/badge';
-	import { ArrowLeft, Plus, Trash2 } from 'lucide-svelte';
+	import { ArrowLeft, Plus, Trash2, Search } from 'lucide-svelte';
 
 	const { character, pack } = $derived($page.data as {
 		character: { id: string; data: CharacterData };
@@ -39,6 +42,12 @@
 	let flaws = $state('');
 	let hasInitializedForm = $state(false);
 
+	// Prepared spells
+	let preparedSpellIds = $state<Set<string>>(new Set());
+
+	// Open5E spell merging
+	let open5eSpells = $state<SpellDefinition[]>([]);
+
 	$effect(() => {
 		if (hasInitializedForm) return;
 		name = character.data.name;
@@ -56,20 +65,61 @@
 		ideals = character.data.flavor?.ideals ?? '';
 		bonds = character.data.flavor?.bonds ?? '';
 		flaws = character.data.flavor?.flaws ?? '';
+		preparedSpellIds = new Set(character.data.spells?.preparedSpellIds ?? []);
 		hasInitializedForm = true;
 	});
 
+	// Fetch Open5E spells on mount if character has external sources
+	onMount(async () => {
+		const sources = character.data.open5eSources;
+		if (!sources?.length) return;
+		try {
+			const res = await fetch(`/api/open5e/spells?sources=${sources.join(',')}`);
+			if (res.ok) {
+				open5eSpells = await res.json();
+			}
+		} catch {
+			// Silently fail — user still has built-in spells
+		}
+	});
+
+	// Merge built-in + Open5E spells (dedup by name, built-in wins)
+	const allSpells: SpellDefinition[] = $derived.by(() => {
+		const base: SpellDefinition[] = pack?.spells ?? [];
+		if (open5eSpells.length === 0) return base;
+		const baseNames = new Set(base.map((s) => s.name.toLowerCase()));
+		return [...base, ...open5eSpells.filter((s) => !baseNames.has(s.name.toLowerCase()))];
+	});
+
+	// Prepared spell context (null if non-caster)
+	const classDef = $derived(
+		pack.classes.find((c) => c.id === character.data.classes[0]?.classId) ?? null
+	);
+	const preparedContext = $derived(
+		classDef ? computePreparedSpellContext(character.data, classDef, pack) : null
+	);
+	const availableSpellsForPrep = $derived(
+		preparedContext
+			? getAvailableSpellsForPreparation(preparedContext, character.data.spells.knownSpells, allSpells)
+			: []
+	);
+
 	// Equipment management
-	let addEquipmentId = $state('');
+	let equipmentSearch = $state('');
 
 	const availableEquipment = $derived(
 		pack.equipment.filter((e) => !equipment.some((eq) => eq.equipmentId === e.id))
 	);
 
-	function addEquipment() {
-		if (!addEquipmentId) return;
-		equipment = [...equipment, { equipmentId: addEquipmentId, quantity: 1, equipped: true }];
-		addEquipmentId = '';
+	const filteredEquipment = $derived.by(() => {
+		if (!equipmentSearch.trim()) return [];
+		const q = equipmentSearch.trim().toLowerCase();
+		return availableEquipment.filter((e) => e.name.toLowerCase().includes(q)).slice(0, 8);
+	});
+
+	function addEquipmentById(id: string) {
+		equipment = [...equipment, { equipmentId: id, quantity: 1, equipped: true }];
+		equipmentSearch = '';
 	}
 
 	function removeEquipment(idx: number) {
@@ -101,6 +151,10 @@
 				temporary: tempHP
 			},
 			equipment,
+			spells: {
+				...character.data.spells,
+				preparedSpellIds: [...preparedSpellIds]
+			},
 			currency: { cp, sp, ep, gp, pp },
 			flavor: {
 				...character.data.flavor,
@@ -185,7 +239,7 @@
 		</Card.Root>
 
 		<!-- Equipment -->
-		<Card.Root>
+		<Card.Root class={equipmentSearch.trim() ? 'relative z-20' : ''}>
 			<Card.Header>
 				<Card.Title class="text-base">Equipment</Card.Title>
 			</Card.Header>
@@ -214,23 +268,47 @@
 
 				<Separator />
 
-				<div class="flex gap-2">
-					<select
-						bind:value={addEquipmentId}
-						class="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
-					>
-						<option value="">Add equipment...</option>
-						{#each availableEquipment as item}
-							<option value={item.id}>{item.name}</option>
-						{/each}
-					</select>
-					<Button variant="outline" size="sm" onclick={addEquipment} disabled={!addEquipmentId} class="gap-1">
-						<Plus class="size-4" />
-						Add
-					</Button>
+				<div class="relative">
+					<Search class="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
+					<Input
+						type="text"
+						placeholder="Type to find equipment..."
+						bind:value={equipmentSearch}
+						class="pl-9"
+					/>
+					{#if filteredEquipment.length > 0}
+						<div class="absolute z-30 mt-1 w-full rounded-md border bg-popover shadow-md">
+							{#each filteredEquipment as item}
+								<button
+									class="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-accent text-left"
+									onclick={() => addEquipmentById(item.id)}
+								>
+									<Plus class="size-3.5 text-muted-foreground shrink-0" />
+									<span>{item.name}</span>
+									{#if item.type}
+										<Badge variant="outline" class="ml-auto text-xs capitalize">{item.type}</Badge>
+									{/if}
+								</button>
+							{/each}
+						</div>
+					{:else if equipmentSearch.trim()}
+						<div class="absolute z-30 mt-1 w-full rounded-md border bg-popover shadow-md px-3 py-2 text-sm text-muted-foreground">
+							No matching equipment
+						</div>
+					{/if}
 				</div>
 			</Card.Content>
 		</Card.Root>
+
+		<!-- Prepared Spells (only for spellcasting classes) -->
+		{#if preparedContext}
+			<PreparedSpellEditor
+				context={preparedContext}
+				currentPreparedIds={preparedSpellIds}
+				availableSpells={availableSpellsForPrep}
+				onchange={(ids) => { preparedSpellIds = ids; }}
+			/>
+		{/if}
 
 		<!-- Currency -->
 		<Card.Root>

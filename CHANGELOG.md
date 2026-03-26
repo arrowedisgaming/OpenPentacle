@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.0] - 2026-03-26
+
+### Added
+- Prepared spell editor on character edit page — change prepared spells between adventures without leveling up
+- Engine functions: `computePreparedSpellContext()` and `getAvailableSpellsForPreparation()` in `$lib/engine/prepared-spells.ts`
+- PreparedSpellEditor component with search, level toggle filters, and "Prepared" filter badge
+- Open5E spell source integration on edit page (fetches and merges third-party spells)
+- "Spellbook" card title on character sheet for Wizard (was misleadingly "Prepared Spells")
+- "Prepared" badge on Wizard character sheet spells that are currently prepared
+- 10 new engine unit tests for prepared spell logic
+
+### Changed
+- Equipment add on edit page: replaced dropdown with type-to-filter search input
+- Character sheet spell card: Wizard sees "Spellbook" title; other prepared casters still see "Prepared Spells"
+
+### Fixed
+- Prepared spell counter showing inflated count (cantrips were counted as user-prepared spells)
+- Equipment search dropdown appearing behind Prepared Spells card (z-index stacking)
+
 ## [0.8.0] - 2026-03-26
 
 ### Added

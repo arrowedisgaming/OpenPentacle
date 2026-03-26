@@ -29,6 +29,8 @@
 		data && pack ? pack.classes.find((c) => c.id === data.classes[0]?.classId) : null
 	);
 	const isPreparedCaster = $derived(classDef?.spellcasting?.preparedCaster ?? false);
+	const isSpellbookCaster = $derived(classDef?.id === 'wizard');
+	const preparedSpellIdSet = $derived(new Set(data?.spells.preparedSpellIds ?? []));
 	const subclassDef = $derived.by(() => {
 		const subId = data?.classes[0]?.subclassId;
 		if (!subId || !classDef) return null;
@@ -671,7 +673,7 @@
 {#if spellGroups}
 	<Card.Root class="mt-4">
 		<Card.Header class="pb-2">
-			<Card.Title class="text-sm">{isPreparedCaster ? 'Prepared Spells' : 'Spells Known'}</Card.Title>
+			<Card.Title class="text-sm">{isSpellbookCaster ? 'Spellbook' : isPreparedCaster ? 'Prepared Spells' : 'Spells Known'}</Card.Title>
 		</Card.Header>
 		<Card.Content class="space-y-3">
 			{#each [...spellGroups.entries()] as [level, spells]}
@@ -685,6 +687,9 @@
 								<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
 									<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
 									<span class="text-xs font-medium">{spell.name}</span>
+									{#if isSpellbookCaster && spell.level > 0 && preparedSpellIdSet.has(spell.id)}
+										<Badge variant="default" class="text-[10px] px-1.5 py-0">Prepared</Badge>
+									{/if}
 									{#if source === 'feat'}
 										<Badge variant="outline" class="text-[10px] px-1.5 py-0">Magic Initiate</Badge>
 									{:else if source === 'origin'}
