@@ -33,7 +33,7 @@
 	tabindex={selected ? 0 : -1}
 	class={cn(
 		'relative w-full rounded-lg border text-left transition-all',
-		compact ? 'p-3' : 'p-4',
+		compact ? 'p-3' : 'p-4 sm:p-5',
 		selected
 			? 'border-primary bg-accent shadow-sm ring-1 ring-primary/20'
 			: 'border-border hover:border-primary/50 hover:bg-accent/30 hover:shadow-sm',

@@ -50,8 +50,12 @@
 	* {
 		@apply border-border;
 	}
+	html {
+		font-size: 1.0625rem; /* 17px base — 6% readability boost */
+	}
 	body {
 		@apply bg-background text-foreground;
+		line-height: 1.625;
 		font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
 		font-feature-settings: "rlig" 1, "calt" 1;
 	}
@@ -60,34 +64,34 @@
 /* ── Type Scale ──────────────────────────────── */
 
 @utility text-page-title {
-	font-size: 1.5rem;
+	font-size: 1.75rem;
 	font-weight: 700;
-	line-height: 2rem;
+	line-height: 2.25rem;
 	@media (min-width: 640px) {
-		font-size: 1.875rem;
-		line-height: 2.25rem;
+		font-size: 2.25rem;
+		line-height: 2.75rem;
 	}
 }
 @utility text-section-title {
-	font-size: 1.125rem;
+	font-size: 1.25rem;
 	font-weight: 600;
-	line-height: 1.75rem;
+	line-height: 1.875rem;
 }
 @utility text-card-title {
-	font-size: 0.875rem;
+	font-size: 1rem;
 	font-weight: 600;
-	line-height: 1.25rem;
+	line-height: 1.5rem;
 }
 @utility text-body {
-	font-size: 0.875rem;
-	line-height: 1.25rem;
+	font-size: 1rem;
+	line-height: 1.625;
 }
 @utility text-caption {
-	font-size: 0.75rem;
-	line-height: 1rem;
+	font-size: 0.8125rem;
+	line-height: 1.125rem;
 }
 @utility text-label {
-	font-size: 0.625rem;
+	font-size: 0.6875rem;
 	font-weight: 600;
 	letter-spacing: 0.05em;
 	text-transform: uppercase;

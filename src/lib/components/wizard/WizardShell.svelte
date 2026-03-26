@@ -32,7 +32,7 @@
 	const progressPercent = $derived(((currentStepIndex + 1) / steps.length) * 100);
 </script>
 
-<div class="mx-auto max-w-5xl px-4 py-6">
+<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6">
 	<!-- Back nav -->
 	<nav class="mb-6">
 		<Button variant="ghost" size="sm" onclick={() => showLeaveDialog = true} class="gap-1 text-muted-foreground">

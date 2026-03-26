@@ -15,12 +15,12 @@
 <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
 	<div>
 		{#if headingLevel === 'h1'}
-			<h1 class="text-xl font-bold sm:text-2xl">{title}</h1>
+			<h1 class="text-2xl font-bold sm:text-3xl">{title}</h1>
 		{:else}
-			<h2 class="text-xl font-bold sm:text-2xl">{title}</h2>
+			<h2 class="text-2xl font-bold sm:text-3xl">{title}</h2>
 		{/if}
 		{#if description}
-			<p class="mt-1 text-sm text-muted-foreground">{description}</p>
+			<p class="mt-1 text-base text-muted-foreground">{description}</p>
 		{/if}
 	</div>
 	{#if children}

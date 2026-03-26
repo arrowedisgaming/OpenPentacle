@@ -5,7 +5,7 @@
    ────────────────────────────────────────────────── */
 
 .notebook {
-	font-size: 1.0625rem; /* 17px — compensates for Patrick Hand reading smaller */
+	font-size: 1.125rem; /* 18px — compensates for Patrick Hand reading smaller */
 
 	--color-background:              hsl(48 30% 94%);
 	--color-foreground:              hsl(220 15% 22%);

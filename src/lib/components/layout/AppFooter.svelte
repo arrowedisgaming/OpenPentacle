@@ -3,7 +3,7 @@
 </script>
 
 <footer class="border-t border-border">
-	<div class="mx-auto flex max-w-5xl flex-col items-center gap-2 px-4 py-6 text-center text-sm text-muted-foreground sm:flex-row sm:justify-between sm:text-left">
+	<div class="mx-auto flex max-w-6xl flex-col items-center gap-2 px-4 sm:px-6 lg:px-8 py-6 text-center text-sm text-muted-foreground sm:flex-row sm:justify-between sm:text-left">
 		<p>&copy; {new Date().getFullYear()} OpenPentacle</p>
 		<div class="flex items-center gap-4">
 			<a href="/content-packs" class="hover:text-foreground">Content Packs</a>

@@ -192,7 +192,7 @@
 		<div class="mb-8">
 			<PageHeader title={layer.name} description={layer.description} />
 
-			<div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" role="listbox" aria-label={layer.name} use:rovingTabindex>
+			<div class="mt-4 grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3" role="listbox" aria-label={layer.name} use:rovingTabindex>
 				{#each layer.options as option}
 					<SelectionCard
 						selected={selections[layer.id]?.optionId === option.id}

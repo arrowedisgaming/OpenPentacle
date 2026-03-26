@@ -340,7 +340,7 @@
 </div>
 
 <!-- Two-column layout for saves/skills + features/proficiencies -->
-<div class="mt-4 grid gap-4 lg:grid-cols-2">
+<div class="mt-4 grid gap-4 sm:grid-cols-2">
 	<!-- Left column: Saves + Skills -->
 	<div class="space-y-4">
 		<Card.Root>

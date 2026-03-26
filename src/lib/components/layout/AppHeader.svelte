@@ -30,7 +30,7 @@
 </script>
 
 <header class="sticky top-8 z-50 border-b border-border bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
-	<div class="mx-auto flex h-14 max-w-5xl items-center gap-4 px-4">
+	<div class="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6 lg:px-8">
 		<!-- Mobile hamburger -->
 		<SheetUI.Root bind:open={mobileNavOpen}>
 			<SheetUI.Trigger>

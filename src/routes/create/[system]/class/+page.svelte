@@ -204,7 +204,7 @@
 
 	<div class="xl:flex xl:gap-6">
 		<div class="xl:w-3/5">
-			<div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2" role="listbox" aria-label="Character classes" use:rovingTabindex>
+			<div class="mt-4 grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2" role="listbox" aria-label="Character classes" use:rovingTabindex>
 				{#each classes as classDef}
 					{@const Icon = classIcons[classDef.id] ?? BookOpen}
 					<SelectionCard

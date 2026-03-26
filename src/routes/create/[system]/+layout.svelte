@@ -12,11 +12,15 @@
 	const systemId = $derived($page.params.system ?? '');
 	const pack = $derived(($page.data as { pack?: ContentPack }).pack);
 
-	// Read character state reactively with proper cleanup
-	let wizState = $state(wizardStore.getCharacter());
-	const unsubscribe = wizardStore.subscribe((s) => { wizState = s.character; });
+	// Read wizard state reactively with proper cleanup
+	let wizCharacter = $state(wizardStore.getCharacter());
+	let wizCompletedSteps = $state<Set<number>>(new Set());
+	const unsubscribe = wizardStore.subscribe((s) => {
+		wizCharacter = s.character;
+		wizCompletedSteps = s.completedSteps;
+	});
 	onDestroy(unsubscribe);
-	const character = $derived(wizState ?? null);
+	const character = $derived(wizCharacter ?? null);
 
 	// Resolve the selected class definition
 	const classDef = $derived.by(() => {
@@ -65,12 +69,12 @@
 	// Determine current step from URL
 	const currentPath = $derived($page.url.pathname.split('/').pop() ?? 'class');
 	const currentStepIndex = $derived(activeSteps.findIndex((s) => s.path === currentPath));
-	const accessibleStepIndexes = $derived(
-		activeSteps
-			.map((_, index) => ({ index, allowed: wizardStore.canAccessStep(index) }))
-			.filter((item) => item.allowed)
-			.map((item) => item.index)
-	);
+	const accessibleStepIndexes = $derived.by(() => {
+		const maxCompleted = Math.max(-1, ...wizCompletedSteps);
+		return activeSteps
+			.map((_, index) => index)
+			.filter((index) => index === 0 || index <= maxCompleted + 1);
+	});
 
 	// Provide navigation helpers to child pages via context
 	function getNextStepPath(currentPath: string): string {

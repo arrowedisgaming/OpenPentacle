@@ -310,7 +310,7 @@
 	{/if}
 
 	<!-- Score assignment grid -->
-	<div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+	<div class="mt-6 grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
 		{#each ABILITY_IDS as ability}
 			{@const score = scores[ability]}
 			{@const mod = abilityModifier(score)}

@@ -142,7 +142,7 @@
 		compact
 	/>
 
-	<div class="mt-4 grid gap-3 sm:grid-cols-2" role="listbox" aria-label="Subclasses" use:rovingTabindex>
+	<div class="mt-4 grid gap-3 sm:gap-4 sm:grid-cols-2" role="listbox" aria-label="Subclasses" use:rovingTabindex>
 		{#each subclasses as sub}
 			<SelectionCard
 				selected={selectedSubclassId === sub.id}

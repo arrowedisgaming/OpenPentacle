@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0] - 2026-03-26
+
+### Added
+- Global root font-size bump (17px base) — 6% readability boost across all rem-based UI
+- Body line-height 1.625 for improved text readability
+- Responsive horizontal padding (sm:px-6 lg:px-8) on all page containers
+- Responsive grid gaps (sm:gap-4) in wizard step selection grids
+- Responsive SelectionCard padding (sm:p-5) for non-compact cards
+- Updated custom typography scale utilities (text-page-title, text-section-title, text-card-title, text-body, text-caption, text-label)
+
+### Changed
+- Card descriptions promoted from text-sm to text-base
+- Page header titles bumped from text-xl/2xl to text-2xl/3xl responsive
+- Page header descriptions promoted from text-sm to text-base
+- Notebook theme font-size bumped from 17px to 18px to maintain differentiation
+- Container widths increased: wizard/header/footer 5xl→6xl, list pages 3xl→4xl, sheet/share 4xl→5xl
+- Character sheet two-column layout triggers at sm (640px) instead of lg (1024px)
+
+### Fixed
+- Wizard stepper not updating completed/accessible steps — $derived was not reactive to Svelte 4 store's completedSteps (used non-reactive get() instead of $state bridge)
+
 ## [0.7.9] - 2026-03-26
 
 ### Added
