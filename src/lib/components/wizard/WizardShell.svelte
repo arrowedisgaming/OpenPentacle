@@ -18,17 +18,18 @@
 	let {
 		steps,
 		currentStepIndex,
+		accessibleStepIndexes = [],
 		systemId,
 		children
 	}: {
 		steps: WizardStep[];
 		currentStepIndex: number;
+		accessibleStepIndexes?: number[];
 		systemId: string;
 		children: Snippet;
 	} = $props();
 
-	const activeSteps = $derived(steps.filter((s) => !s.conditional || s.conditional));
-	const progressPercent = $derived(((currentStepIndex + 1) / activeSteps.length) * 100);
+	const progressPercent = $derived(((currentStepIndex + 1) / steps.length) * 100);
 </script>
 
 <div class="mx-auto max-w-5xl px-4 py-6">
@@ -65,9 +66,9 @@
 		<div class="sm:hidden">
 			<div class="mb-2 flex items-center justify-between text-sm">
 				<span class="text-muted-foreground">
-					Step {currentStepIndex + 1} of {activeSteps.length}
+					Step {currentStepIndex + 1} of {steps.length}
 				</span>
-				<span class="font-medium">{activeSteps[currentStepIndex]?.label}</span>
+				<span class="font-medium">{steps[currentStepIndex]?.label}</span>
 			</div>
 			<Progress value={progressPercent} class="h-1.5" />
 		</div>
@@ -75,10 +76,10 @@
 		<!-- Desktop stepper: circles with connecting lines -->
 		<div class="hidden sm:block">
 			<div class="flex items-center gap-2">
-				{#each activeSteps as step, i}
+				{#each steps as step, i}
 					{@const isCurrent = i === currentStepIndex}
 					{@const isComplete = i < currentStepIndex}
-					{@const isAccessible = i <= currentStepIndex}
+					{@const isAccessible = accessibleStepIndexes.includes(i)}
 
 					{#if i > 0}
 						<div

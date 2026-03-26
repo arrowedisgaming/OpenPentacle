@@ -65,6 +65,12 @@
 	// Determine current step from URL
 	const currentPath = $derived($page.url.pathname.split('/').pop() ?? 'class');
 	const currentStepIndex = $derived(activeSteps.findIndex((s) => s.path === currentPath));
+	const accessibleStepIndexes = $derived(
+		activeSteps
+			.map((_, index) => ({ index, allowed: wizardStore.canAccessStep(index) }))
+			.filter((item) => item.allowed)
+			.map((item) => item.index)
+	);
 
 	// Provide navigation helpers to child pages via context
 	function getNextStepPath(currentPath: string): string {
@@ -93,6 +99,6 @@
 	});
 </script>
 
-<WizardShell steps={activeSteps} {currentStepIndex} {systemId}>
+<WizardShell steps={activeSteps} {currentStepIndex} {accessibleStepIndexes} {systemId}>
 	{@render children()}
 </WizardShell>

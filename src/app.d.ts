@@ -1,8 +1,9 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
-declare const __APP_VERSION__: string;
-declare const __APP_CHANGELOG_ANCHOR__: string;
 
 declare global {
+	const __APP_VERSION__: string;
+	const __APP_CHANGELOG_ANCHOR__: string;
+
 	namespace App {
 		interface Locals {
 			session: import('@auth/sveltekit').Session | null;

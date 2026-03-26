@@ -94,7 +94,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 			signIn: '/login'
 		},
 		callbacks: {
-			jwt({ token, user, account }: { token: any; user: any; account: any }) {
+			jwt({ token, user, account }) {
 				// Use the OAuth provider's stable subject ID as the user ID
 				// This is consistent across sessions (unlike the random UUID without DrizzleAdapter)
 				if (account?.providerAccountId) {
@@ -104,7 +104,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth(async (event) => {
 				}
 				return token;
 			},
-			session({ session, token }: { session: any; token: any }) {
+			session({ session, token }) {
 				if (session.user && token.id) {
 					session.user.id = token.id as string;
 				}

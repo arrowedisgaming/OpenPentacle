@@ -20,23 +20,44 @@
 	});
 
 	// Editable local copies
-	let name = $state(character.data.name);
-	let currentHP = $state(character.data.hitPoints.current);
-	let tempHP = $state(character.data.hitPoints.temporary);
-	let equipment = $state<EquipmentSelection[]>(structuredClone(character.data.equipment));
-	let cp = $state(character.data.currency.cp);
-	let sp = $state(character.data.currency.sp);
-	let ep = $state(character.data.currency.ep);
-	let gp = $state(character.data.currency.gp);
-	let pp = $state(character.data.currency.pp);
+	let name = $state('');
+	let currentHP = $state(0);
+	let tempHP = $state(0);
+	let equipment = $state<EquipmentSelection[]>([]);
+	let cp = $state(0);
+	let sp = $state(0);
+	let ep = $state(0);
+	let gp = $state(0);
+	let pp = $state(0);
 
 	// Flavor fields
-	let appearance = $state(character.data.flavor?.appearance ?? '');
-	let backstory = $state(character.data.flavor?.backstory ?? '');
-	let personalityTraits = $state(character.data.flavor?.personalityTraits ?? '');
-	let ideals = $state(character.data.flavor?.ideals ?? '');
-	let bonds = $state(character.data.flavor?.bonds ?? '');
-	let flaws = $state(character.data.flavor?.flaws ?? '');
+	let appearance = $state('');
+	let backstory = $state('');
+	let personalityTraits = $state('');
+	let ideals = $state('');
+	let bonds = $state('');
+	let flaws = $state('');
+	let hasInitializedForm = $state(false);
+
+	$effect(() => {
+		if (hasInitializedForm) return;
+		name = character.data.name;
+		currentHP = character.data.hitPoints.current;
+		tempHP = character.data.hitPoints.temporary;
+		equipment = structuredClone(character.data.equipment);
+		cp = character.data.currency.cp;
+		sp = character.data.currency.sp;
+		ep = character.data.currency.ep;
+		gp = character.data.currency.gp;
+		pp = character.data.currency.pp;
+		appearance = character.data.flavor?.appearance ?? '';
+		backstory = character.data.flavor?.backstory ?? '';
+		personalityTraits = character.data.flavor?.personalityTraits ?? '';
+		ideals = character.data.flavor?.ideals ?? '';
+		bonds = character.data.flavor?.bonds ?? '';
+		flaws = character.data.flavor?.flaws ?? '';
+		hasInitializedForm = true;
+	});
 
 	// Equipment management
 	let addEquipmentId = $state('');

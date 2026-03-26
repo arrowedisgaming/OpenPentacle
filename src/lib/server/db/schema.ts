@@ -6,7 +6,7 @@ export const users = sqliteTable('users', {
 	id: text('id').primaryKey(),
 	name: text('name'),
 	email: text('email').unique(),
-	emailVerified: integer('email_verified', {}),
+	emailVerified: integer('email_verified'),
 	image: text('image')
 });
 
@@ -29,13 +29,13 @@ export const sessions = sqliteTable('sessions', {
 	id: text('id').primaryKey(),
 	sessionToken: text('session_token').unique().notNull(),
 	userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-	expires: integer('expires', {}).notNull()
+	expires: integer('expires').notNull()
 });
 
 export const verificationTokens = sqliteTable('verification_tokens', {
 	identifier: text('identifier').notNull(),
 	token: text('token').notNull(),
-	expires: integer('expires', {}).notNull()
+	expires: integer('expires').notNull()
 });
 
 // ─── Application Tables ──────────────────────────────────────
@@ -71,8 +71,8 @@ export const userContentPacks = sqliteTable('user_content_packs', {
 	isValid: integer('is_valid', { mode: 'boolean' }).notNull().default(false),
 	/** Validation error messages, if any */
 	validationErrors: text('validation_errors'),
-	createdAt: integer('created_at', {}).notNull(),
-	updatedAt: integer('updated_at', {}).notNull()
+	createdAt: integer('created_at').notNull(),
+	updatedAt: integer('updated_at').notNull()
 }, (table) => [
 	index('user_content_packs_user_id_idx').on(table.userId)
 ]);

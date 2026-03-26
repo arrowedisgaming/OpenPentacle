@@ -170,7 +170,7 @@
 
 	function getUsedSkilledProficiencies(): Set<string> {
 		const used = new Set<string>();
-		for (const p of data.proficiencies?.skills ?? []) {
+		for (const p of data.skills ?? []) {
 			used.add(`skill:${p.skillId}`);
 		}
 		for (const f of data.feats ?? []) {

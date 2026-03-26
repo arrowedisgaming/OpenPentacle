@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.7.8] - 2026-03-26
+
+### Fixed
+- Fix WizardShell step filter — was including all steps regardless of conditional flag
+- Wizard step sidebar now reflects completion-based accessibility, not just current position
+- Class step preserves subclass selection when returning via back-navigation
+- Edit page form fields no longer reset on re-render (deferred initialization via $effect)
+- Toggle-group reactivity — use getter functions for Svelte 5 context values
+- Level-up skilled proficiency lookup path corrected (data.skills)
+- Remove empty object args from Drizzle integer() calls
+- Remove redundant type annotations from Auth.js callbacks
+- Move app globals into proper `declare global` block in app.d.ts
+
+### Added
+- Playwright E2E test infrastructure with smoke test
+- Unit tests for class-step wizard helpers (buildClassSelection, mergeFeatureChoices)
+- `$lib/wizard/class-step.ts` — pure functions for class selection building with feature choice merging
+
 ## [0.7.7] - 2026-03-26
 
 ### Fixed

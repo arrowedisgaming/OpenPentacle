@@ -5,6 +5,7 @@
 	import type { ClassDefinition, ClassFeature, SystemId } from '$lib/types/content-pack.js';
 	import type { FeatureChoiceSelection } from '$lib/types/character.js';
 	import { getSubclassLevel, getClassFeaturesUpToLevel, getASILevels } from '$lib/engine/class-progression.js';
+	import { buildClassSelection } from '$lib/wizard/class-step.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
 	import SelectionCard from '$lib/components/ui/selection-card/SelectionCard.svelte';
 	import DetailPanel from '$lib/components/ui/detail-panel/DetailPanel.svelte';
@@ -133,14 +134,19 @@
 			wizardStore.start(systemId as SystemId);
 		}
 
+		const latestChar = wizardStore.getCharacter();
+		const existingClass = latestChar?.classes[0];
+		const nextClassSelection = buildClassSelection({
+			existingClass,
+			selectedClassId,
+			selectedLevel,
+			hitDie: selectedClass.hitDie,
+			selectedClassFeatureChoices: buildFeatureChoices()
+		});
+
 		wizardStore.updateCharacter({
 			level: selectedLevel,
-			classes: [{
-				classId: selectedClassId,
-				level: selectedLevel,
-				hitDie: selectedClass.hitDie,
-				featureChoices: buildFeatureChoices()
-			}],
+			classes: [nextClassSelection],
 			proficiencies: [
 				...selectedClass.savingThrows.map((st) => ({
 					type: 'saving-throw' as const,

@@ -197,8 +197,14 @@
 	let skilledSelections = $state<Set<string>>(initFeat.skilled);
 
 	// Reset feat config when user actively changes background (not on first render)
-	let prevBgForFeat = $state(selectedId);
+	let prevBgForFeat = $state('');
+	let hasInitializedBgWatcher = $state(false);
 	$effect(() => {
+		if (!hasInitializedBgWatcher) {
+			prevBgForFeat = selectedId;
+			hasInitializedBgWatcher = true;
+			return;
+		}
 		if (selectedId && selectedId !== prevBgForFeat) {
 			miConfig = { spellList: '', cantrips: new Set(), spell: '', spellcastingAbility: '' };
 			skilledSelections = new Set();
