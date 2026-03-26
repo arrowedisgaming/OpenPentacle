@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.7.7] - 2026-03-26
+
+### Fixed
+- Fix "Thunderwavea" typo in spell data (id and name corrected to "Thunderwave")
+- Wizard Scholar feature (L2) now has selectable expertise choice UI with 6 skill options
+- Expertise from feature choices (Rogue, Bard, Ranger, Scholar) now applied to skill computation — doubles proficiency bonus on character sheet
+- Magic Initiate feat spells (cantrips + level 1 spell) now displayed on character sheet with "Magic Initiate" badge
+- Species/origin spells (e.g., Drow, High Elf, Tiefling lineage) now displayed on character sheet with "Species" badge, level-gated by character level
+
 ## [0.7.6] - 2026-03-25
 
 ### Security

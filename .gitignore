@@ -43,3 +43,7 @@ CLAUDE.md
 .claude/
 .claude-flow/
 .mcp.json
+
+# Agent skills
+.agents/
+TODO.md

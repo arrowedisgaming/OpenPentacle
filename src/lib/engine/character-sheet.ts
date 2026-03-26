@@ -58,13 +58,29 @@ export function computeSheet(data: CharacterData, pack: ContentPack): ComputedSh
 		};
 	}
 
+	// Collect expertise from feature choices (Rogue, Bard, Ranger, Scholar)
+	const expertiseSkills = new Set<string>();
+	for (const cls of data.classes) {
+		for (const fc of cls.featureChoices) {
+			if (fc.choiceId.includes('expertise') || fc.featureId.includes('expertise')) {
+				for (const skillId of fc.selectedOptionIds) {
+					expertiseSkills.add(skillId);
+				}
+			}
+		}
+	}
+
 	// Skills
 	const skills = {} as ComputedSheet['skills'];
 	const skillIds = Object.keys(SKILL_ABILITIES) as SkillId[];
 	for (const skillId of skillIds) {
 		const ability = SKILL_ABILITIES[skillId];
 		const skillData = data.skills.find((s) => s.skillId === skillId);
-		const proficiency = skillData?.proficiency ?? 'none';
+		let proficiency = skillData?.proficiency ?? 'none';
+		// Upgrade to expertise if selected via feature choices and already proficient
+		if (proficiency === 'proficient' && expertiseSkills.has(skillId)) {
+			proficiency = 'expertise';
+		}
 		let modifier = modifiers[ability];
 		if (proficiency === 'proficient') modifier += profBonus;
 		if (proficiency === 'expertise') modifier += profBonus * 2;

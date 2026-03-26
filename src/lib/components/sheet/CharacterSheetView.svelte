@@ -221,18 +221,85 @@
 		return Object.keys(groups).length > 0 ? groups : null;
 	});
 
+	// Collect feat spell IDs (e.g., Magic Initiate cantrips + spell)
+	const featSpellIds = $derived.by(() => {
+		if (!data) return new Set<string>();
+		const ids = new Set<string>();
+		for (const feat of data.feats) {
+			if (feat.featId !== 'magic-initiate') continue;
+			for (const choice of feat.choices) {
+				if (choice.choiceId.startsWith('cantrip-') || choice.choiceId.startsWith('spell-')) {
+					ids.add(choice.selectedValue);
+				}
+			}
+		}
+		return ids;
+	});
+
+	// Collect origin/species spell IDs (level-gated by character level)
+	const originSpellIds = $derived.by(() => {
+		if (!data || !pack) return new Set<string>();
+		const ids = new Set<string>();
+		const originSel = data.origins[0];
+		if (!originSel) return ids;
+		const originOption = pack.origins.flatMap((l) => l.options).find((o) => o.id === originSel.optionId);
+		if (!originOption) return ids;
+		const subOption = originSel.subOptionId
+			? originOption.subOptions?.find((s) => s.id === originSel.subOptionId)
+			: null;
+		// Sub-option spells (e.g., Drow, High Elf, Tiefling lineage)
+		if (subOption?.spells) {
+			for (const os of subOption.spells) {
+				if (data.level >= os.level) {
+					ids.add(os.spellId);
+				}
+			}
+		}
+		return ids;
+	});
+
 	// Known spells grouped by level (keep full definition for expandable details)
+	// Includes class spells, feat spells (Magic Initiate), and origin/species spells
 	const spellGroups = $derived.by(() => {
-		if (!data || !pack || data.spells.knownSpells.length === 0) return null;
-		const groups = new Map<number, SpellDefinition[]>();
+		if (!data || !pack) return null;
+		const groups = new Map<number, { spell: SpellDefinition; source: 'class' | 'feat' | 'origin' }[]>();
+		const seenIds = new Set<string>();
+
+		// Class spells
 		for (const known of data.spells.knownSpells) {
 			const spell = pack.spells.find((s) => s.id === known.spellId)
 				?? additionalSpells.find((s) => s.id === known.spellId);
 			if (!spell) continue;
+			seenIds.add(spell.id);
 			const list = groups.get(spell.level) ?? [];
-			list.push(spell);
+			list.push({ spell, source: 'class' });
 			groups.set(spell.level, list);
 		}
+
+		// Feat spells (avoid duplicates)
+		for (const spellId of featSpellIds) {
+			if (seenIds.has(spellId)) continue;
+			const spell = pack.spells.find((s) => s.id === spellId)
+				?? additionalSpells.find((s) => s.id === spellId);
+			if (!spell) continue;
+			seenIds.add(spell.id);
+			const list = groups.get(spell.level) ?? [];
+			list.push({ spell, source: 'feat' });
+			groups.set(spell.level, list);
+		}
+
+		// Origin/species spells (avoid duplicates)
+		for (const spellId of originSpellIds) {
+			if (seenIds.has(spellId)) continue;
+			const spell = pack.spells.find((s) => s.id === spellId)
+				?? additionalSpells.find((s) => s.id === spellId);
+			if (!spell) continue;
+			seenIds.add(spell.id);
+			const list = groups.get(spell.level) ?? [];
+			list.push({ spell, source: 'origin' });
+			groups.set(spell.level, list);
+		}
+
 		return groups.size > 0 ? new Map([...groups.entries()].sort(([a], [b]) => a - b)) : null;
 	});
 </script>
@@ -613,11 +680,16 @@
 						{level === 0 ? 'Cantrips' : formatSpellLevel(level) + ' Level'}
 					</h4>
 					<div class="mt-1 space-y-0.5">
-						{#each spells as spell}
+						{#each spells as { spell, source }}
 							<Collapsible.Root>
 								<Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-muted/50 transition-colors">
 									<ChevronDown class="size-3.5 shrink-0 text-muted-foreground motion-safe:transition-transform motion-safe:duration-200 [[data-state=open]>&]:rotate-180" />
 									<span class="text-xs font-medium">{spell.name}</span>
+									{#if source === 'feat'}
+										<Badge variant="outline" class="text-[10px] px-1.5 py-0">Magic Initiate</Badge>
+									{:else if source === 'origin'}
+										<Badge variant="outline" class="text-[10px] px-1.5 py-0">Species</Badge>
+									{/if}
 									{#if spell.concentration}
 										<span class="text-xs text-muted-foreground" title="Requires concentration">C</span>
 									{/if}

@@ -7406,7 +7406,23 @@
             "id": "scholar",
             "name": "Scholar",
             "description": "While studying magic, you also specialized in another field of study. Choose one of the following skills in which you have proficiency: Arcana, History, Investigation, Medicine, Nature, or Religion. You have Expertise in the chosen skill.",
-            "level": 2
+            "level": 2,
+            "choices": [
+              {
+                "id": "scholar-expertise",
+                "name": "Scholar Expertise",
+                "description": "Choose 1 skill to gain Expertise in.",
+                "count": 1,
+                "options": [
+                  { "id": "arcana", "name": "Arcana", "description": "Gain Expertise in Arcana." },
+                  { "id": "history", "name": "History", "description": "Gain Expertise in History." },
+                  { "id": "investigation", "name": "Investigation", "description": "Gain Expertise in Investigation." },
+                  { "id": "medicine", "name": "Medicine", "description": "Gain Expertise in Medicine." },
+                  { "id": "nature", "name": "Nature", "description": "Gain Expertise in Nature." },
+                  { "id": "religion", "name": "Religion", "description": "Gain Expertise in Religion." }
+                ]
+              }
+            ]
           }
         ],
         "cantripsKnown": 3,
