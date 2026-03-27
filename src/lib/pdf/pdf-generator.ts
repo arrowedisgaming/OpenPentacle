@@ -149,7 +149,8 @@ export async function downloadCharacterPDF(
 	// that @types/pdfmake doesn't fully declare — use any for the runtime API
 	const pdfMake: any = pdfMakeModule.default ?? pdfMakeModule;
 
-	pdfMake.vfs = fontVfs;
+	// Write fonts into pdfmake's internal virtual filesystem
+	pdfMake.addVirtualFileSystem(fontVfs);
 	pdfMake.fonts = {
 		[FONTS.header]: {
 			normal: 'Cinzel-Variable.ttf',
