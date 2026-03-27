@@ -137,13 +137,13 @@ export async function downloadCharacterPDF(
 	sheet: ComputedSheet,
 	additionalSpells: SpellDefinition[] = []
 ): Promise<void> {
-	const docDefinition = buildDocDefinition(data, pack, sheet, additionalSpells);
-
 	// Dynamic imports — only loaded when user clicks PDF
 	const [pdfMakeModule, { fontVfs }] = await Promise.all([
 		import('pdfmake/build/pdfmake.js'),
 		import('./font-data.js')
 	]);
+
+	const docDefinition = buildDocDefinition(data, pack, sheet, additionalSpells);
 
 	// pdfmake's browser build has vfs/fonts/createPdf().download() APIs
 	// that @types/pdfmake doesn't fully declare — use any for the runtime API
@@ -168,9 +168,9 @@ export async function downloadCharacterPDF(
 
 	const safeName = (data.name || 'character').slice(0, 50).replace(/[^a-zA-Z0-9]/g, '_');
 
-	return new Promise<void>((resolve) => {
-		pdfMake.createPdf(docDefinition).download(`${safeName}.pdf`, () => {
-			resolve();
-		});
-	});
+	// .download() is fire-and-forget — pdfMake's callback-based APIs (.download(name, cb),
+	// .getBlob(cb)) never fire the callback in many browsers, so we can't await completion.
+	// The brief delay keeps the spinner visible long enough to feel responsive.
+	pdfMake.createPdf(docDefinition).download(`${safeName}.pdf`);
+	await new Promise((resolve) => setTimeout(resolve, 800));
 }

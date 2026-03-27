@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.11.2] - 2026-03-27
+
+### Fixed
+- PDF button no longer stuck in "Generating..." state after download completes
+- Replaced unreliable pdfmake callback with fire-and-forget download pattern
+- Moved doc definition build after dynamic imports for robustness
+
 ## [0.11.1] - 2026-03-27
 
 ### Fixed
