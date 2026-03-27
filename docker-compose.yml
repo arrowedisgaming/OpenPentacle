@@ -6,7 +6,7 @@ services:
     volumes:
       - app-data:/data
     environment:
-      - DATABASE_URL=/data/free5e.db
+      - DATABASE_URL=/data/openpentacle.db
       # AUTH_SECRET is auto-generated if not provided (see docker-entrypoint.sh)
       - AUTH_SECRET=${AUTH_SECRET:-}
       # Optional: Google OAuth (https://console.cloud.google.com/apis/credentials)
@@ -15,6 +15,8 @@ services:
       # Optional: Discord OAuth (https://discord.com/developers/applications)
       - AUTH_DISCORD_ID=${AUTH_DISCORD_ID:-}
       - AUTH_DISCORD_SECRET=${AUTH_DISCORD_SECRET:-}
+      # Optional: Public URL for CSRF checks behind a reverse proxy
+      - ORIGIN=${ORIGIN:-}
     restart: unless-stopped
 
 volumes:

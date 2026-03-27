@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.11.4] - 2026-03-27
+
+### Fixed
+- DATABASE_URL in docker-compose.yml now matches Dockerfile default (`openpentacle.db` instead of `free5e.db`)
+- ORIGIN env var passed through docker-compose.yml so reverse proxy CSRF checks work
+- .env.example referenced nonexistent `DEPLOY_TARGET` variable, now correctly documents `ADAPTER`
+- Git clone URLs in SELF-HOSTING.md pointed to `your-username` placeholder instead of actual repo
+- Node.js version in SELF-HOSTING.md updated from 20+ to 22+ to match Dockerfile
+- Bare metal build command in SELF-HOSTING.md now includes `ADAPTER=node`
+
+### Added
+- Cloudflare Pages deployment section in SELF-HOSTING.md (D1 setup, wrangler.toml, migrations, env vars)
+- ORIGIN env var guidance in SELF-HOSTING.md reverse proxy section
+- nginx HTTPS note with certbot/Caddy recommendations
+- Database migration note for existing Docker users (`free5e.db` → `openpentacle.db`)
+- Missing features in README: PDF export, themes, prepared spell editor, JSON export
+
+### Changed
+- README and SELF-HOSTING.md prose cleaned up and humanized
+- Test count updated from 161 to 214 across README and CLAUDE.md
+
 ## [0.11.3] - 2026-03-27
 
 ### Fixed
