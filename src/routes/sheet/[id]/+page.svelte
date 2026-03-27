@@ -6,7 +6,7 @@
 	import type { CharacterData } from '$lib/types/character.js';
 	import CharacterSheetView from '$lib/components/sheet/CharacterSheetView.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Share2, Copy, EyeOff, Loader2, ArrowUp, Pencil } from 'lucide-svelte';
+	import { Share2, Copy, EyeOff, Loader2, ArrowUp, Pencil, Download } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 
 	const { character, pack } = $derived($page.data as {
@@ -88,6 +88,15 @@
 <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 animate-fade-in">
 	<!-- Actions bar -->
 	<div class="mb-6 flex items-center justify-end gap-2">
+		<Button
+			variant="outline"
+			size="sm"
+			href="/api/export/{character.id}/pdf"
+			class="gap-2"
+		>
+			<Download class="size-4" />
+			PDF
+		</Button>
 		<Button
 			variant="outline"
 			size="sm"

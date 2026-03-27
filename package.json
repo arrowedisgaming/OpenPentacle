@@ -1,7 +1,7 @@
 {
 	"name": "openpentacle",
 	"private": true,
-	"version": "0.10.0",
+	"version": "0.11.0",
 	"license": "GPL-3.0-only",
 	"type": "module",
 	"scripts": {
@@ -45,12 +45,14 @@
 	"dependencies": {
 		"@auth/drizzle-adapter": "^1.11.1",
 		"@auth/sveltekit": "^1.11.1",
+		"@types/pdfmake": "^0.3.2",
 		"better-sqlite3": "^12.6.2",
 		"bits-ui": "^2.16.2",
 		"clsx": "^2.1.1",
 		"drizzle-orm": "^0.45.1",
 		"lucide-svelte": "^0.575.0",
 		"nanoid": "^3.3.11",
+		"pdfmake": "^0.3.7",
 		"tailwind-merge": "^3.5.0",
 		"tailwind-variants": "^3.2.2",
 		"zod": "^4.3.6"

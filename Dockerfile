@@ -15,6 +15,7 @@ COPY --from=builder /app/build ./build
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/static/content-packs ./static/content-packs
 COPY --from=builder /app/src/lib/server/db/migrations ./migrations
+COPY --from=builder /app/src/lib/server/pdf/fonts ./src/lib/server/pdf/fonts
 RUN npm ci --omit=dev
 
 COPY docker-entrypoint.sh ./

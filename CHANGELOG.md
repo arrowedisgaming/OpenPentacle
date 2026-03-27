@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.11.0] - 2026-03-27
+
+### Added
+- PDF character sheet export — downloadable D&D-style PDF with parchment theme, Cinzel/Crimson Text typography
+- PDF button on character sheet actions bar (Download icon)
+- PDF data resolver: pure functions porting CharacterSheetView display logic for server-side use
+- PDF sections: ability scores, saving throws, skills, weapons, equipment, proficiencies, class features, feats, species traits, spells, flavor text
+- Spellcasting page (page 2, conditional — only generated for caster characters)
+- Open5E spells included in PDF export when character has external sources configured
+- 13 new unit tests for PDF data resolver (214 total tests passing)
+- API endpoint: `GET /api/export/[characterId]/pdf`
+- Fonts: Cinzel (headers) and Crimson Text (body) embedded in PDF
+
 ## [0.10.0] - 2026-03-27
 
 ### Changed
