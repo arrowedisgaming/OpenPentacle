@@ -9,7 +9,7 @@ export function sectionDivider(): Content {
 			{
 				type: 'line',
 				x1: 0, y1: 4,
-				x2: 515, y2: 4,
+				x2: 540, y2: 4,
 				lineWidth: 0.75,
 				lineColor: COLORS.border
 			},
@@ -30,10 +30,10 @@ export function sectionDivider(): Content {
 			{
 				type: 'polyline',
 				points: [
-					{ x: 511, y: 0 },
-					{ x: 515, y: 4 },
-					{ x: 511, y: 8 },
-					{ x: 507, y: 4 }
+					{ x: 536, y: 0 },
+					{ x: 540, y: 4 },
+					{ x: 536, y: 8 },
+					{ x: 532, y: 4 }
 				],
 				lineWidth: 0,
 				closePath: true,

@@ -66,7 +66,7 @@ export function buildCoreStatsRow(r: ResolvedSheetData): Content {
 
 	const combatStats: Content = {
 		table: {
-			widths: ['*', '*', '*'],
+			widths: [35, 43, 35],
 			body: [
 				[
 					combatCell('AC', String(r.sheet.armorClass)),
@@ -85,8 +85,8 @@ export function buildCoreStatsRow(r: ResolvedSheetData): Content {
 			vLineWidth: () => 0.5,
 			hLineColor: () => COLORS.borderLight,
 			vLineColor: () => COLORS.borderLight,
-			paddingLeft: () => 3,
-			paddingRight: () => 3,
+			paddingLeft: () => 2,
+			paddingRight: () => 2,
 			paddingTop: () => 2,
 			paddingBottom: () => 2
 		}
@@ -115,7 +115,7 @@ export function buildCoreStatsRow(r: ResolvedSheetData): Content {
 			{ width: 8, text: '' },
 			{
 				...combatStats,
-				width: 130
+				width: 125
 			}
 		],
 		margin: [0, 4, 0, 0] as [number, number, number, number]
@@ -124,6 +124,7 @@ export function buildCoreStatsRow(r: ResolvedSheetData): Content {
 
 function combatCell(label: string, value: string): TableCell {
 	return {
+		noWrap: true,
 		stack: [
 			{
 				text: value,
@@ -131,7 +132,8 @@ function combatCell(label: string, value: string): TableCell {
 				fontSize: FONT_SIZES.combatStat,
 				bold: true,
 				color: COLORS.inkDark,
-				alignment: 'center' as const
+				alignment: 'center' as const,
+				noWrap: true
 			},
 			{
 				text: label,

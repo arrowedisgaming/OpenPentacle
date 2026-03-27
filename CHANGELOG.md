@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.11.3] - 2026-03-27
+
+### Fixed
+- PDF section divider line and diamonds now span full content width (540pt), properly centered
+- PDF core stats row no longer overflows right margin — combat stats use fixed column widths and tighter padding
+- Reduced combat stat font from 14pt to 12pt so "Medium" and other values fit within cells
+
 ## [0.11.2] - 2026-03-27
 
 ### Fixed

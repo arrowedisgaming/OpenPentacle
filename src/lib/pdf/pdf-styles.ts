@@ -26,7 +26,7 @@ export const FONT_SIZES = {
 	tableCell: 8,
 	footer: 7,
 	spellName: 8,
-	combatStat: 14,
+	combatStat: 12,
 	combatLabel: 7
 } as const;
 
