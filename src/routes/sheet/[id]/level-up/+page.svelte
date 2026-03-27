@@ -94,7 +94,7 @@
 	function getUsedSpellLists(): Set<string> {
 		const used = new Set<string>();
 		for (const f of data.feats ?? []) {
-			if (f.featId === 'magic-initiate') {
+			if (f.featId === 'magic-initiate' || f.featId.startsWith('magic-initiate-')) {
 				const listChoice = f.choices?.find((c) => c.choiceId === 'spell-list');
 				if (listChoice) used.add(listChoice.selectedValue);
 			}

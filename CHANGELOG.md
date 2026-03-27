@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.10.0] - 2026-03-27
+
+### Changed
+- Character sheet layout: CSS Grid → CSS multi-column masonry (auto-balanced columns, no dead space)
+- Container width widened (`max-w-5xl` → `max-w-6xl`) on sheet and share pages
+- Card padding tightened across all character sheet cards (py-3 gap-2, px-4 headers/content)
+- Inter-section spacing reduced (mt-4/gap-4 → mt-3/gap-3) for denser layout
+- Spell Slots and Spells cards now flow inside the masonry columns instead of spanning full width
+- Spell names and level headers bumped from `text-xs` to `text-sm` for consistency with other list items
+- Proficiency Bonus and Passive Perception badges moved to full-width row above the two-column layout
+
+### Fixed
+- "Legacy" badge incorrectly shown on Magic Initiate feats — suffixed feat IDs (e.g., `magic-initiate-wizard`) now resolved via `findFeatDef()`
+- Magic Initiate cantrips and spells missing from character sheet Spellbook section
+- Magic Initiate spells missing from review page spell list
+- ASI feature display silently failing to show feat name for suffixed feat IDs
+- Review page spell section hidden for characters whose only spells come from Magic Initiate feat
+- Level-up page not detecting prior Magic Initiate selections with suffixed feat IDs
+
 ## [0.9.0] - 2026-03-26
 
 ### Added

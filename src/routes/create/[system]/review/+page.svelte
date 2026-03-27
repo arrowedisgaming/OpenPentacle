@@ -167,14 +167,33 @@
 	}
 
 	const spellsByLevel = $derived.by(() => {
-		if (!character?.spells?.knownSpells) return [];
-		const groups = new Map<number, { known: typeof character.spells.knownSpells[0]; spell: SpellDefinition }[]>();
-		for (const known of character.spells.knownSpells) {
+		if (!character) return [];
+		const groups = new Map<number, { known: { spellId: string; source: string }; spell: SpellDefinition }[]>();
+		const seenIds = new Set<string>();
+
+		// Class spells
+		for (const known of character.spells?.knownSpells ?? []) {
 			const spell = mergedSpells.find((s) => s.id === known.spellId);
 			if (!spell) continue;
+			seenIds.add(spell.id);
 			if (!groups.has(spell.level)) groups.set(spell.level, []);
 			groups.get(spell.level)!.push({ known, spell });
 		}
+
+		// Feat spells (e.g., Magic Initiate cantrips + spell)
+		for (const feat of character.feats ?? []) {
+			if (feat.featId !== 'magic-initiate' && !feat.featId.startsWith('magic-initiate-')) continue;
+			for (const choice of feat.choices) {
+				if (!choice.choiceId.startsWith('cantrip-') && !choice.choiceId.startsWith('spell-')) continue;
+				if (seenIds.has(choice.selectedValue)) continue;
+				const spell = mergedSpells.find((s) => s.id === choice.selectedValue);
+				if (!spell) continue;
+				seenIds.add(spell.id);
+				if (!groups.has(spell.level)) groups.set(spell.level, []);
+				groups.get(spell.level)!.push({ known: { spellId: spell.id, source: 'feat' }, spell });
+			}
+		}
+
 		return [...groups.entries()].sort((a, b) => a[0] - b[0]);
 	});
 
@@ -572,7 +591,7 @@
 			{/if}
 
 			<!-- Spells -->
-			{#if character.spells.knownSpells.length > 0}
+			{#if spellsByLevel.length > 0}
 				<div>
 					<div class="flex items-center justify-between">
 						<h3 class="text-lg font-semibold">Spells</h3>
