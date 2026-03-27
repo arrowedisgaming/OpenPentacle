@@ -1,14 +1,16 @@
-/** Main PDF generator — orchestrates sections into a complete pdfmake document */
+/**
+ * Client-side PDF generator using pdfmake's browser build.
+ * Fonts are embedded as base64 via virtual filesystem — no Node.js APIs needed.
+ * Dynamically imports pdfmake to avoid bloating the initial page bundle.
+ */
 import type { TDocumentDefinitions } from 'pdfmake/interfaces.js';
-import { join } from 'path';
-import { createRequire } from 'module';
+import type { Content } from 'pdfmake/interfaces.js';
 import type { CharacterData } from '$lib/types/character.js';
 import type { ContentPack, SpellDefinition } from '$lib/types/content-pack.js';
 import type { ComputedSheet } from '$lib/engine/character-sheet.js';
 import { resolveSheetData } from './pdf-data-resolver.js';
 import { sectionDivider } from './pdf-decorations.js';
 import { COLORS, FONTS, FONT_SIZES } from './pdf-styles.js';
-import type { Content } from 'pdfmake/interfaces.js';
 import {
 	buildCharacterHeader,
 	buildCoreStatsRow,
@@ -25,33 +27,8 @@ import {
 	buildSpellcastingPage
 } from './pdf-sections.js';
 
-const FONTS_DIR = join(process.cwd(), 'src/lib/server/pdf/fonts');
-
-/** pdfmake singleton — initialized once at module load.
- *  Uses createRequire because pdfmake/src/printer.js has extensionless ESM imports
- *  that fail in Node 25; the CJS build (pdfmake/js/index.js) works correctly. */
-const pdfmake = (() => {
-	const req = createRequire(import.meta.url);
-	const instance = req('pdfmake/js/index.js');
-	instance.fonts = {
-		[FONTS.header]: {
-			normal: join(FONTS_DIR, 'Cinzel-Variable.ttf'),
-			bold: join(FONTS_DIR, 'Cinzel-Variable.ttf'),
-			italics: join(FONTS_DIR, 'Cinzel-Variable.ttf'),
-			bolditalics: join(FONTS_DIR, 'Cinzel-Variable.ttf')
-		},
-		[FONTS.body]: {
-			normal: join(FONTS_DIR, 'CrimsonText-Regular.ttf'),
-			bold: join(FONTS_DIR, 'CrimsonText-Bold.ttf'),
-			italics: join(FONTS_DIR, 'CrimsonText-Italic.ttf'),
-			bolditalics: join(FONTS_DIR, 'CrimsonText-BoldItalic.ttf')
-		}
-	};
-	return instance;
-})();
-
-/** Build the pdfmake document definition from resolved data */
-export function buildDocDefinition(
+/** Build the pdfmake document definition */
+function buildDocDefinition(
 	data: CharacterData,
 	pack: ContentPack,
 	sheet: ComputedSheet,
@@ -59,7 +36,6 @@ export function buildDocDefinition(
 ): TDocumentDefinitions {
 	const r = resolveSheetData(data, pack, sheet, additionalSpells);
 
-	// ─── Page 1: Main character sheet ────────────────────────
 	const page1Content = [
 		buildCharacterHeader(r),
 		sectionDivider(),
@@ -67,7 +43,6 @@ export function buildDocDefinition(
 		sectionDivider()
 	];
 
-	// Two-column body
 	const leftColumn = [
 		buildSavingThrows(r),
 		{ text: '', margin: [0, 6, 0, 0] as [number, number, number, number] },
@@ -94,7 +69,6 @@ export function buildDocDefinition(
 		]
 	});
 
-	// ─── Remaining: features, traits, feats ──────────────────
 	const detailSections = [
 		buildClassFeatures(r),
 		buildSpeciesTraits(r),
@@ -106,7 +80,6 @@ export function buildDocDefinition(
 		page1Content.push(...detailSections);
 	}
 
-	// ─── Spellcasting page (conditional) ─────────────────────
 	const spellContent = buildSpellcastingPage(r);
 	if (spellContent) {
 		page1Content.push(
@@ -128,7 +101,7 @@ export function buildDocDefinition(
 				{
 					type: 'rect',
 					x: 0, y: 0,
-					w: 612, h: 792, // Letter size in points
+					w: 612, h: 792,
 					color: COLORS.parchment
 				}
 			]
@@ -156,14 +129,47 @@ export function buildDocDefinition(
 	};
 }
 
-/** Generate a PDF buffer from character data */
-export async function generateCharacterPDFBuffer(
+/** Generate a PDF and trigger a browser download.
+ *  Lazily imports pdfmake + font data to keep the initial page bundle small. */
+export async function downloadCharacterPDF(
 	data: CharacterData,
 	pack: ContentPack,
 	sheet: ComputedSheet,
 	additionalSpells: SpellDefinition[] = []
-): Promise<Buffer> {
+): Promise<void> {
 	const docDefinition = buildDocDefinition(data, pack, sheet, additionalSpells);
-	const doc = pdfmake.createPdf(docDefinition);
-	return doc.getBuffer();
+
+	// Dynamic imports — only loaded when user clicks PDF
+	const [pdfMakeModule, { fontVfs }] = await Promise.all([
+		import('pdfmake/build/pdfmake.js'),
+		import('./font-data.js')
+	]);
+
+	// pdfmake's browser build has vfs/fonts/createPdf().download() APIs
+	// that @types/pdfmake doesn't fully declare — use any for the runtime API
+	const pdfMake: any = pdfMakeModule.default ?? pdfMakeModule;
+
+	pdfMake.vfs = fontVfs;
+	pdfMake.fonts = {
+		[FONTS.header]: {
+			normal: 'Cinzel-Variable.ttf',
+			bold: 'Cinzel-Variable.ttf',
+			italics: 'Cinzel-Variable.ttf',
+			bolditalics: 'Cinzel-Variable.ttf'
+		},
+		[FONTS.body]: {
+			normal: 'CrimsonText-Regular.ttf',
+			bold: 'CrimsonText-Bold.ttf',
+			italics: 'CrimsonText-Italic.ttf',
+			bolditalics: 'CrimsonText-BoldItalic.ttf'
+		}
+	};
+
+	const safeName = (data.name || 'character').slice(0, 50).replace(/[^a-zA-Z0-9]/g, '_');
+
+	return new Promise<void>((resolve) => {
+		pdfMake.createPdf(docDefinition).download(`${safeName}.pdf`, () => {
+			resolve();
+		});
+	});
 }

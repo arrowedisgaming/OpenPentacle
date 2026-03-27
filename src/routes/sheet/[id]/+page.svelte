@@ -79,6 +79,21 @@
 			toast.success('Link copied!');
 		}
 	}
+
+	let generatingPDF = $state(false);
+	async function handleDownloadPDF() {
+		if (!sheet || generatingPDF) return;
+		generatingPDF = true;
+		try {
+			const { downloadCharacterPDF } = await import('$lib/pdf/pdf-generator.js');
+			await downloadCharacterPDF(character.data, pack, sheet, open5eSpells);
+		} catch (err) {
+			console.error('PDF generation failed:', err);
+			toast.error('Failed to generate PDF');
+		} finally {
+			generatingPDF = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -91,11 +106,17 @@
 		<Button
 			variant="outline"
 			size="sm"
-			href="/api/export/{character.id}/pdf"
+			onclick={handleDownloadPDF}
+			disabled={generatingPDF}
 			class="gap-2"
 		>
-			<Download class="size-4" />
-			PDF
+			{#if generatingPDF}
+				<Loader2 class="size-4 animate-spin" />
+				Generating...
+			{:else}
+				<Download class="size-4" />
+				PDF
+			{/if}
 		</Button>
 		<Button
 			variant="outline"

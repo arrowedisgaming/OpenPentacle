@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resolveSheetData } from '$lib/server/pdf/pdf-data-resolver.js';
+import { resolveSheetData } from '$lib/pdf/pdf-data-resolver.js';
 import { computeSheet } from '$lib/engine/character-sheet.js';
 import { createEmptyCharacter } from '$lib/types/character.js';
 import type { ContentPack, ClassDefinition, SpellDefinition } from '$lib/types/content-pack.js';

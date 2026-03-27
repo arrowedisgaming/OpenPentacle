@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.11.1] - 2026-03-27
+
+### Fixed
+- PDF export now works on Cloudflare Pages — moved from server-side (Node.js) to client-side generation
+- Fonts embedded as base64 in virtual filesystem instead of reading from disk
+- pdfmake + font data lazily loaded only when user clicks PDF button (keeps initial bundle small)
+
 ## [0.11.0] - 2026-03-27
 
 ### Added
