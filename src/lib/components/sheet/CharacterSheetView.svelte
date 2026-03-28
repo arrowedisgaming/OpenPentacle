@@ -637,6 +637,7 @@
 			</Card.Content>
 		</Card.Root>
 	{/if}
+</div>
 
 	<!-- Spell Slots (if any) -->
 	{#if Object.keys(sheet.spellSlots).length > 0}
@@ -715,4 +716,3 @@
 			</Card.Content>
 		</Card.Root>
 	{/if}
-</div>

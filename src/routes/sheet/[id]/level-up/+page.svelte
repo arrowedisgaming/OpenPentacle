@@ -13,9 +13,11 @@
 	import { totalAbilityScore, abilityModifier } from '$lib/engine/ability-scores.js';
 	import { calculateMaxHP } from '$lib/engine/hit-points.js';
 	import { getMaxSpellLevel, resolveFeatureChoiceProficiencies } from '$lib/engine/class-progression.js';
+	import { filterSpells, EMPTY_FILTERS, type SpellFilters } from '$lib/engine/spells.js';
 	import { formatSpellLevel, kebabToTitle, formatModifier } from '$lib/utils/format.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
 	import SelectionCard from '$lib/components/ui/selection-card/SelectionCard.svelte';
+	import { SpellFilterBar } from '$lib/components/ui/spell-filter-bar';
 	import * as Card from '$lib/components/ui/card';
 	import * as Alert from '$lib/components/ui/alert';
 	import { Badge } from '$lib/components/ui/badge';
@@ -288,6 +290,7 @@
 
 	let newSpellIds = $state<Set<string>>(new Set());
 	let newCantripIds = $state<Set<string>>(new Set());
+	let spellFilters = $state<SpellFilters>({ ...EMPTY_FILTERS, schools: new Set(), levels: new Set() });
 
 	const availableSpells = $derived(() => {
 		if (!classDef?.spellcasting || !levelUp) return [];
@@ -312,6 +315,9 @@
 				!existingIds.has(s.id)
 		);
 	});
+
+	// Pre-filtered spell list for the template (avoids {@const} inside component elements)
+	const filteredAvailableSpells = $derived(filterSpells(availableSpells(), spellFilters));
 
 	function toggleNewSpell(spellId: string) {
 		const newSet = new Set(newSpellIds);
@@ -1337,25 +1343,32 @@
 						<Badge variant="secondary" class="mb-3">
 							Selected: {newSpellIds.size} / {levelUp.spellsKnownDelta}
 						</Badge>
-						<div class="space-y-2">
-							{#each availableSpells() as spell}
-								<SelectionCard
-									selected={newSpellIds.has(spell.id)}
-									onclick={() => toggleNewSpell(spell.id)}
-									compact
-								>
-									<div class="flex items-center gap-2 pr-6">
-										<span class="font-medium text-sm">{spell.name}</span>
-										<Badge variant="secondary" class="text-xs">{formatSpellLevel(spell.level)}</Badge>
-										<Badge variant="secondary" class="text-xs capitalize">{spell.school}</Badge>
-										{#if spell.concentration}
-											<Badge variant="outline" class="text-xs">C</Badge>
-										{/if}
-									</div>
-									<p class="mt-1 line-clamp-2 text-xs text-muted-foreground">{spell.description}</p>
-								</SelectionCard>
-							{/each}
-						</div>
+						{#if availableSpells().length > 8}
+							<SpellFilterBar spells={availableSpells()} bind:filters={spellFilters} showLevels={true} class="mb-3" />
+						{/if}
+						{#if filteredAvailableSpells.length > 0}
+							<div class="space-y-2">
+								{#each filteredAvailableSpells as spell}
+									<SelectionCard
+										selected={newSpellIds.has(spell.id)}
+										onclick={() => toggleNewSpell(spell.id)}
+										compact
+									>
+										<div class="flex items-center gap-2 pr-6">
+											<span class="font-medium text-sm">{spell.name}</span>
+											<Badge variant="secondary" class="text-xs">{formatSpellLevel(spell.level)}</Badge>
+											<Badge variant="secondary" class="text-xs capitalize">{spell.school}</Badge>
+											{#if spell.concentration}
+												<Badge variant="outline" class="text-xs">C</Badge>
+											{/if}
+										</div>
+										<p class="mt-1 line-clamp-2 text-xs text-muted-foreground">{spell.description}</p>
+									</SelectionCard>
+								{/each}
+							</div>
+						{:else}
+							<p class="text-sm text-muted-foreground text-center py-4">No spells match your filters.</p>
+						{/if}
 					</Card.Content>
 				</Card.Root>
 			{:else if levelUp.isSpellbookCaster && levelUp.spellbookGrowth > 0}
@@ -1378,25 +1391,32 @@
 								Prepared spell limit increases to {levelUp.newPreparedSpells}.
 							</p>
 						{/if}
-						<div class="space-y-2">
-							{#each availableSpells() as spell}
-								<SelectionCard
-									selected={newSpellIds.has(spell.id)}
-									onclick={() => toggleNewSpell(spell.id)}
-									compact
-								>
-									<div class="flex items-center gap-2 pr-6">
-										<span class="font-medium text-sm">{spell.name}</span>
-										<Badge variant="secondary" class="text-xs">{formatSpellLevel(spell.level)}</Badge>
-										<Badge variant="secondary" class="text-xs capitalize">{spell.school}</Badge>
-										{#if spell.concentration}
-											<Badge variant="outline" class="text-xs">C</Badge>
-										{/if}
-									</div>
-									<p class="mt-1 line-clamp-2 text-xs text-muted-foreground">{spell.description}</p>
-								</SelectionCard>
-							{/each}
-						</div>
+						{#if availableSpells().length > 8}
+							<SpellFilterBar spells={availableSpells()} bind:filters={spellFilters} showLevels={true} class="mb-3" />
+						{/if}
+						{#if filteredAvailableSpells.length > 0}
+							<div class="space-y-2">
+								{#each filteredAvailableSpells as spell}
+									<SelectionCard
+										selected={newSpellIds.has(spell.id)}
+										onclick={() => toggleNewSpell(spell.id)}
+										compact
+									>
+										<div class="flex items-center gap-2 pr-6">
+											<span class="font-medium text-sm">{spell.name}</span>
+											<Badge variant="secondary" class="text-xs">{formatSpellLevel(spell.level)}</Badge>
+											<Badge variant="secondary" class="text-xs capitalize">{spell.school}</Badge>
+											{#if spell.concentration}
+												<Badge variant="outline" class="text-xs">C</Badge>
+											{/if}
+										</div>
+										<p class="mt-1 line-clamp-2 text-xs text-muted-foreground">{spell.description}</p>
+									</SelectionCard>
+								{/each}
+							</div>
+						{:else}
+							<p class="text-sm text-muted-foreground text-center py-4">No spells match your filters.</p>
+						{/if}
 					</Card.Content>
 				</Card.Root>
 			{:else if levelUp.isPreparedCaster && levelUp.preparedSpellsDelta > 0}

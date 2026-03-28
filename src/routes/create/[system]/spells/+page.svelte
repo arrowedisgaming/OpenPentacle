@@ -6,17 +6,16 @@
 	import type { SpellDefinition, ClassDefinition } from '$lib/types/content-pack.js';
 	import type { SpellKnown } from '$lib/types/character.js';
 	import { getMaxSpellLevel } from '$lib/engine/class-progression.js';
+	import { filterSpells, EMPTY_FILTERS, type SpellFilters } from '$lib/engine/spells.js';
 	import { formatSpellLevel } from '$lib/utils/format.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
 	import SelectionCard from '$lib/components/ui/selection-card/SelectionCard.svelte';
 	import WizardNav from '$lib/components/wizard/WizardNav.svelte';
+	import { SpellFilterBar } from '$lib/components/ui/spell-filter-bar';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
 	import { BookOpen, ChevronDown, ChevronUp } from 'lucide-svelte';
 	import * as Sheet from '$lib/components/ui/sheet';
-	import * as Collapsible from '$lib/components/ui/collapsible';
 	import SourceSelector from '$lib/components/open5e/SourceSelector.svelte';
 
 
@@ -203,63 +202,11 @@
 		spellPhase = 'spellbook';
 	}
 
-	// Filter state
-	let schoolFilters = $state<Set<string>>(new Set());
-	let concentrationFilter = $state<boolean | null>(null);
-	let ritualFilter = $state<boolean | null>(null);
+	// Filter state — shared via SpellFilterBar component
+	let spellFilters = $state<SpellFilters>({ ...EMPTY_FILTERS, schools: new Set(), levels: new Set() });
 
-	const hasActiveFilters = $derived(schoolFilters.size > 0 || concentrationFilter !== null || ritualFilter !== null);
-
-	function clearFilters() {
-		schoolFilters = new Set();
-		concentrationFilter = null;
-		ritualFilter = null;
-	}
-
-	function toggleSchool(school: string) {
-		const next = new Set(schoolFilters);
-		if (next.has(school)) {
-			next.delete(school);
-		} else {
-			next.add(school);
-		}
-		schoolFilters = next;
-	}
-
-	function toggleConcentration() {
-		concentrationFilter = concentrationFilter === true ? null : true;
-	}
-
-	function toggleRitual() {
-		ritualFilter = ritualFilter === true ? null : true;
-	}
-
-	// Group available spells by level
-	const spellsByLevel = $derived(() => {
-		const groups = new Map<number, SpellDefinition[]>();
-		for (const spell of availableSpells()) {
-			const list = groups.get(spell.level) ?? [];
-			list.push(spell);
-			groups.set(spell.level, list);
-		}
-		return new Map([...groups.entries()].sort(([a], [b]) => a - b));
-	});
-
-	// Get schools present in a given level's spells
-	function getSchoolsForLevel(spells: SpellDefinition[]): string[] {
-		const schools = new Set(spells.map((s) => s.school));
-		return [...schools].sort();
-	}
-
-	// Apply filters to a list of spells
-	function filterSpells(spells: SpellDefinition[]): SpellDefinition[] {
-		return spells.filter((spell) => {
-			if (schoolFilters.size > 0 && !schoolFilters.has(spell.school)) return false;
-			if (concentrationFilter === true && !spell.concentration) return false;
-			if (ritualFilter === true && !spell.ritual) return false;
-			return true;
-		});
-	}
+	// Filtered spell list (flat, no tabs)
+	const filteredSpells = $derived(filterSpells(availableSpells(), spellFilters));
 
 	// Source labels for Open5E spells (derived from spell ID prefix)
 	const SOURCE_LABELS: Record<string, string> = {
@@ -281,9 +228,6 @@
 		event.stopPropagation();
 		expandedSpellId = expandedSpellId === spellId ? null : spellId;
 	}
-
-	const spellLevels = $derived([...spellsByLevel().entries()]);
-	const defaultTab = $derived(spellLevels.length > 0 ? String(spellLevels[0][0]) : '0');
 
 	const nextPath = $derived(wizNav.getNextStepPath('spells'));
 	const nextLabel = $derived(`Next: ${wizNav.getNextStepLabel('spells')}`);
@@ -409,115 +353,67 @@
 		</div>
 	</div>
 
-	{#if spellLevels.length > 0}
-		<Tabs.Root value={defaultTab} class="mt-4" onValueChange={() => clearFilters()}>
-			<Tabs.List class="w-max">
-				{#each spellLevels as [level]}
-					<Tabs.Trigger value={String(level)}>
-						{formatSpellLevel(level)}{level > 0 ? ' Level' : 's'}
-					</Tabs.Trigger>
-				{/each}
-			</Tabs.List>
-			{#each spellLevels as [level, spells]}
-				<Tabs.Content value={String(level)}>
-					{@const schools = getSchoolsForLevel(spells)}
-					{@const hasConcentration = spells.some((s) => s.concentration)}
-					{@const hasRitual = spells.some((s) => s.ritual)}
-					{@const filtered = filterSpells(spells)}
-					<div class="mb-3 flex flex-wrap items-center gap-2">
-						{#each schools as school}
-							<button onclick={() => toggleSchool(school)}>
-								<Badge
-									variant={schoolFilters.has(school) ? 'default' : 'outline'}
-									class="cursor-pointer capitalize"
-								>
-									{school}
-								</Badge>
-							</button>
-						{/each}
-						{#if hasConcentration}
-							<button onclick={toggleConcentration}>
-								<Badge
-									variant={concentrationFilter === true ? 'default' : 'outline'}
-									class="cursor-pointer"
-								>
-									Concentration
-								</Badge>
-							</button>
+	<!-- Filter bar + flat spell list -->
+	<SpellFilterBar spells={availableSpells()} bind:filters={spellFilters} showLevels={true} class="mt-4 mb-3" />
+
+	{#if filteredSpells.length > 0}
+		<div class="space-y-2">
+			{#each filteredSpells as spell}
+				{@const source = getSpellSource(spell.id)}
+				{@const isExpanded = expandedSpellId === spell.id}
+				<SelectionCard
+					selected={isSpellbookCaster && spellPhase === 'prepare'
+						? (spell.level === 0 || preparedSpellIdSet.has(spell.id))
+						: selectedSpellIds.has(spell.id)}
+					onclick={() => toggleSpell(spell.id)}
+					disabled={isSpellbookCaster && spellPhase === 'prepare' && spell.level === 0}
+				>
+					<div class="flex items-center gap-2 pr-6">
+						<span class="font-medium">{spell.name}</span>
+						<Badge variant="secondary" class="text-xs capitalize">{spell.school}</Badge>
+						<Badge variant="outline" class="text-xs">{formatSpellLevel(spell.level)}</Badge>
+						{#if spell.concentration}
+							<Badge variant="outline" class="text-xs">C</Badge>
 						{/if}
-						{#if hasRitual}
-							<button onclick={toggleRitual}>
-								<Badge
-									variant={ritualFilter === true ? 'default' : 'outline'}
-									class="cursor-pointer"
-								>
-									Ritual
-								</Badge>
-							</button>
+						{#if spell.ritual}
+							<Badge variant="outline" class="text-xs">R</Badge>
 						{/if}
-						{#if hasActiveFilters}
-							<button
-								onclick={clearFilters}
-								class="text-xs text-muted-foreground underline hover:text-foreground"
-							>
-								Clear
-							</button>
+						{#if source}
+							<Badge variant="outline" class="text-xs text-primary/70">{source}</Badge>
 						{/if}
 					</div>
-					<div class="space-y-2">
-							{#each filtered as spell}
-								{@const source = getSpellSource(spell.id)}
-								{@const isExpanded = expandedSpellId === spell.id}
-								<SelectionCard
-									selected={isSpellbookCaster && spellPhase === 'prepare'
-										? (spell.level === 0 || preparedSpellIdSet.has(spell.id))
-										: selectedSpellIds.has(spell.id)}
-									onclick={() => toggleSpell(spell.id)}
-									disabled={isSpellbookCaster && spellPhase === 'prepare' && spell.level === 0}
-								>
-									<div class="flex items-center gap-2 pr-6">
-										<span class="font-medium">{spell.name}</span>
-										<Badge variant="secondary" class="text-xs capitalize">{spell.school}</Badge>
-										{#if spell.concentration}
-											<Badge variant="outline" class="text-xs">C</Badge>
-										{/if}
-										{#if spell.ritual}
-											<Badge variant="outline" class="text-xs">R</Badge>
-										{/if}
-										{#if source}
-											<Badge variant="outline" class="text-xs text-primary/70">{source}</Badge>
-										{/if}
-									</div>
-									<p class="{isExpanded ? '' : 'line-clamp-2'} mt-1 text-sm text-muted-foreground">{spell.description}</p>
-									{#if spell.higherLevels && isExpanded}
-										<p class="mt-1 text-sm text-muted-foreground italic">{spell.higherLevels}</p>
-									{/if}
-									<div class="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-										<span>
-											{spell.castingTime} &middot; {spell.range} &middot; {spell.duration}
-											&middot; {[
-												spell.components.verbal ? 'V' : '',
-												spell.components.somatic ? 'S' : '',
-												spell.components.material ? 'M' : ''
-											].filter(Boolean).join(', ') || '—'}{#if spell.components.materialCost}&nbsp;({spell.components.materialCost} gp){/if}
-										</span>
-										<button
-											onclick={(e) => toggleExpand(spell.id, e)}
-											class="ml-auto inline-flex items-center gap-0.5 text-primary/60 hover:text-primary"
-										>
-											{#if isExpanded}
-												<ChevronUp class="size-3.5" />
-											{:else}
-												<ChevronDown class="size-3.5" />
-											{/if}
-										</button>
-									</div>
-								</SelectionCard>
-							{/each}
-						</div>
-				</Tabs.Content>
+					<p class="{isExpanded ? '' : 'line-clamp-2'} mt-1 text-sm text-muted-foreground">{spell.description}</p>
+					{#if spell.higherLevels && isExpanded}
+						<p class="mt-1 text-sm text-muted-foreground italic">{spell.higherLevels}</p>
+					{/if}
+					<div class="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+						<span>
+							{spell.castingTime} &middot; {spell.range} &middot; {spell.duration}
+							&middot; {[
+								spell.components.verbal ? 'V' : '',
+								spell.components.somatic ? 'S' : '',
+								spell.components.material ? 'M' : ''
+							].filter(Boolean).join(', ') || '—'}{#if spell.components.materialCost}&nbsp;({spell.components.materialCost} gp){/if}
+						</span>
+						<button
+							type="button"
+							onclick={(e) => toggleExpand(spell.id, e)}
+							class="ml-auto inline-flex items-center gap-0.5 text-primary/60 hover:text-primary"
+							aria-label={isExpanded ? 'Collapse spell details' : 'Expand spell details'}
+							aria-expanded={isExpanded}
+						>
+							{#if isExpanded}
+								<ChevronUp class="size-3.5" />
+							{:else}
+								<ChevronDown class="size-3.5" />
+							{/if}
+						</button>
+					</div>
+				</SelectionCard>
 			{/each}
-		</Tabs.Root>
+		</div>
+	{:else if availableSpells().length > 0}
+		<p class="text-sm text-muted-foreground text-center py-4">No spells match your filters.</p>
 	{/if}
 
 	<WizardNav

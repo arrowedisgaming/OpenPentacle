@@ -1,12 +1,13 @@
 <script lang="ts">
 	import type { PreparedSpellContext } from '$lib/engine/prepared-spells.js';
 	import type { SpellDefinition } from '$lib/types/content-pack.js';
+	import { filterSpells, hasActiveFilters, EMPTY_FILTERS, type SpellFilters } from '$lib/engine/spells.js';
 	import { formatSpellLevel } from '$lib/utils/format.js';
 	import SelectionCard from '$lib/components/ui/selection-card/SelectionCard.svelte';
+	import { SpellFilterBar } from '$lib/components/ui/spell-filter-bar';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Input } from '$lib/components/ui/input';
 	import * as Card from '$lib/components/ui/card';
-	import { Lock, ChevronDown, ChevronUp, Search } from 'lucide-svelte';
+	import { Lock, ChevronDown, ChevronUp } from 'lucide-svelte';
 
 	interface Props {
 		context: PreparedSpellContext;
@@ -18,9 +19,8 @@
 	let { context, currentPreparedIds, availableSpells, onchange }: Props = $props();
 
 	let expandedSpellId = $state<string | null>(null);
-	let searchQuery = $state('');
-	let activeLevelFilters = $state<Set<number>>(new Set());
 	let showPreparedOnly = $state(false);
+	let spellFilters = $state<SpellFilters>({ ...EMPTY_FILTERS, schools: new Set(), levels: new Set() });
 
 	// Build a set of available spell IDs for fast lookup
 	const availableSpellIds = $derived(new Set(availableSpells.map((s) => s.id)));
@@ -33,49 +33,21 @@
 		).length
 	);
 
-	// Get distinct spell levels present
-	const distinctLevels = $derived(
-		[...new Set(availableSpells.map((s) => s.level))].sort((a, b) => a - b)
-	);
-
-	// Filter spells by search + level + prepared filters
+	// Filter spells: prepared-only toggle (domain-specific) + shared filters
 	const filteredSpells = $derived.by(() => {
 		let spells = availableSpells;
 
-		// Prepared-only filter
+		// Prepared-only filter (domain-specific, not part of shared SpellFilters)
 		if (showPreparedOnly) {
 			spells = spells.filter(
 				(s) => currentPreparedIds.has(s.id) || context.alwaysPreparedIds.has(s.id)
 			);
 		}
 
-		// Level filter (empty = show all)
-		if (activeLevelFilters.size > 0) {
-			spells = spells.filter((s) => activeLevelFilters.has(s.level));
-		}
-
-		// Text search
-		if (searchQuery.trim()) {
-			const q = searchQuery.trim().toLowerCase();
-			spells = spells.filter(
-				(s) =>
-					s.name.toLowerCase().includes(q) ||
-					s.school.toLowerCase().includes(q)
-			);
-		}
-
-		return spells;
+		return filterSpells(spells, spellFilters);
 	});
 
-	function toggleLevelFilter(level: number) {
-		const next = new Set(activeLevelFilters);
-		if (next.has(level)) {
-			next.delete(level);
-		} else {
-			next.add(level);
-		}
-		activeLevelFilters = next;
-	}
+	const hasAnyFilters = $derived(showPreparedOnly || hasActiveFilters(spellFilters));
 
 	function toggleSpell(spellId: string) {
 		if (context.alwaysPreparedIds.has(spellId)) return;
@@ -125,48 +97,25 @@
 			{/if}
 		</div>
 
-		<!-- Level filter badges -->
-		{#if distinctLevels.length > 0}
-			<div class="mb-3 flex flex-wrap items-center gap-2">
-				{#each distinctLevels as level}
-					<button type="button" onclick={() => toggleLevelFilter(level)}>
-						<Badge
-							variant={activeLevelFilters.has(level) ? 'default' : 'outline'}
-							class="cursor-pointer"
-						>
-							{formatSpellLevel(level)} Level
-						</Badge>
-					</button>
-				{/each}
-				<button type="button" onclick={() => { showPreparedOnly = !showPreparedOnly; }}>
+		<!-- Spell filters -->
+		<div class="mb-4">
+			<SpellFilterBar spells={availableSpells} bind:filters={spellFilters} showLevels={true} />
+			<div class="mt-1.5 flex flex-wrap items-center gap-1.5">
+				<button
+					type="button"
+					onclick={() => { showPreparedOnly = !showPreparedOnly; }}
+					aria-pressed={showPreparedOnly}
+					aria-label="Show only prepared spells"
+					class="rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+				>
 					<Badge
-						variant={showPreparedOnly ? 'default' : 'outline'}
-						class="cursor-pointer"
+						variant={showPreparedOnly ? 'default' : 'secondary'}
+						class="cursor-pointer transition-colors"
 					>
-						Prepared
+						Prepared Only
 					</Badge>
 				</button>
-				{#if activeLevelFilters.size > 0 || showPreparedOnly}
-					<button
-						type="button"
-						onclick={() => { activeLevelFilters = new Set(); showPreparedOnly = false; }}
-						class="text-xs text-muted-foreground underline hover:text-foreground"
-					>
-						Clear Filters
-					</button>
-				{/if}
 			</div>
-		{/if}
-
-		<!-- Search input -->
-		<div class="relative mb-4">
-			<Search class="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-			<Input
-				type="text"
-				placeholder="Search spells..."
-				bind:value={searchQuery}
-				class="pl-9"
-			/>
 		</div>
 
 		<!-- Spell list -->
@@ -227,7 +176,7 @@
 					</SelectionCard>
 				{/each}
 			</div>
-		{:else if searchQuery.trim() || activeLevelFilters.size > 0}
+		{:else if hasAnyFilters}
 			<p class="text-sm text-muted-foreground text-center py-4">No spells match your filters.</p>
 		{:else}
 			<p class="text-sm text-muted-foreground text-center py-4">No spells available for preparation.</p>

@@ -47,3 +47,6 @@ CLAUDE.md
 # Agent skills
 .agents/
 TODO.md
+
+# Dippy (local workflow automation)
+.dippy

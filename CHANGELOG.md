@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.12.0] - 2026-03-27
+
+### Added
+- Unified spell filter bar with search, school, level, concentration, and ritual filters
+- Spell filtering on the level-up page (previously had no filtering)
+- Search-by-name filtering on the wizard spell step (previously missing)
+- School, concentration, and ritual filters on the prepared spell editor (previously only had search and level)
+
+### Changed
+- Wizard spell step uses a flat spell list with level filter badges instead of level tabs
+- Each spell card now shows a level badge for quick identification
+- Filter badge buttons include proper accessibility attributes (aria-pressed, aria-label)
+- "Clear" filter action styled as a badge for better discoverability
+- Filter bar shows result count ("12 of 48") when filters are active
+
 ## [0.11.4] - 2026-03-27
 
 ### Fixed
