@@ -10,6 +10,8 @@ export interface PreparedSpellContext {
 	alwaysPreparedIds: Set<string>;
 	isSpellbookCaster: boolean;
 	className: string;
+	maxCantrips: number;
+	canSwapCantrips: boolean;
 }
 
 /**
@@ -41,13 +43,17 @@ export function computePreparedSpellContext(
 			.map((s) => s.spellId)
 	);
 
+	const maxCantrips = row.cantripsKnown ?? 0;
+
 	return {
 		maxPrepared,
 		maxSpellLevel,
 		spellListId: classDef.spellcasting.spellList,
 		alwaysPreparedIds,
 		isSpellbookCaster: classDef.id === 'wizard',
-		className: classDef.name
+		className: classDef.name,
+		maxCantrips,
+		canSwapCantrips: classDef.id === 'wizard'
 	};
 }
 
@@ -76,5 +82,19 @@ export function getAvailableSpellsForPreparation(
 			s.level > 0 &&
 			s.level <= context.maxSpellLevel &&
 			s.lists.includes(context.spellListId)
+	);
+}
+
+/**
+ * Return all cantrips (level 0) on the wizard spell list that the character
+ * could swap to. The UI uses this pool to let the user pick which cantrips
+ * to keep; the total count is capped at `context.maxCantrips`.
+ */
+export function getAvailableCantripsForSwap(
+	context: PreparedSpellContext,
+	allSpells: SpellDefinition[]
+): SpellDefinition[] {
+	return allSpells.filter(
+		(s) => s.level === 0 && s.lists.includes(context.spellListId)
 	);
 }

@@ -5,9 +5,10 @@
 	import type { ContentPack, SpellDefinition } from '$lib/types/content-pack.js';
 	import type { CharacterData, EquipmentSelection } from '$lib/types/character.js';
 	import { kebabToTitle } from '$lib/utils/format.js';
-	import { computePreparedSpellContext, getAvailableSpellsForPreparation } from '$lib/engine/prepared-spells.js';
+	import { computePreparedSpellContext, getAvailableSpellsForPreparation, getAvailableCantripsForSwap } from '$lib/engine/prepared-spells.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
 	import PreparedSpellEditor from '$lib/components/edit/PreparedSpellEditor.svelte';
+	import CantripEditor from '$lib/components/edit/CantripEditor.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Alert from '$lib/components/ui/alert';
 	import { Button } from '$lib/components/ui/button';
@@ -45,6 +46,9 @@
 	// Prepared spells
 	let preparedSpellIds = $state<Set<string>>(new Set());
 
+	// Cantrip swapping (wizard only)
+	let cantripIds = $state<Set<string>>(new Set());
+
 	// Open5E spell merging
 	let open5eSpells = $state<SpellDefinition[]>([]);
 
@@ -66,6 +70,11 @@
 		bonds = character.data.flavor?.bonds ?? '';
 		flaws = character.data.flavor?.flaws ?? '';
 		preparedSpellIds = new Set(character.data.spells?.preparedSpellIds ?? []);
+		cantripIds = new Set(
+			character.data.spells.knownSpells
+				.filter((s) => s.source.startsWith('class:') && allSpells.find((sp) => sp.id === s.spellId)?.level === 0)
+				.map((s) => s.spellId)
+		);
 		hasInitializedForm = true;
 	});
 
@@ -101,6 +110,11 @@
 	const availableSpellsForPrep = $derived(
 		preparedContext
 			? getAvailableSpellsForPreparation(preparedContext, character.data.spells.knownSpells, allSpells)
+			: []
+	);
+	const availableCantrips = $derived(
+		preparedContext?.canSwapCantrips
+			? getAvailableCantripsForSwap(preparedContext, allSpells)
 			: []
 	);
 
@@ -142,6 +156,27 @@
 		saving = true;
 		error = '';
 
+		// Build updated knownSpells if cantrips were swapped
+		let updatedKnownSpells = [...character.data.spells.knownSpells];
+		let updatedPreparedIds = [...preparedSpellIds];
+		if (preparedContext?.canSwapCantrips) {
+			const classSource = `class:${character.data.classes[0]?.classId}`;
+			// Remove old class cantrips
+			updatedKnownSpells = updatedKnownSpells.filter(
+				(s) => !(s.source === classSource && allSpells.find((sp) => sp.id === s.spellId)?.level === 0)
+			);
+			// Add current cantrip selections
+			for (const id of cantripIds) {
+				updatedKnownSpells.push({ spellId: id, source: classSource, alwaysPrepared: true });
+			}
+			// Update preparedSpellIds: remove only class-list cantrips, preserve feat/origin cantrips
+			const classListCantripIds = new Set(
+				allSpells.filter((s) => s.level === 0 && s.lists.includes(preparedContext.spellListId)).map((s) => s.id)
+			);
+			updatedPreparedIds = updatedPreparedIds.filter((id) => !classListCantripIds.has(id));
+			updatedPreparedIds.push(...cantripIds);
+		}
+
 		const updatedData: CharacterData = {
 			...character.data,
 			name,
@@ -153,7 +188,8 @@
 			equipment,
 			spells: {
 				...character.data.spells,
-				preparedSpellIds: [...preparedSpellIds]
+				knownSpells: updatedKnownSpells,
+				preparedSpellIds: updatedPreparedIds
 			},
 			currency: { cp, sp, ep, gp, pp },
 			flavor: {
@@ -299,6 +335,16 @@
 				</div>
 			</Card.Content>
 		</Card.Root>
+
+		<!-- Cantrip Swapping (wizard only) -->
+		{#if preparedContext?.canSwapCantrips && availableCantrips.length > 0}
+			<CantripEditor
+				maxCantrips={preparedContext.maxCantrips}
+				currentCantripIds={cantripIds}
+				{availableCantrips}
+				onchange={(ids) => { cantripIds = ids; }}
+			/>
+		{/if}
 
 		<!-- Prepared Spells (only for spellcasting classes) -->
 		{#if preparedContext}

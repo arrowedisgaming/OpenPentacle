@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
 	computePreparedSpellContext,
-	getAvailableSpellsForPreparation
+	getAvailableSpellsForPreparation,
+	getAvailableCantripsForSwap
 } from '$lib/engine/prepared-spells.js';
 import type { SpellDefinition } from '$lib/types/content-pack.js';
 import type { SpellKnown } from '$lib/types/character.js';
@@ -150,7 +151,9 @@ describe('getAvailableSpellsForPreparation', () => {
 			spellListId: 'wizard',
 			alwaysPreparedIds: new Set<string>(),
 			isSpellbookCaster: true,
-			className: 'Wizard'
+			className: 'Wizard',
+			maxCantrips: 3,
+			canSwapCantrips: true
 		};
 		const knownSpells: SpellKnown[] = [
 			{ spellId: 'magic-missile', source: 'class:wizard' },
@@ -173,7 +176,9 @@ describe('getAvailableSpellsForPreparation', () => {
 			spellListId: 'cleric',
 			alwaysPreparedIds: new Set<string>(),
 			isSpellbookCaster: false,
-			className: 'Cleric'
+			className: 'Cleric',
+			maxCantrips: 3,
+			canSwapCantrips: false
 		};
 		const knownSpells: SpellKnown[] = []; // Cleric prepares from full list
 
@@ -192,7 +197,9 @@ describe('getAvailableSpellsForPreparation', () => {
 			spellListId: 'cleric',
 			alwaysPreparedIds: new Set<string>(),
 			isSpellbookCaster: false,
-			className: 'Cleric'
+			className: 'Cleric',
+			maxCantrips: 3,
+			canSwapCantrips: false
 		};
 
 		const available = getAvailableSpellsForPreparation(context, [], clericSpells);
@@ -211,12 +218,56 @@ describe('getAvailableSpellsForPreparation', () => {
 			spellListId: 'wizard',
 			alwaysPreparedIds: new Set<string>(),
 			isSpellbookCaster: false, // Pretend non-spellbook for this test
-			className: 'Wizard'
+			className: 'Wizard',
+			maxCantrips: 3,
+			canSwapCantrips: false
 		};
 
 		const available = getAvailableSpellsForPreparation(context, [], wizardSpells);
 
 		expect(available.every((s) => s.level > 0)).toBe(true);
 		expect(available.find((s) => s.id === 'fire-bolt')).toBeUndefined();
+	});
+});
+
+// ─── getAvailableCantripsForSwap ────────────────────────────
+
+describe('getAvailableCantripsForSwap', () => {
+	it('returns only level 0 spells on the class spell list', () => {
+		const context = {
+			maxPrepared: 4,
+			maxSpellLevel: 2,
+			spellListId: 'wizard',
+			alwaysPreparedIds: new Set<string>(),
+			isSpellbookCaster: true,
+			className: 'Wizard',
+			maxCantrips: 3,
+			canSwapCantrips: true
+		};
+
+		const available = getAvailableCantripsForSwap(context, wizardSpells);
+
+		expect(available.every((s) => s.level === 0)).toBe(true);
+		expect(available.every((s) => s.lists.includes('wizard'))).toBe(true);
+		expect(available.map((s) => s.id)).toEqual(['fire-bolt']);
+	});
+
+	it('excludes cantrips from other spell lists', () => {
+		const context = {
+			maxPrepared: 4,
+			maxSpellLevel: 2,
+			spellListId: 'wizard',
+			alwaysPreparedIds: new Set<string>(),
+			isSpellbookCaster: true,
+			className: 'Wizard',
+			maxCantrips: 3,
+			canSwapCantrips: true
+		};
+
+		const mixedSpells = [...wizardSpells, ...clericSpells];
+		const available = getAvailableCantripsForSwap(context, mixedSpells);
+
+		expect(available.map((s) => s.id)).toEqual(['fire-bolt']);
+		expect(available.find((s) => s.id === 'sacred-flame')).toBeUndefined();
 	});
 });
