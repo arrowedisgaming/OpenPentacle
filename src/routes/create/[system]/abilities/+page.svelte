@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { wizardStore } from '$lib/stores/wizard.js';
 	import { ABILITY_IDS, ABILITY_NAMES, type AbilityId } from '$lib/types/common.js';
-	import type { AbilityScoreMethod, PointBuyConfig } from '$lib/types/content-pack.js';
+	import type { AbilityScoreMethod, ClassDefinition, PointBuyConfig } from '$lib/types/content-pack.js';
 	import {
 		abilityModifier,
 		formatModifier,
@@ -21,7 +21,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as ToggleGroup from '$lib/components/ui/toggle-group';
-	import { Minus, Plus, Dice5 } from 'lucide-svelte';
+	import { Minus, Plus, Dice5, Wand2, Check } from 'lucide-svelte';
 
 	const { pack, systemId } = $derived($page.data as { pack: any; systemId: string });
 	const methods: AbilityScoreMethod[] = $derived(pack?.abilityScoreMethods ?? []);
@@ -165,6 +165,45 @@
 		poolPicks = reset;
 	}
 
+	// Look up the selected class for suggested ability scores
+	const selectedClass: ClassDefinition | undefined = $derived.by(() => {
+		const classId = wizardStore.getCharacter()?.classes?.[0]?.classId;
+		if (!classId || !pack?.classes) return undefined;
+		return (pack.classes as ClassDefinition[]).find((c: ClassDefinition) => c.id === classId);
+	});
+
+	// Whether current picks match the suggested array for the selected class
+	const suggestedMatchesCurrent = $derived.by(() => {
+		const suggested = selectedClass?.suggestedAbilityScores;
+		if (!suggested || !isPoolMethod) return false;
+		return ABILITY_IDS.every((ab) => {
+			const pick = poolPicks[ab];
+			return pick !== '' && tagValue(pick) === suggested[ab];
+		});
+	});
+
+	let suggestedShaking = $state(false);
+
+	function applySuggestedArray() {
+		const suggested = selectedClass?.suggestedAbilityScores;
+		if (!suggested || taggedPool.length === 0) return;
+		const newPicks = {} as Record<AbilityId, string>;
+		const usedTags = new Set<string>();
+		for (const ab of ABILITY_IDS) {
+			const val = suggested[ab];
+			const tag = taggedPool.find((t) => tagValue(t) === val && !usedTags.has(t));
+			if (tag) {
+				newPicks[ab] = tag;
+				usedTags.add(tag);
+			} else {
+				newPicks[ab] = '';
+			}
+		}
+		poolPicks = newPicks;
+		suggestedShaking = true;
+		setTimeout(() => suggestedShaking = false, 400);
+	}
+
 	function proceed() {
 		if (!isValid()) return;
 		wizardStore.updateCharacter({
@@ -252,6 +291,24 @@
 				<span class="text-sm text-muted-foreground">— assign one to each ability</span>
 			</Card.Content>
 		</Card.Root>
+		{#if selectedClass?.suggestedAbilityScores}
+			<div class="mt-3">
+				<Button
+					variant={suggestedMatchesCurrent ? undefined : 'default'}
+					size="sm"
+					onclick={applySuggestedArray}
+					class="{suggestedShaking ? 'animate-shake' : ''} {suggestedMatchesCurrent ? 'bg-success text-success-foreground hover:bg-success/90 shadow-xs' : ''}"
+				>
+					{#if suggestedMatchesCurrent}
+						<Check class="size-4" />
+						{selectedClass.name} Suggested Applied
+					{:else}
+						<Wand2 class="size-4" />
+						Use {selectedClass.name} Suggested
+					{/if}
+				</Button>
+			</div>
+		{/if}
 	{/if}
 
 	{#if currentMethod?.type === 'point-buy'}

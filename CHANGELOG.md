@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.13.0] - 2026-03-29
+
+### Added
+- One-click "Use [Class] Suggested" button on the Standard Array ability score step — auto-fills all six ability scores based on the SRD 5.2.1 recommended array for each class
+- Suggested ability score data for all 12 SRD classes (from SRD page 21 "Standard Array by Class" table)
+- Visual feedback: button turns green with checkmark when suggested scores are active, reverts when manually changed
+
 ## [0.12.1] - 2026-03-27
 
 ### Added

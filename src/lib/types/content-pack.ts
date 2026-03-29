@@ -143,6 +143,8 @@ export interface ClassDefinition {
 	progression: ClassProgression[];
 	subclasses: SubclassDefinition[];
 	spellcasting?: SpellcastingConfig;
+	/** SRD suggested ability score assignment for this class (standard array values) */
+	suggestedAbilityScores?: Record<AbilityId, number>;
 }
 
 export interface ClassToolProficiency {

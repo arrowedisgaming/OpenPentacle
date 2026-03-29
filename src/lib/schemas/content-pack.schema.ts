@@ -183,7 +183,8 @@ const classDefinitionSchema = z.object({
 	startingGold: z.string().optional(),
 	progression: z.array(classProgressionSchema).min(1),
 	subclasses: z.array(subclassSchema),
-	spellcasting: spellcastingConfigSchema.optional()
+	spellcasting: spellcastingConfigSchema.optional(),
+	suggestedAbilityScores: z.record(abilityIdSchema, z.number().int()).optional()
 });
 
 // ─── Backgrounds ─────────────────────────────────────────────

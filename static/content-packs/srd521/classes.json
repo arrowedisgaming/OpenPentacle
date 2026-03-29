@@ -612,7 +612,15 @@
           }
         ]
       }
-    ]
+    ],
+    "suggestedAbilityScores": {
+      "str": 15,
+      "dex": 13,
+      "con": 14,
+      "int": 10,
+      "wis": 12,
+      "cha": 8
+    }
   },
   {
     "id": "bard",
@@ -1344,7 +1352,15 @@
           }
         ]
       }
-    ]
+    ],
+    "suggestedAbilityScores": {
+      "str": 8,
+      "dex": 14,
+      "con": 12,
+      "int": 13,
+      "wis": 10,
+      "cha": 15
+    }
   },
   {
     "id": "cleric",
@@ -1450,8 +1466,14 @@
                     "name": "Protector",
                     "description": "You gain proficiency with Martial weapons and training with Heavy armor.",
                     "grants": [
-                      { "type": "weapon", "value": "martial" },
-                      { "type": "armor", "value": "heavy" }
+                      {
+                        "type": "weapon",
+                        "value": "martial"
+                      },
+                      {
+                        "type": "armor",
+                        "value": "heavy"
+                      }
                     ]
                   },
                   {
@@ -1872,7 +1894,15 @@
           }
         ]
       }
-    ]
+    ],
+    "suggestedAbilityScores": {
+      "str": 14,
+      "dex": 8,
+      "con": 13,
+      "int": 10,
+      "wis": 15,
+      "cha": 12
+    }
   },
   {
     "id": "druid",
@@ -2011,8 +2041,14 @@
                     "name": "Warden",
                     "description": "You gain proficiency with Martial weapons and training with Medium armor.",
                     "grants": [
-                      { "type": "weapon", "value": "martial" },
-                      { "type": "armor", "value": "medium" }
+                      {
+                        "type": "weapon",
+                        "value": "martial"
+                      },
+                      {
+                        "type": "armor",
+                        "value": "medium"
+                      }
                     ]
                   }
                 ],
@@ -2454,7 +2490,15 @@
           }
         ]
       }
-    ]
+    ],
+    "suggestedAbilityScores": {
+      "str": 8,
+      "dex": 12,
+      "con": 14,
+      "int": 13,
+      "wis": 15,
+      "cha": 10
+    }
   },
   {
     "id": "fighter",
@@ -3090,7 +3134,15 @@
           }
         ]
       }
-    ]
+    ],
+    "suggestedAbilityScores": {
+      "str": 15,
+      "dex": 14,
+      "con": 13,
+      "int": 8,
+      "wis": 10,
+      "cha": 12
+    }
   },
   {
     "id": "monk",
@@ -3580,7 +3632,15 @@
           }
         ]
       }
-    ]
+    ],
+    "suggestedAbilityScores": {
+      "str": 12,
+      "dex": 15,
+      "con": 13,
+      "int": 10,
+      "wis": 14,
+      "cha": 8
+    }
   },
   {
     "id": "paladin",
@@ -4289,7 +4349,15 @@
           }
         ]
       }
-    ]
+    ],
+    "suggestedAbilityScores": {
+      "str": 15,
+      "dex": 10,
+      "con": 13,
+      "int": 8,
+      "wis": 12,
+      "cha": 14
+    }
   },
   {
     "id": "ranger",
@@ -4614,24 +4682,96 @@
                 "name": "Deft Explorer Expertise",
                 "description": "Choose one skill proficiency to gain Expertise in.",
                 "options": [
-                  { "id": "acrobatics", "name": "Acrobatics", "description": "Gain Expertise in Acrobatics." },
-                  { "id": "animal-handling", "name": "Animal Handling", "description": "Gain Expertise in Animal Handling." },
-                  { "id": "arcana", "name": "Arcana", "description": "Gain Expertise in Arcana." },
-                  { "id": "athletics", "name": "Athletics", "description": "Gain Expertise in Athletics." },
-                  { "id": "deception", "name": "Deception", "description": "Gain Expertise in Deception." },
-                  { "id": "history", "name": "History", "description": "Gain Expertise in History." },
-                  { "id": "insight", "name": "Insight", "description": "Gain Expertise in Insight." },
-                  { "id": "intimidation", "name": "Intimidation", "description": "Gain Expertise in Intimidation." },
-                  { "id": "investigation", "name": "Investigation", "description": "Gain Expertise in Investigation." },
-                  { "id": "medicine", "name": "Medicine", "description": "Gain Expertise in Medicine." },
-                  { "id": "nature", "name": "Nature", "description": "Gain Expertise in Nature." },
-                  { "id": "perception", "name": "Perception", "description": "Gain Expertise in Perception." },
-                  { "id": "performance", "name": "Performance", "description": "Gain Expertise in Performance." },
-                  { "id": "persuasion", "name": "Persuasion", "description": "Gain Expertise in Persuasion." },
-                  { "id": "religion", "name": "Religion", "description": "Gain Expertise in Religion." },
-                  { "id": "sleight-of-hand", "name": "Sleight of Hand", "description": "Gain Expertise in Sleight of Hand." },
-                  { "id": "stealth", "name": "Stealth", "description": "Gain Expertise in Stealth." },
-                  { "id": "survival", "name": "Survival", "description": "Gain Expertise in Survival." }
+                  {
+                    "id": "acrobatics",
+                    "name": "Acrobatics",
+                    "description": "Gain Expertise in Acrobatics."
+                  },
+                  {
+                    "id": "animal-handling",
+                    "name": "Animal Handling",
+                    "description": "Gain Expertise in Animal Handling."
+                  },
+                  {
+                    "id": "arcana",
+                    "name": "Arcana",
+                    "description": "Gain Expertise in Arcana."
+                  },
+                  {
+                    "id": "athletics",
+                    "name": "Athletics",
+                    "description": "Gain Expertise in Athletics."
+                  },
+                  {
+                    "id": "deception",
+                    "name": "Deception",
+                    "description": "Gain Expertise in Deception."
+                  },
+                  {
+                    "id": "history",
+                    "name": "History",
+                    "description": "Gain Expertise in History."
+                  },
+                  {
+                    "id": "insight",
+                    "name": "Insight",
+                    "description": "Gain Expertise in Insight."
+                  },
+                  {
+                    "id": "intimidation",
+                    "name": "Intimidation",
+                    "description": "Gain Expertise in Intimidation."
+                  },
+                  {
+                    "id": "investigation",
+                    "name": "Investigation",
+                    "description": "Gain Expertise in Investigation."
+                  },
+                  {
+                    "id": "medicine",
+                    "name": "Medicine",
+                    "description": "Gain Expertise in Medicine."
+                  },
+                  {
+                    "id": "nature",
+                    "name": "Nature",
+                    "description": "Gain Expertise in Nature."
+                  },
+                  {
+                    "id": "perception",
+                    "name": "Perception",
+                    "description": "Gain Expertise in Perception."
+                  },
+                  {
+                    "id": "performance",
+                    "name": "Performance",
+                    "description": "Gain Expertise in Performance."
+                  },
+                  {
+                    "id": "persuasion",
+                    "name": "Persuasion",
+                    "description": "Gain Expertise in Persuasion."
+                  },
+                  {
+                    "id": "religion",
+                    "name": "Religion",
+                    "description": "Gain Expertise in Religion."
+                  },
+                  {
+                    "id": "sleight-of-hand",
+                    "name": "Sleight of Hand",
+                    "description": "Gain Expertise in Sleight of Hand."
+                  },
+                  {
+                    "id": "stealth",
+                    "name": "Stealth",
+                    "description": "Gain Expertise in Stealth."
+                  },
+                  {
+                    "id": "survival",
+                    "name": "Survival",
+                    "description": "Gain Expertise in Survival."
+                  }
                 ],
                 "count": 1
               }
@@ -5175,7 +5315,15 @@
           }
         ]
       }
-    ]
+    ],
+    "suggestedAbilityScores": {
+      "str": 12,
+      "dex": 15,
+      "con": 13,
+      "int": 8,
+      "wis": 14,
+      "cha": 10
+    }
   },
   {
     "id": "rogue",
@@ -6010,7 +6158,15 @@
           }
         ]
       }
-    ]
+    ],
+    "suggestedAbilityScores": {
+      "str": 12,
+      "dex": 15,
+      "con": 13,
+      "int": 14,
+      "wis": 10,
+      "cha": 8
+    }
   },
   {
     "id": "sorcerer",
@@ -6752,7 +6908,15 @@
           }
         ]
       }
-    ]
+    ],
+    "suggestedAbilityScores": {
+      "str": 10,
+      "dex": 13,
+      "con": 14,
+      "int": 8,
+      "wis": 12,
+      "cha": 15
+    }
   },
   {
     "id": "warlock",
@@ -7390,7 +7554,15 @@
           }
         ]
       }
-    ]
+    ],
+    "suggestedAbilityScores": {
+      "str": 8,
+      "dex": 14,
+      "con": 13,
+      "int": 12,
+      "wis": 10,
+      "cha": 15
+    }
   },
   {
     "id": "wizard",
@@ -7510,12 +7682,36 @@
                 "description": "Choose 1 skill to gain Expertise in.",
                 "count": 1,
                 "options": [
-                  { "id": "arcana", "name": "Arcana", "description": "Gain Expertise in Arcana." },
-                  { "id": "history", "name": "History", "description": "Gain Expertise in History." },
-                  { "id": "investigation", "name": "Investigation", "description": "Gain Expertise in Investigation." },
-                  { "id": "medicine", "name": "Medicine", "description": "Gain Expertise in Medicine." },
-                  { "id": "nature", "name": "Nature", "description": "Gain Expertise in Nature." },
-                  { "id": "religion", "name": "Religion", "description": "Gain Expertise in Religion." }
+                  {
+                    "id": "arcana",
+                    "name": "Arcana",
+                    "description": "Gain Expertise in Arcana."
+                  },
+                  {
+                    "id": "history",
+                    "name": "History",
+                    "description": "Gain Expertise in History."
+                  },
+                  {
+                    "id": "investigation",
+                    "name": "Investigation",
+                    "description": "Gain Expertise in Investigation."
+                  },
+                  {
+                    "id": "medicine",
+                    "name": "Medicine",
+                    "description": "Gain Expertise in Medicine."
+                  },
+                  {
+                    "id": "nature",
+                    "name": "Nature",
+                    "description": "Gain Expertise in Nature."
+                  },
+                  {
+                    "id": "religion",
+                    "name": "Religion",
+                    "description": "Gain Expertise in Religion."
+                  }
                 ]
               }
             ]
@@ -7897,6 +8093,14 @@
           }
         ]
       }
-    ]
+    ],
+    "suggestedAbilityScores": {
+      "str": 8,
+      "dex": 12,
+      "con": 13,
+      "int": 15,
+      "wis": 14,
+      "cha": 10
+    }
   }
 ]
