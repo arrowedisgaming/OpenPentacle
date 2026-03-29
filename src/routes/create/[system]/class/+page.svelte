@@ -219,7 +219,7 @@
 							<Badge variant="outline" class="text-xs">{classDef.hitDie}</Badge>
 						</div>
 						<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
-							{classDef.description}
+							{classDef.description.includes('. ') ? classDef.description.split('. ')[0] + '.' : classDef.description}
 						</p>
 						<div class="mt-2 flex flex-wrap gap-1">
 							{#each classDef.primaryAbility as ability}

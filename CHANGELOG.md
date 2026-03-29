@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.14.1] - 2026-03-29
+
+### Changed
+- Class descriptions rewritten with action-oriented language and subclass mention (e.g., "Storm with Rage, and wade into hand-to-hand combat. Then follow the Path of the Berserker to unleash raw violence.")
+- Class selection cards now show only the first sentence; full description appears in the detail panel
+
 ## [0.14.0] - 2026-03-29
 
 ### Added

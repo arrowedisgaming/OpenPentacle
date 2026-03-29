@@ -2,7 +2,7 @@
   {
     "id": "barbarian",
     "name": "Barbarian",
-    "description": "A fierce warrior who can enter a battle rage.",
+    "description": "Storm with Rage, and wade into hand-to-hand combat. Then follow the Path of the Berserker to unleash raw violence.",
     "hitDie": "1d12",
     "primaryAbility": [
       "str"
@@ -625,7 +625,7 @@
   {
     "id": "bard",
     "name": "Bard",
-    "description": "An inspiring magician whose power echoes the music of creation.",
+    "description": "Perform spells that inspire and heal allies or beguile foes. Then join the College of Lore to collect knowledge and magical secrets.",
     "hitDie": "1d8",
     "primaryAbility": [
       "cha"
@@ -1365,7 +1365,7 @@
   {
     "id": "cleric",
     "name": "Cleric",
-    "description": "A priestly champion who wields divine magic in service of a higher power.",
+    "description": "Invoke divine magic to heal, bolster, and smite. Then harness the Life Domain to be a master of healing.",
     "hitDie": "1d8",
     "primaryAbility": [
       "wis"
@@ -1907,7 +1907,7 @@
   {
     "id": "druid",
     "name": "Druid",
-    "description": "A priest of the Old Faith, wielding the powers of nature and adopting animal forms.",
+    "description": "Channel nature magic to heal, shape-shift, and control the elements. Then join the Circle of the Land to draw on the magic of the environment.",
     "hitDie": "1d8",
     "primaryAbility": [
       "wis"
@@ -2503,7 +2503,7 @@
   {
     "id": "fighter",
     "name": "Fighter",
-    "description": "A master of martial combat, skilled with a variety of weapons and armor.",
+    "description": "Master all weapons and armor. Then embody the Champion to strive for peak combat prowess.",
     "hitDie": "1d10",
     "primaryAbility": [
       "str",
@@ -3147,7 +3147,7 @@
   {
     "id": "monk",
     "name": "Monk",
-    "description": "A master of martial arts, harnessing the power of the body in pursuit of physical and spiritual perfection.",
+    "description": "Dart in and out of melee while striking fast and hard. Then become a Warrior of the Open Hand to master unarmed combat.",
     "hitDie": "1d8",
     "primaryAbility": [
       "dex",
@@ -3645,7 +3645,7 @@
   {
     "id": "paladin",
     "name": "Paladin",
-    "description": "A holy warrior bound to a sacred oath.",
+    "description": "Smite foes and shield allies with divine and martial might. Then swear the Oath of Devotion to emulate the angels of justice.",
     "hitDie": "1d10",
     "primaryAbility": [
       "str",
@@ -4362,7 +4362,7 @@
   {
     "id": "ranger",
     "name": "Ranger",
-    "description": "A warrior who combats threats on the edges of civilization.",
+    "description": "Weave together martial prowess, nature magic, and survival skills. Then embody the Hunter to protect nature with martial versatility.",
     "hitDie": "1d10",
     "primaryAbility": [
       "dex",
@@ -5328,7 +5328,7 @@
   {
     "id": "rogue",
     "name": "Rogue",
-    "description": "A scoundrel who uses stealth and trickery to overcome obstacles and enemies.",
+    "description": "Launch deadly Sneak Attacks while avoiding harm through stealth. Then embody the Thief to master infiltration and treasure hunting.",
     "hitDie": "1d8",
     "primaryAbility": [
       "dex"
@@ -6171,7 +6171,7 @@
   {
     "id": "sorcerer",
     "name": "Sorcerer",
-    "description": "A spellcaster who draws on inherent magic from a gift or bloodline.",
+    "description": "Wield magic innate to your being, shaping the power to your will. Then channel Draconic Sorcery to breathe the magic of dragons.",
     "hitDie": "1d6",
     "primaryAbility": [
       "cha"
@@ -6921,7 +6921,7 @@
   {
     "id": "warlock",
     "name": "Warlock",
-    "description": "A wielder of magic that is derived from a bargain with an extraplanar entity.",
+    "description": "Cast spells derived from occult knowledge. Then form a pact with the Fiend Patron to call on sinister powers.",
     "hitDie": "1d8",
     "primaryAbility": [
       "cha"
@@ -7567,7 +7567,7 @@
   {
     "id": "wizard",
     "name": "Wizard",
-    "description": "A scholarly magic-user capable of manipulating the structures of reality.",
+    "description": "Study arcane magic and master spells for every purpose. Then embody the Evoker to create explosive effects.",
     "hitDie": "1d6",
     "primaryAbility": [
       "int"
