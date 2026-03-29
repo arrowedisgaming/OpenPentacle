@@ -31,7 +31,29 @@
 		pack: ContentPack;
 	});
 
-	const data = $derived(character.data);
+	const originalData = $derived(character.data);
+
+	// ─── Multi-Level State ─────────────────────────────────
+	let targetLevel = $state(character.data.level + 1);
+	let workingData = $state<CharacterData>(structuredClone(character.data));
+	let stepHistory = $state<CharacterData[]>([]);
+
+	// Re-sync working data if server data changes and no stepping in progress
+	$effect(() => {
+		if (stepHistory.length === 0) {
+			const fresh = originalData;
+			workingData = structuredClone(fresh);
+			targetLevel = fresh.level + 1;
+		}
+	});
+
+	// 'data' now reads from the working copy — all existing code works unchanged
+	const data = $derived(workingData);
+	const totalSteps = $derived(targetLevel - originalData.level);
+	const currentStep = $derived(data.level - originalData.level + 1);
+	const isLastStep = $derived(data.level + 1 >= targetLevel);
+	const maxLevel = $derived(pack.systemMechanics.maxLevel);
+
 	const primaryClass = $derived(data.classes[0]);
 	const classDef = $derived(
 		pack.classes.find((c) => c.id === primaryClass?.classId) ?? null
@@ -40,6 +62,34 @@
 	const levelUp = $derived(
 		classDef ? computeLevelUpChoices(data, classDef, pack) : null
 	);
+
+	// Preview of what each level requires (for target picker)
+	const levelPreview = $derived.by(() => {
+		if (targetLevel <= originalData.level + 1 || !classDef) return [];
+		const previews: { level: number; tags: string[] }[] = [];
+		let tempData: CharacterData = structuredClone(character.data);
+		for (let lvl = originalData.level + 1; lvl <= targetLevel; lvl++) {
+			const choices = computeLevelUpChoices(tempData, classDef, pack);
+			if (!choices) break;
+			const tags: string[] = [];
+			if (choices.needsSubclass) tags.push('Subclass');
+			if (choices.needsASI) tags.push('ASI/Feat');
+			if (choices.needsEpicBoon) tags.push('Epic Boon');
+			if (choices.spellsKnownDelta > 0 || choices.spellbookGrowth > 0) tags.push('Spells');
+			if (choices.cantripsKnownDelta > 0) tags.push('Cantrips');
+			if (choices.newFeatures.some(f => f.choices?.length)) tags.push('Feature Choices');
+			previews.push({ level: lvl, tags });
+			// Advance temp data for next iteration
+			tempData = {
+				...tempData,
+				level: lvl,
+				classes: tempData.classes.map((c, i) =>
+					i === 0 ? { ...c, level: lvl, subclassId: choices.needsSubclass ? 'placeholder' : c.subclassId } : c
+				)
+			};
+		}
+		return previews;
+	});
 
 	// ─── HP Choice ──────────────────────────────────────────
 	let hpMethod = $state<'average' | 'roll'>('average');
@@ -384,6 +434,26 @@
 		return result;
 	}
 
+	// ─── Step Reset ────────────────────────────────────────
+	function resetStepState() {
+		hpMethod = 'average';
+		rolledHP = null;
+		selectedSubclassId = '';
+		asiType = 'asi-2';
+		asiAbility1 = undefined;
+		asiAbility2 = undefined;
+		asiFeatId = '';
+		expandedFeatId = null;
+		featAbilityChoice = undefined;
+		miFeatConfig = null;
+		skilledSelection = new Set();
+		newSpellIds = new Set();
+		newCantripIds = new Set();
+		spellFilters = { ...EMPTY_FILTERS, schools: new Set(), levels: new Set() };
+		featureSelections = {};
+		error = '';
+	}
+
 	// ─── Validation ─────────────────────────────────────────
 	const isValid = $derived(() => {
 		if (!levelUp) return false;
@@ -410,16 +480,48 @@
 	let saving = $state(false);
 	let error = $state('');
 
-	async function applyLevelUp() {
-		if (!levelUp || !classDef || !isValid()) return;
+	async function saveToAPI() {
 		saving = true;
 		error = '';
+		try {
+			const res = await fetch(`/api/characters/${character.id}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(workingData)
+			});
+			if (res.ok) {
+				goto(`/sheet/${character.id}`);
+			} else {
+				const body = await res.json().catch(() => ({}));
+				error = body.message ?? 'Failed to save. Please try again.';
+			}
+		} catch {
+			error = 'Network error. Please try again.';
+		} finally {
+			saving = false;
+		}
+	}
+
+	function goBackStep() {
+		if (stepHistory.length === 0) return;
+		workingData = stepHistory[stepHistory.length - 1];
+		stepHistory = stepHistory.slice(0, -1);
+		resetStepState();
+	}
+
+	async function applyStepChoices() {
+		if (!levelUp || !classDef || !isValid()) return;
+		error = '';
+
+		try {
 
 		const newLevel = levelUp.newLevel;
+		// Snapshot the current working data to escape Svelte 5 proxy
+		const snapshot = $state.snapshot(workingData) as CharacterData;
 
 		// Update class (merge new feature choices)
 		const newFeatureChoices = buildNewFeatureChoices();
-		const updatedClasses = data.classes.map((c, i) => {
+		const updatedClasses = snapshot.classes.map((c, i) => {
 			if (i !== 0) return c;
 			return {
 				...c,
@@ -430,8 +532,8 @@
 		});
 
 		// Update ASI/Feats
-		const updatedLevelUpBonuses = [...data.abilityScores.levelUpBonuses];
-		const updatedFeats = [...data.feats];
+		const updatedLevelUpBonuses = [...snapshot.abilityScores.levelUpBonuses];
+		const updatedFeats = [...snapshot.feats];
 
 		if (levelUp.needsASI) {
 			const source = `class:${primaryClass.classId}:${newLevel}`;
@@ -493,7 +595,7 @@
 		}
 
 		// Update spells
-		const updatedKnownSpells = [...data.spells.knownSpells];
+		const updatedKnownSpells = [...snapshot.spells.knownSpells];
 		for (const spellId of newSpellIds) {
 			updatedKnownSpells.push({ spellId, source: `class:${primaryClass.classId}` });
 		}
@@ -501,10 +603,9 @@
 			updatedKnownSpells.push({ spellId, source: `class:${primaryClass.classId}` });
 		}
 
-		// Sync preparedSpellIds for non-spellbook prepared casters:
-		// New spells/cantrips should be added to the prepared list
+		// Sync preparedSpellIds for non-spellbook prepared casters
 		const isSpellbookCaster = classDef?.id === 'wizard';
-		const updatedPreparedIds = [...(data.spells.preparedSpellIds ?? [])];
+		const updatedPreparedIds = [...(snapshot.spells.preparedSpellIds ?? [])];
 		if (classDef?.spellcasting?.preparedCaster && !isSpellbookCaster) {
 			for (const spellId of newSpellIds) {
 				if (!updatedPreparedIds.includes(spellId)) {
@@ -519,58 +620,55 @@
 		}
 
 		// Compute new HP
-		const newHP = data.hitPoints.maximum + hpGain();
+		const newHP = snapshot.hitPoints.maximum + hpGain();
 
 		// Resolve proficiency grants from new feature choices
 		const newGrantProficiencies = classDef
 			? resolveFeatureChoiceProficiencies(classDef, newFeatureChoices)
 			: [];
 		const updatedProficiencies = newGrantProficiencies.length > 0
-			? [...data.proficiencies, ...newGrantProficiencies]
-			: data.proficiencies;
+			? [...snapshot.proficiencies, ...newGrantProficiencies]
+			: snapshot.proficiencies;
 
 		const updatedData: CharacterData = {
-			...data,
+			...snapshot,
 			level: newLevel,
 			proficiencies: updatedProficiencies,
 			classes: updatedClasses,
 			abilityScores: {
-				...data.abilityScores,
+				...snapshot.abilityScores,
 				levelUpBonuses: updatedLevelUpBonuses
 			},
 			feats: updatedFeats,
 			spells: {
-				...data.spells,
+				...snapshot.spells,
 				knownSpells: updatedKnownSpells,
 				preparedSpellIds: updatedPreparedIds
 			},
 			hitPoints: {
-				...data.hitPoints,
+				...snapshot.hitPoints,
 				maximum: newHP,
 				current: newHP,
-				hitDice: data.hitPoints.hitDice.map((hd, i) => {
+				hitDice: snapshot.hitPoints.hitDice.map((hd, i) => {
 					if (i !== 0) return hd;
 					return { ...hd, total: newLevel };
 				})
 			}
 		};
 
-		try {
-			const res = await fetch(`/api/characters/${character.id}`, {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(updatedData)
-			});
-			if (res.ok) {
-				goto(`/sheet/${character.id}`);
-			} else {
-				const body = await res.json().catch(() => ({}));
-				error = body.message ?? 'Failed to save. Please try again.';
-			}
-		} catch {
-			error = 'Network error. Please try again.';
-		} finally {
-			saving = false;
+		// Save snapshot for back navigation, then advance working data
+		stepHistory = [...stepHistory, snapshot];
+		workingData = updatedData;
+
+		if (updatedData.level >= targetLevel) {
+			await saveToAPI();
+		} else {
+			resetStepState();
+		}
+
+		} catch (e) {
+			console.error('Level-up step failed:', e);
+			error = 'Something went wrong. Please try again.';
 		}
 	}
 </script>
@@ -586,11 +684,63 @@
 	</Button>
 
 	{#if levelUp && classDef}
-		<PageHeader
-			as="h1"
-			title="Level Up to Level {levelUp.newLevel}"
-			description="{data.name} — {classDef.name}"
-		/>
+		<div class="flex flex-wrap items-end justify-between gap-4">
+			<PageHeader
+				as="h1"
+				title="Level Up to Level {targetLevel}"
+				description="{data.name} — {classDef.name}"
+			/>
+			<div class="flex items-center gap-2 mb-2">
+				<label for="target-level" class="text-sm font-medium text-muted-foreground whitespace-nowrap">Target Level</label>
+				<select
+					id="target-level"
+					bind:value={targetLevel}
+					disabled={stepHistory.length > 0}
+					class="rounded-md border border-border bg-background px-3 py-1.5 text-sm disabled:opacity-50"
+				>
+					{#each Array.from({ length: maxLevel - originalData.level }, (_, i) => originalData.level + 1 + i) as lvl}
+						<option value={lvl}>Level {lvl}</option>
+					{/each}
+				</select>
+			</div>
+		</div>
+
+		<!-- Multi-level preview (before first step) -->
+		{#if totalSteps > 1 && stepHistory.length === 0 && levelPreview.length > 0}
+			<Card.Root class="mt-4">
+				<Card.Content class="py-3">
+					<p class="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Level-up summary</p>
+					<div class="grid gap-1.5 text-sm">
+						{#each levelPreview as preview}
+							<div class="flex items-center gap-2">
+								<Badge variant={preview.level === levelUp.newLevel ? 'default' : 'outline'} class="text-xs w-14 justify-center">
+									L{preview.level}
+								</Badge>
+								<span class="text-muted-foreground">
+									{preview.tags.length > 0 ? preview.tags.join(', ') : 'Features only'}
+								</span>
+							</div>
+						{/each}
+					</div>
+				</Card.Content>
+			</Card.Root>
+		{/if}
+
+		<!-- Progress bar (during multi-level stepping) -->
+		{#if totalSteps > 1 && stepHistory.length > 0}
+			<div class="mt-4 mb-2">
+				<div class="flex items-center justify-between text-sm text-muted-foreground mb-1.5">
+					<span>Step {currentStep} of {totalSteps} — Level {levelUp.newLevel}</span>
+					<span>Level {originalData.level} → {targetLevel}</span>
+				</div>
+				<div class="h-2 rounded-full bg-muted overflow-hidden">
+					<div
+						class="h-full rounded-full bg-primary transition-all duration-300"
+						style="width: {(currentStep / totalSteps) * 100}%"
+					></div>
+				</div>
+			</div>
+		{/if}
 
 		<div class="mt-6 space-y-6">
 			<!-- 1. New Features -->
@@ -1459,18 +1609,34 @@
 				</Alert.Root>
 			{/if}
 
-			<!-- Apply button -->
-			<div class="flex justify-end gap-3 pb-8">
-				<Button variant="outline" href="/sheet/{character.id}">
-					Cancel
-				</Button>
-				<Button
-					onclick={applyLevelUp}
-					disabled={!isValid() || saving}
-					size="lg"
-				>
-					{saving ? 'Saving...' : `Apply Level Up to Level ${levelUp.newLevel}`}
-				</Button>
+			<!-- Action buttons -->
+			<div class="flex justify-between pb-8">
+				<div>
+					{#if stepHistory.length > 0}
+						<Button variant="outline" onclick={goBackStep}>
+							<ArrowLeft class="size-4 mr-1" />
+							Back to Level {data.level}
+						</Button>
+					{/if}
+				</div>
+				<div class="flex gap-3">
+					<Button variant="outline" href="/sheet/{character.id}">
+						Cancel
+					</Button>
+					<Button
+						onclick={applyStepChoices}
+						disabled={!isValid() || saving}
+						size="lg"
+					>
+						{#if saving}
+							Saving...
+						{:else if isLastStep}
+							Apply Level Up to Level {targetLevel}
+						{:else}
+							Next: Level {levelUp.newLevel + 1} →
+						{/if}
+					</Button>
+				</div>
 			</div>
 		</div>
 	{:else}

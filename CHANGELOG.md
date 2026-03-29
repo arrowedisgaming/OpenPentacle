@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.14.0] - 2026-03-29
+
+### Added
+- Multi-level-up support — select a target level (e.g., L2 → L5) and step through each level's choices with a progress bar, back navigation, and level-by-level preview
+- Target level picker with summary of decisions needed at each level (subclass, ASI/feat, spells, etc.)
+
 ## [0.13.1] - 2026-03-29
 
 ### Fixed
