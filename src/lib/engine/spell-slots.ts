@@ -51,7 +51,7 @@ const PACT_SLOTS: Record<number, { count: number; level: number }> = {
 
 /**
  * Calculate multiclass caster level from class levels + spellcasting configs.
- * Full casters contribute their full level, half casters half (rounded down),
+ * Full casters contribute their full level, half casters half (rounded up per 2024 SRD),
  * third casters a third (rounded down). Pact casters don't contribute.
  */
 export function multiclassCasterLevel(
@@ -65,7 +65,7 @@ export function multiclassCasterLevel(
 				total += cls.level;
 				break;
 			case 'half':
-				total += Math.floor(cls.level / 2);
+				total += Math.ceil(cls.level / 2);
 				break;
 			case 'third':
 				total += Math.floor(cls.level / 3);

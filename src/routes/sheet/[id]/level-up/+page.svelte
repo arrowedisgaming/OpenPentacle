@@ -501,6 +501,23 @@
 			updatedKnownSpells.push({ spellId, source: `class:${primaryClass.classId}` });
 		}
 
+		// Sync preparedSpellIds for non-spellbook prepared casters:
+		// New spells/cantrips should be added to the prepared list
+		const isSpellbookCaster = classDef?.id === 'wizard';
+		const updatedPreparedIds = [...(data.spells.preparedSpellIds ?? [])];
+		if (classDef?.spellcasting?.preparedCaster && !isSpellbookCaster) {
+			for (const spellId of newSpellIds) {
+				if (!updatedPreparedIds.includes(spellId)) {
+					updatedPreparedIds.push(spellId);
+				}
+			}
+			for (const spellId of newCantripIds) {
+				if (!updatedPreparedIds.includes(spellId)) {
+					updatedPreparedIds.push(spellId);
+				}
+			}
+		}
+
 		// Compute new HP
 		const newHP = data.hitPoints.maximum + hpGain();
 
@@ -524,7 +541,8 @@
 			feats: updatedFeats,
 			spells: {
 				...data.spells,
-				knownSpells: updatedKnownSpells
+				knownSpells: updatedKnownSpells,
+				preparedSpellIds: updatedPreparedIds
 			},
 			hitPoints: {
 				...data.hitPoints,

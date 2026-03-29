@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.13.1] - 2026-03-29
+
+### Fixed
+- Half-caster spell slots at level 1 — rangers and paladins now correctly receive 2 first-level spell slots at L1 per 2024 SRD (was showing 0 due to rounding formula)
+- Prepared spell edits not appearing on character sheet or PDF — changing prepared spells on the edit page now correctly updates the displayed spell list for all non-wizard prepared casters
+- Level-up spell sync — new spells gained during level-up are now added to the prepared spell list for non-wizard prepared casters
+
 ## [0.13.0] - 2026-03-29
 
 ### Added

@@ -44,7 +44,13 @@ describe('multiclassCasterLevel', () => {
 	it('should calculate half caster level', () => {
 		expect(multiclassCasterLevel([
 			{ level: 5, spellcasting: halfCaster }
-		])).toBe(2); // floor(5/2)
+		])).toBe(3); // ceil(5/2)
+	});
+
+	it('should give L1 half caster a caster level of 1', () => {
+		expect(multiclassCasterLevel([
+			{ level: 1, spellcasting: halfCaster }
+		])).toBe(1); // ceil(1/2) — 2024 SRD grants spells at L1
 	});
 
 	it('should not count pact casters', () => {
@@ -57,7 +63,7 @@ describe('multiclassCasterLevel', () => {
 		expect(multiclassCasterLevel([
 			{ level: 3, spellcasting: fullCaster },
 			{ level: 5, spellcasting: halfCaster }
-		])).toBe(5); // 3 + floor(5/2)
+		])).toBe(6); // 3 + ceil(5/2)
 	});
 
 	it('should ignore non-casters', () => {
@@ -111,6 +117,14 @@ describe('calculateSpellSlots', () => {
 			{ level: 5, spellcasting: fullCaster }
 		]);
 		expect(result.slots).toEqual({ 1: 4, 2: 3, 3: 2 });
+		expect(result.pactSlots).toBeNull();
+	});
+
+	it('should give L1 ranger 2 first-level slots', () => {
+		const result = calculateSpellSlots([
+			{ level: 1, spellcasting: halfCaster }
+		]);
+		expect(result.slots).toEqual({ 1: 2 });
 		expect(result.pactSlots).toBeNull();
 	});
 

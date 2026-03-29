@@ -177,6 +177,28 @@
 			updatedPreparedIds.push(...cantripIds);
 		}
 
+		// Sync knownSpells for non-spellbook prepared casters:
+		// Their knownSpells (level 1+ class spells) should mirror preparedSpellIds
+		if (preparedContext && !preparedContext.isSpellbookCaster) {
+			const classSource = `class:${character.data.classes[0]?.classId}`;
+			// Keep non-class spells (feat/origin) and cantrips
+			const preserved = updatedKnownSpells.filter(
+				(s) => !s.source.startsWith('class:') ||
+					allSpells.find((sp) => sp.id === s.spellId)?.level === 0
+			);
+			// Add entries for each prepared level 1+ spell
+			const preparedLeveled = updatedPreparedIds
+				.filter((id) => {
+					const spell = allSpells.find((s) => s.id === id);
+					return spell && spell.level > 0;
+				})
+				.map((id) => {
+					const existing = updatedKnownSpells.find((s) => s.spellId === id);
+					return existing ?? { spellId: id, source: classSource };
+				});
+			updatedKnownSpells = [...preserved, ...preparedLeveled];
+		}
+
 		const updatedData: CharacterData = {
 			...character.data,
 			name,
