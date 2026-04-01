@@ -2017,8 +2017,9 @@
           {
             "id": "druidic",
             "name": "Druidic",
-            "description": "You know Druidic, the secret language of Druids.",
-            "level": 1
+            "description": "You know Druidic, the secret language of Druids. You can use it to leave hidden messages and you always have the Speak with Animals spell prepared.",
+            "level": 1,
+            "mechanicalEffect": "language:druidic"
           },
           {
             "id": "primal-order",
@@ -3184,11 +3185,16 @@
           "tinkers-tools",
           "weavers-tools",
           "woodcarvers-tools",
-          "flute",
+          "bagpipes",
           "drum",
+          "dulcimer",
+          "flute",
+          "horn",
           "lute",
           "lyre",
-          "horn"
+          "pan-flute",
+          "shawm",
+          "viol"
         ],
         "choiceCount": 1
       }
@@ -5538,8 +5544,27 @@
           {
             "id": "thieves-cant",
             "name": "Thieves' Cant",
-            "description": "You know Thieves' Cant, a secret mix of dialect, jargon, and code that allows you to hide messages in seemingly normal conversation.",
-            "level": 1
+            "description": "You know Thieves' Cant and one other language of your choice. You can use Thieves' Cant to hide messages in seemingly normal conversation. Only another creature that knows Thieves' Cant understands such messages.",
+            "level": 1,
+            "mechanicalEffect": "language:thieves-cant",
+            "choices": [
+              {
+                "id": "language",
+                "name": "Language",
+                "description": "Choose one Standard language.",
+                "options": [
+                  { "id": "draconic", "name": "Draconic", "description": "Dragons, Dragonborn" },
+                  { "id": "dwarvish", "name": "Dwarvish", "description": "Dwarves" },
+                  { "id": "elvish", "name": "Elvish", "description": "Elves" },
+                  { "id": "giant", "name": "Giant", "description": "Ogres, Giants" },
+                  { "id": "gnomish", "name": "Gnomish", "description": "Gnomes" },
+                  { "id": "goblin", "name": "Goblin", "description": "Goblins, Hobgoblins, Bugbears" },
+                  { "id": "halfling", "name": "Halfling", "description": "Halflings" },
+                  { "id": "orc", "name": "Orc", "description": "Orcs" }
+                ],
+                "count": 1
+              }
+            ]
           },
           {
             "id": "weapon-mastery-rogue",

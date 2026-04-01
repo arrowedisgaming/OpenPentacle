@@ -13,7 +13,7 @@
       { "value": "religion" }
     ],
     "toolProficiencies": [
-      { "value": "calligrapher-supplies" }
+      { "value": "calligraphers-supplies" }
     ],
     "languages": [],
     "equipment": ["Calligrapher's Supplies", "Holy Symbol", "Parchment (10 sheets)", "Robe", "Pouch"],
@@ -55,7 +55,7 @@
       { "value": "history" }
     ],
     "toolProficiencies": [
-      { "value": "cartographer-tools" }
+      { "value": "cartographers-tools" }
     ],
     "languages": [],
     "equipment": ["Cartographer's Tools", "Book (history)", "Ink", "Ink Pen", "Parchment (10 sheets)", "Robe", "Pouch"],

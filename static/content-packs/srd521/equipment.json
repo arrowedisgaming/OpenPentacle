@@ -1017,6 +1017,8 @@
     "id": "thieves-tools",
     "name": "Thieves' Tools",
     "type": "tool",
+    "toolCategory": "other",
+    "description": "Pick a lock, disarm a trap",
     "cost": { "amount": 25, "currency": "gp" },
     "weight": 1
   },
@@ -1024,8 +1026,325 @@
     "id": "herbalism-kit",
     "name": "Herbalism Kit",
     "type": "tool",
+    "toolCategory": "other",
+    "description": "Identify a plant",
     "cost": { "amount": 5, "currency": "gp" },
     "weight": 3
+  },
+  {
+    "id": "alchemists-supplies",
+    "name": "Alchemist's Supplies",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Identify substances, start fire",
+    "cost": { "amount": 50, "currency": "gp" },
+    "weight": 8
+  },
+  {
+    "id": "brewers-supplies",
+    "name": "Brewer's Supplies",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Detect poisoned drink, identify alcohol",
+    "cost": { "amount": 20, "currency": "gp" },
+    "weight": 9
+  },
+  {
+    "id": "calligraphers-supplies",
+    "name": "Calligrapher's Supplies",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Write text that guards against forgery",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 5
+  },
+  {
+    "id": "carpenters-tools",
+    "name": "Carpenter's Tools",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Pry open door or container",
+    "cost": { "amount": 8, "currency": "gp" },
+    "weight": 6
+  },
+  {
+    "id": "cartographers-tools",
+    "name": "Cartographer's Tools",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Draft a map of a small area",
+    "cost": { "amount": 15, "currency": "gp" },
+    "weight": 6
+  },
+  {
+    "id": "cobblers-tools",
+    "name": "Cobbler's Tools",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Modify footwear for Advantage on certain checks",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 5
+  },
+  {
+    "id": "cooks-utensils",
+    "name": "Cook's Utensils",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Improve food's flavor, detect spoiled food",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 8
+  },
+  {
+    "id": "glassblowers-tools",
+    "name": "Glassblower's Tools",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Discern what a glass object held recently",
+    "cost": { "amount": 30, "currency": "gp" },
+    "weight": 5
+  },
+  {
+    "id": "jewelers-tools",
+    "name": "Jeweler's Tools",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Discern a gem's value",
+    "cost": { "amount": 25, "currency": "gp" },
+    "weight": 2
+  },
+  {
+    "id": "leatherworkers-tools",
+    "name": "Leatherworker's Tools",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Add design to leather item",
+    "cost": { "amount": 5, "currency": "gp" },
+    "weight": 5
+  },
+  {
+    "id": "masons-tools",
+    "name": "Mason's Tools",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Chisel symbol or hole in stone",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 8
+  },
+  {
+    "id": "painters-supplies",
+    "name": "Painter's Supplies",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Paint a recognizable image",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 5
+  },
+  {
+    "id": "potters-tools",
+    "name": "Potter's Tools",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Discern what a ceramic object held recently",
+    "cost": { "amount": 10, "currency": "gp" },
+    "weight": 3
+  },
+  {
+    "id": "smiths-tools",
+    "name": "Smith's Tools",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Pry open door or container",
+    "cost": { "amount": 20, "currency": "gp" },
+    "weight": 8
+  },
+  {
+    "id": "tinkers-tools",
+    "name": "Tinker's Tools",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Assemble a tiny item from scrap",
+    "cost": { "amount": 50, "currency": "gp" },
+    "weight": 10
+  },
+  {
+    "id": "weavers-tools",
+    "name": "Weaver's Tools",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Mend a tear in clothing",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 5
+  },
+  {
+    "id": "woodcarvers-tools",
+    "name": "Woodcarver's Tools",
+    "type": "tool",
+    "toolCategory": "artisan",
+    "description": "Carve a pattern in wood",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 5
+  },
+  {
+    "id": "dice-set",
+    "name": "Gaming Set (Dice)",
+    "type": "tool",
+    "toolCategory": "gaming",
+    "description": "Discern whether someone is cheating, win a game",
+    "cost": { "amount": 1, "currency": "sp" },
+    "weight": 0
+  },
+  {
+    "id": "dragonchess-set",
+    "name": "Gaming Set (Dragonchess)",
+    "type": "tool",
+    "toolCategory": "gaming",
+    "description": "Discern whether someone is cheating, win a game",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 0
+  },
+  {
+    "id": "playing-card-set",
+    "name": "Gaming Set (Playing Cards)",
+    "type": "tool",
+    "toolCategory": "gaming",
+    "description": "Discern whether someone is cheating, win a game",
+    "cost": { "amount": 5, "currency": "sp" },
+    "weight": 0
+  },
+  {
+    "id": "three-dragon-ante-set",
+    "name": "Gaming Set (Three-Dragon Ante)",
+    "type": "tool",
+    "toolCategory": "gaming",
+    "description": "Discern whether someone is cheating, win a game",
+    "cost": { "amount": 1, "currency": "gp" },
+    "weight": 0
+  },
+  {
+    "id": "bagpipes",
+    "name": "Bagpipes",
+    "type": "tool",
+    "toolCategory": "musical",
+    "description": "Play a known tune, improvise a song",
+    "cost": { "amount": 30, "currency": "gp" },
+    "weight": 6
+  },
+  {
+    "id": "drum",
+    "name": "Drum",
+    "type": "tool",
+    "toolCategory": "musical",
+    "description": "Play a known tune, improvise a song",
+    "cost": { "amount": 6, "currency": "gp" },
+    "weight": 3
+  },
+  {
+    "id": "dulcimer",
+    "name": "Dulcimer",
+    "type": "tool",
+    "toolCategory": "musical",
+    "description": "Play a known tune, improvise a song",
+    "cost": { "amount": 25, "currency": "gp" },
+    "weight": 10
+  },
+  {
+    "id": "flute",
+    "name": "Flute",
+    "type": "tool",
+    "toolCategory": "musical",
+    "description": "Play a known tune, improvise a song",
+    "cost": { "amount": 2, "currency": "gp" },
+    "weight": 1
+  },
+  {
+    "id": "horn",
+    "name": "Horn",
+    "type": "tool",
+    "toolCategory": "musical",
+    "description": "Play a known tune, improvise a song",
+    "cost": { "amount": 3, "currency": "gp" },
+    "weight": 2
+  },
+  {
+    "id": "lute",
+    "name": "Lute",
+    "type": "tool",
+    "toolCategory": "musical",
+    "description": "Play a known tune, improvise a song",
+    "cost": { "amount": 35, "currency": "gp" },
+    "weight": 2
+  },
+  {
+    "id": "lyre",
+    "name": "Lyre",
+    "type": "tool",
+    "toolCategory": "musical",
+    "description": "Play a known tune, improvise a song",
+    "cost": { "amount": 30, "currency": "gp" },
+    "weight": 2
+  },
+  {
+    "id": "pan-flute",
+    "name": "Pan Flute",
+    "type": "tool",
+    "toolCategory": "musical",
+    "description": "Play a known tune, improvise a song",
+    "cost": { "amount": 12, "currency": "gp" },
+    "weight": 2
+  },
+  {
+    "id": "shawm",
+    "name": "Shawm",
+    "type": "tool",
+    "toolCategory": "musical",
+    "description": "Play a known tune, improvise a song",
+    "cost": { "amount": 2, "currency": "gp" },
+    "weight": 1
+  },
+  {
+    "id": "viol",
+    "name": "Viol",
+    "type": "tool",
+    "toolCategory": "musical",
+    "description": "Play a known tune, improvise a song",
+    "cost": { "amount": 30, "currency": "gp" },
+    "weight": 1
+  },
+  {
+    "id": "disguise-kit",
+    "name": "Disguise Kit",
+    "type": "tool",
+    "toolCategory": "other",
+    "description": "Apply makeup and disguises",
+    "cost": { "amount": 25, "currency": "gp" },
+    "weight": 3
+  },
+  {
+    "id": "forgery-kit",
+    "name": "Forgery Kit",
+    "type": "tool",
+    "toolCategory": "other",
+    "description": "Mimic handwriting, duplicate wax seal",
+    "cost": { "amount": 15, "currency": "gp" },
+    "weight": 5
+  },
+  {
+    "id": "navigators-tools",
+    "name": "Navigator's Tools",
+    "type": "tool",
+    "toolCategory": "other",
+    "description": "Plot a course, determine position by stargazing",
+    "cost": { "amount": 25, "currency": "gp" },
+    "weight": 2
+  },
+  {
+    "id": "poisoners-kit",
+    "name": "Poisoner's Kit",
+    "type": "tool",
+    "toolCategory": "other",
+    "description": "Detect a poisoned object",
+    "cost": { "amount": 50, "currency": "gp" },
+    "weight": 2
   },
   {
     "id": "explorers-pack",

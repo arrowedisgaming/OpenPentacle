@@ -121,7 +121,8 @@ const classFeatureSchema = z.object({
 	name: z.string().min(1),
 	description: z.string(),
 	level: z.number().int().min(1).max(20),
-	choices: z.array(featureChoiceSchema).optional()
+	choices: z.array(featureChoiceSchema).optional(),
+	mechanicalEffect: z.string().optional()
 });
 
 const spellcastingConfigSchema = z.object({
@@ -257,6 +258,7 @@ const equipmentDefinitionSchema = z.object({
 		currency: z.enum(['cp', 'sp', 'ep', 'gp', 'pp'])
 	}),
 	weight: z.number().min(0),
+	toolCategory: z.enum(['artisan', 'gaming', 'musical', 'other']).optional(),
 	weapon: z.object({
 		category: weaponCategorySchema,
 		damage: z.string(),

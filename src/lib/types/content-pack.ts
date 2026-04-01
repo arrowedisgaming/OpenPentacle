@@ -192,6 +192,7 @@ export interface ClassFeature {
 	description: string;
 	level: number;
 	choices?: FeatureChoice[];
+	mechanicalEffect?: string;
 }
 
 export interface FeatureChoice {
@@ -304,6 +305,8 @@ export interface EquipmentDefinition {
 	weight: number;
 	weapon?: WeaponProperties;
 	armor?: ArmorProperties;
+	/** Subcategory for tools — enables grouped pickers in the wizard UI */
+	toolCategory?: 'artisan' | 'gaming' | 'musical' | 'other';
 }
 
 export type EquipmentType =

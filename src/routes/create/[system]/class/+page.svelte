@@ -4,7 +4,8 @@
 	import { wizardStore } from '$lib/stores/wizard.js';
 	import type { ClassDefinition, ClassFeature, SystemId } from '$lib/types/content-pack.js';
 	import type { FeatureChoiceSelection } from '$lib/types/character.js';
-	import { getSubclassLevel, getClassFeaturesUpToLevel, getASILevels, resolveFeatureChoiceProficiencies } from '$lib/engine/class-progression.js';
+	import { getSubclassLevel, getClassFeaturesUpToLevel, getASILevels, resolveFeatureChoiceProficiencies, resolveClassLanguages } from '$lib/engine/class-progression.js';
+	import { kebabToTitle } from '$lib/utils/format.js';
 	import { buildClassSelection } from '$lib/wizard/class-step.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
 	import SelectionCard from '$lib/components/ui/selection-card/SelectionCard.svelte';
@@ -34,6 +35,9 @@
 	const subclassTrigger = $derived(selectedClass ? getSubclassLevel(selectedClass) : null);
 	const asiLevels = $derived(selectedClass ? getASILevels(selectedClass) : []);
 	const needsSubclass = $derived(subclassTrigger !== null && selectedLevel >= subclassTrigger);
+
+	// Equipment lookup map for tool category grouping
+	const equipMap: Record<string, any> = $derived(Object.fromEntries((pack?.equipment ?? []).map((e: any) => [e.id, e])));
 
 	// Build level-by-level feature preview for selected class (includes descriptions)
 	const featurePreview = $derived(() => {
@@ -67,11 +71,34 @@
 
 	const SEARCH_THRESHOLD = 10; // Show search box when 10+ options
 
+	// Tool proficiency choice selections: keyed by tool prof value (e.g., "musical-instrument")
+	let toolProfSelections = $state<Record<string, string[]>>({});
+
+	// Tool prof choices that need user input for the selected class
+	const toolProfChoices = $derived(
+		(selectedClass?.toolProficiencies ?? []).filter((tp) => tp.isChoice && tp.choices?.length)
+	);
+
+	function toggleToolProfOption(toolValue: string, optionId: string, maxCount: number) {
+		const current = toolProfSelections[toolValue] ?? [];
+		const idx = current.indexOf(optionId);
+		let updated: string[];
+		if (idx >= 0) {
+			updated = current.filter((id) => id !== optionId);
+		} else if (current.length < maxCount) {
+			updated = [...current, optionId];
+		} else {
+			updated = [...current.slice(1), optionId];
+		}
+		toolProfSelections = { ...toolProfSelections, [toolValue]: updated };
+	}
+
 	// Reset selections when class changes
 	$effect(() => {
 		if (selectedClassId) {
 			featureSelections = {};
 			featureSearchFilters = {};
+			toolProfSelections = {};
 		}
 	});
 
@@ -149,10 +176,40 @@
 			selectedClassFeatureChoices
 		);
 
+		// Fixed tool proficiencies (e.g., Rogue: thieves-tools, Druid: herbalism-kit)
+		const fixedToolProfs = selectedClass.toolProficiencies
+			.filter((tp) => !tp.isChoice)
+			.map((tp) => ({
+				type: 'tool' as const,
+				value: tp.value,
+				source: `class:${selectedClassId}`
+			}));
+
+		// Choice tool proficiencies (e.g., Bard: 3 instruments, Monk: 1 artisan's tool)
+		const choiceToolProfs = Object.entries(toolProfSelections).flatMap(([, selected]) =>
+			selected.map((val) => ({
+				type: 'tool' as const,
+				value: val,
+				source: `class:${selectedClassId}`
+			}))
+		);
+
+		// Languages from class features (e.g., Thieves' Cant, Druidic + language choices)
+		const classLanguages = resolveClassLanguages(
+			selectedClass,
+			selectedLevel,
+			selectedClassFeatureChoices
+		);
+
+		// Preserve proficiencies from other wizard steps (origin, background)
+		const existingProfs = (wizardStore.getCharacter()?.proficiencies ?? [])
+			.filter((p) => !p.source.startsWith('class:'));
+
 		wizardStore.updateCharacter({
 			level: selectedLevel,
 			classes: [nextClassSelection],
 			proficiencies: [
+				...existingProfs,
 				...selectedClass.savingThrows.map((st) => ({
 					type: 'saving-throw' as const,
 					value: st,
@@ -168,6 +225,9 @@
 					value: w,
 					source: `class:${selectedClassId}`
 				})),
+				...fixedToolProfs,
+				...choiceToolProfs,
+				...classLanguages,
 				...featureChoiceProficiencies
 			]
 		});
@@ -182,6 +242,12 @@
 	}
 
 	const nextLabel = $derived(needsSubclass ? 'Next: Subclass' : 'Next: Origin');
+
+	const toolChoicesComplete = $derived(
+		toolProfChoices.every((tp) => (toolProfSelections[tp.value]?.length ?? 0) >= (tp.choiceCount ?? 1))
+	);
+
+	const canProceed = $derived(!!selectedClassId && toolChoicesComplete);
 </script>
 
 <svelte:head>
@@ -198,7 +264,7 @@
 	<WizardNav
 		nextLabel={nextLabel}
 		onNext={proceed}
-		nextDisabled={!selectedClassId}
+		nextDisabled={!canProceed}
 		compact
 	/>
 
@@ -343,6 +409,62 @@
 							</div>
 						{/if}
 
+						<!-- Tool Proficiency Choices (Bard: instruments, Monk: artisan's tools) -->
+						{#if toolProfChoices.length > 0}
+							<Separator class="my-4" />
+							<h4 class="mb-3 text-sm font-medium">Tool Proficiency Choices</h4>
+							<div class="space-y-4">
+								{#each toolProfChoices as tp}
+									{@const selected = toolProfSelections[tp.value] ?? []}
+									{@const max = tp.choiceCount ?? 1}
+									{@const categories = [...new Set((tp.choices ?? []).map((id: string) => equipMap[id]?.toolCategory ?? 'other'))]}
+									{@const useGroups = categories.length > 1}
+									<div>
+										<div class="mb-1.5 flex items-center gap-2">
+											<span class="text-sm font-medium">Choose {max}</span>
+											<span class="text-xs text-muted-foreground">{selected.length}/{max}</span>
+										</div>
+										{#if useGroups}
+											{@const categoryLabels: Record<string, string> = { artisan: "Artisan's Tools", musical: 'Musical Instruments', gaming: 'Gaming Sets', other: 'Other Tools' }}
+											{#each categories as cat}
+												{@const catChoices = (tp.choices ?? []).filter((id: string) => (equipMap[id]?.toolCategory ?? 'other') === cat)}
+												<div class="mb-3">
+													<p class="mb-1 text-xs font-medium text-muted-foreground">{categoryLabels[cat] ?? cat}</p>
+													<div class="flex flex-wrap gap-1.5">
+														{#each catChoices as optionId}
+															{@const isSelected = selected.includes(optionId)}
+															<button
+																aria-pressed={isSelected}
+																class="rounded-md border px-2.5 py-1.5 text-xs transition-colors
+																	{isSelected ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:border-muted-foreground/50'}"
+																onclick={() => toggleToolProfOption(tp.value, optionId, max)}
+															>
+																<span class="font-medium">{kebabToTitle(optionId)}</span>
+															</button>
+														{/each}
+													</div>
+												</div>
+											{/each}
+										{:else}
+											<div class="flex flex-wrap gap-1.5">
+												{#each tp.choices ?? [] as optionId}
+													{@const isSelected = selected.includes(optionId)}
+													<button
+														aria-pressed={isSelected}
+														class="rounded-md border px-2.5 py-1.5 text-xs transition-colors
+															{isSelected ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:border-muted-foreground/50'}"
+														onclick={() => toggleToolProfOption(tp.value, optionId, max)}
+													>
+														<span class="font-medium">{kebabToTitle(optionId)}</span>
+													</button>
+												{/each}
+											</div>
+										{/if}
+									</div>
+								{/each}
+							</div>
+						{/if}
+
 						<!-- Level features preview with expandable descriptions -->
 						{#if featurePreview().length > 0}
 							<Separator class="my-4" />
@@ -397,6 +519,6 @@
 	<WizardNav
 		nextLabel={nextLabel}
 		onNext={proceed}
-		nextDisabled={!selectedClassId}
+		nextDisabled={!canProceed}
 	/>
 </div>

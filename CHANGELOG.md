@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.14.2] - 2026-04-01
+
+### Added
+- Tool category grouping in class wizard — Monk's 27-option tool picker now shows "Artisan's Tools" and "Musical Instruments" as separate sections
+- Cross-reference validation test ensuring all tool IDs in backgrounds and classes match equipment definitions
+
+### Fixed
+- Acolyte and Sage backgrounds referenced wrong tool IDs (calligrapher-supplies → calligraphers-supplies, cartographer-tools → cartographers-tools), causing tool proficiencies to silently fail
+- Monk missing 5 musical instruments (bagpipes, dulcimer, pan flute, shawm, viol) from tool proficiency choices — SRD requires all 10
+- Duplicate tool proficiencies appearing on review page and character sheet when background and class grant the same tool (e.g., Criminal + Rogue both granting Thieves' Tools)
+
 ## [0.14.1] - 2026-03-29
 
 ### Changed

@@ -159,12 +159,51 @@
 		character?.abilityScores?.method ? allAbilityModifiers(character.abilityScores) : null
 	);
 
+	// Collect expertise skill IDs from feature choices (Rogue, Bard, etc.)
+	const expertiseSkillIds = $derived.by(() => {
+		if (!character) return new Set<string>();
+		const ids = new Set<string>();
+		for (const cls of character.classes) {
+			for (const fc of cls.featureChoices) {
+				if (fc.choiceId.includes('expertise') || fc.featureId.includes('expertise')) {
+					for (const skillId of fc.selectedOptionIds) {
+						ids.add(skillId);
+					}
+				}
+			}
+		}
+		return ids;
+	});
+
+	function isExpertise(skillId: SkillId): boolean {
+		const skill = character?.skills.find((s) => s.skillId === skillId);
+		return (skill?.proficiency === 'proficient' || skill?.proficiency === 'expertise') && expertiseSkillIds.has(skillId);
+	}
+
 	function skillBonus(skillId: SkillId): string {
 		if (!abilityMods) return '';
 		const ability = SKILL_ABILITIES[skillId];
 		const mod = abilityMods[ability];
-		return formatModifier(mod + profBonus);
+		const bonus = isExpertise(skillId) ? profBonus * 2 : profBonus;
+		return formatModifier(mod + bonus);
 	}
+
+	// Group proficiencies by type for display (skip saving-throws, shown elsewhere)
+	const proficiencyGroups = $derived.by(() => {
+		if (!character) return null;
+		const groups: Record<string, string[]> = {};
+		for (const p of character.proficiencies) {
+			if (p.type === 'saving-throw') continue;
+			const label = p.type === 'armor' ? 'Armor'
+				: p.type === 'weapon' ? 'Weapons'
+				: p.type === 'tool' ? 'Tools'
+				: 'Languages';
+			if (!groups[label]) groups[label] = [];
+			const title = kebabToTitle(p.value);
+			if (!groups[label].includes(title)) groups[label].push(title);
+		}
+		return Object.keys(groups).length > 0 ? groups : null;
+	});
 
 	const spellsByLevel = $derived.by(() => {
 		if (!character) return [];
@@ -514,14 +553,41 @@
 					<div class="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
 						{#each character.skills as skill}
 							{@const ability = SKILL_ABILITIES[skill.skillId]}
+							{@const hasExpertise = isExpertise(skill.skillId)}
 							<div class="rounded-lg border border-border p-3">
 								<div class="flex items-center gap-2">
+									<span class="text-xs {hasExpertise ? 'text-primary' : 'text-muted-foreground'}" title={hasExpertise ? 'Expertise' : 'Proficient'}>
+										{hasExpertise ? '◆' : '●'}
+									</span>
 									<span class="font-medium text-sm">{kebabToTitle(skill.skillId)}</span>
 									<span class="text-xs text-muted-foreground">({ability.toUpperCase()})</span>
 									<span class="font-mono text-sm font-bold text-primary">{skillBonus(skill.skillId)}</span>
 								</div>
 								<p class="mt-0.5 text-xs text-muted-foreground">{SKILL_EXAMPLES[skill.skillId] ?? ''}</p>
-								<Badge variant={skill.source.startsWith('background') ? 'outline' : 'secondary'} class="mt-1 text-[10px]">{skill.source.split(':')[0]}</Badge>
+								<div class="mt-1 flex gap-1">
+									<Badge variant={skill.source.startsWith('background') ? 'outline' : 'secondary'} class="text-[10px]">{skill.source.split(':')[0]}</Badge>
+									{#if hasExpertise}
+										<Badge variant="secondary" class="text-[10px] bg-primary/10 text-primary">Expertise</Badge>
+									{/if}
+								</div>
+							</div>
+						{/each}
+					</div>
+				</div>
+			{/if}
+
+			<!-- Proficiencies (Armor, Weapons, Tools, Languages) -->
+			{#if proficiencyGroups}
+				<div>
+					<div class="flex items-center justify-between">
+						<h3 class="text-lg font-semibold">Proficiencies</h3>
+						<Button variant="ghost" size="icon-sm" href="/create/{systemId}/class" aria-label="Edit class"><Pencil class="size-3.5" /></Button>
+					</div>
+					<div class="mt-2 space-y-2">
+						{#each Object.entries(proficiencyGroups) as [label, values]}
+							<div>
+								<span class="text-sm font-medium">{label}:</span>
+								<span class="ml-1 text-sm text-muted-foreground">{values.join(', ')}</span>
 							</div>
 						{/each}
 					</div>

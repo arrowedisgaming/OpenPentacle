@@ -218,7 +218,8 @@
 			if (p.type === 'saving-throw') continue; // shown separately
 			const label = p.type === 'armor' ? 'Armor' : p.type === 'weapon' ? 'Weapons' : p.type === 'tool' ? 'Tools' : 'Languages';
 			if (!groups[label]) groups[label] = [];
-			groups[label].push(kebabToTitle(p.value));
+			const title = kebabToTitle(p.value);
+			if (!groups[label].includes(title)) groups[label].push(title);
 		}
 		return Object.keys(groups).length > 0 ? groups : null;
 	});
