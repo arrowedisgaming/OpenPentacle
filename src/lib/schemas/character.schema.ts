@@ -52,7 +52,9 @@ const spellDataSchema = z.object({
 	pactSlots: z.object({
 		count: z.number().int(),
 		level: z.number().int()
-	}).optional()
+	}).optional(),
+	spellSlotsUsed: z.record(z.string(), z.number().int().min(0)).optional(),
+	pactSlotsUsed: z.number().int().min(0).optional()
 });
 
 export const characterDataSchema = z.object({
@@ -113,6 +115,7 @@ export const characterDataSchema = z.object({
 			used: z.number().int().min(0)
 		}))
 	}),
+	resourceUsage: z.record(z.string(), z.number().int().min(0)).optional(),
 	currency: z.object({
 		cp: z.number().int().min(0),
 		sp: z.number().int().min(0),

@@ -5,7 +5,8 @@ import {
 	getClassFeaturesUpToLevel,
 	getSubclassFeaturesUpToLevel,
 	isASILevel,
-	getMaxSpellLevel
+	getMaxSpellLevel,
+	resolveClassLanguages
 } from '$lib/engine/class-progression.js';
 import type { ClassDefinition } from '$lib/types/content-pack.js';
 import {
@@ -167,5 +168,85 @@ describe('getMaxSpellLevel', () => {
 
 	it('returns 9 for Cleric at level 17', () => {
 		expect(getMaxSpellLevel(cleric, 17)).toBe(9);
+	});
+});
+
+describe('resolveClassLanguages', () => {
+	const cantFeature = {
+		id: 'thieves-cant',
+		name: "Thieves' Cant",
+		description: 'You know Thieves\' Cant and one other language of your choice.',
+		level: 1,
+		mechanicalEffect: 'language:thieves-cant',
+		choices: [{
+			id: 'language',
+			name: 'Language',
+			description: 'Choose one Standard language.',
+			options: [
+				{ id: 'elvish', name: 'Elvish', description: 'Elves' },
+				{ id: 'dwarvish', name: 'Dwarvish', description: 'Dwarves' }
+			],
+			count: 1
+		}]
+	};
+
+	const rogueWithCant: ClassDefinition = {
+		...fighter,
+		id: 'rogue',
+		progression: [
+			{ level: 1, proficiencyBonus: 2, features: [
+				{ id: 'sneak-attack', name: 'Sneak Attack', description: 'Extra damage.', level: 1 },
+				cantFeature
+			]},
+			{ level: 2, proficiencyBonus: 2, features: [
+				{ id: 'cunning-action', name: 'Cunning Action', description: 'Dash, Disengage, or Hide.', level: 2 }
+			]}
+		]
+	};
+
+	it('resolves Thieves\' Cant language from mechanicalEffect', () => {
+		const result = resolveClassLanguages(rogueWithCant, 1, []);
+		expect(result).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ type: 'language', value: 'thieves-cant' })
+			])
+		);
+	});
+
+	it('resolves language feature choice selection', () => {
+		const result = resolveClassLanguages(rogueWithCant, 1, [
+			{ featureId: 'thieves-cant', choiceId: 'language', selectedOptionIds: ['elvish'] }
+		]);
+		expect(result).toHaveLength(2); // thieves-cant + elvish
+		expect(result).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ type: 'language', value: 'thieves-cant' }),
+				expect.objectContaining({ type: 'language', value: 'elvish' })
+			])
+		);
+	});
+
+	it('returns empty for class with no language features', () => {
+		const result = resolveClassLanguages(fighter, 20, []);
+		expect(result).toHaveLength(0);
+	});
+
+	it('respects character level (no language from higher-level features)', () => {
+		const classWithL6Lang: ClassDefinition = {
+			...fighter,
+			id: 'test',
+			progression: [
+				{ level: 1, proficiencyBonus: 2, features: [] },
+				{ level: 6, proficiencyBonus: 3, features: [{
+					id: 'secret-tongue',
+					name: 'Secret Tongue',
+					description: 'You learn a secret language.',
+					level: 6,
+					mechanicalEffect: 'language:secret-tongue'
+				}]}
+			]
+		};
+		expect(resolveClassLanguages(classWithL6Lang, 5, [])).toHaveLength(0);
+		expect(resolveClassLanguages(classWithL6Lang, 6, [])).toHaveLength(1);
 	});
 });

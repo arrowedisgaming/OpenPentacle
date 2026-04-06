@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.15.0] - 2026-04-06
+
+### Added
+- Resource tracking on character sheet — track HP, hit dice, spell slots, and class resources (Rages, Focus Points, Sorcery Points)
+- HP adjustment field — type +/- values (e.g., "-6") and press Enter for quick changes
+- Temporary HP tracker with +/- buttons and direct input
+- Hit dice usage tracker with per-die-type +/- controls
+- Spell slot usage — click filled/empty circles to toggle individual slots
+- Pact magic slot tracking (Warlock), restored on short rest
+- Class resource tracking driven by content pack data — Barbarian (Rages), Monk (Focus Points), Sorcerer (Sorcery Points)
+- Short Rest button — resets short-rest resources and pact slots, with confirmation dialog
+- Long Rest button — full HP restore, hit dice recovery, all spell slots and resources reset, with confirmation dialog
+- Origin language proficiencies now saved to character data during wizard
+- Class language proficiency resolution from features with mechanicalEffect
+- Background tool proficiency choices (e.g., Soldier's gaming set pick)
+
+### Fixed
+- Temp HP section always visible (was hidden behind debug condition)
+- Rest confirmation toast now waits for save to complete before showing success
+
 ## [0.14.2] - 2026-04-01
 
 ### Added

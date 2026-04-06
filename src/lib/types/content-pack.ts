@@ -127,6 +127,16 @@ export interface OriginSpell {
 
 // ─── Classes ─────────────────────────────────────────────────
 
+/** Declares a trackable class resource (e.g., Rages, Focus Points) */
+export interface ResourceDefinition {
+	/** Must match a key in ClassProgression.classSpecific (e.g., "rages") */
+	id: string;
+	/** Display name (e.g., "Rages") */
+	name: string;
+	/** When this resource resets */
+	recovery: 'short' | 'long' | 'none';
+}
+
 export interface ClassDefinition {
 	id: string;
 	name: string;
@@ -145,6 +155,8 @@ export interface ClassDefinition {
 	spellcasting?: SpellcastingConfig;
 	/** SRD suggested ability score assignment for this class (standard array values) */
 	suggestedAbilityScores?: Record<AbilityId, number>;
+	/** Trackable resources derived from classSpecific progression data */
+	resourceDefinitions?: ResourceDefinition[];
 }
 
 export interface ClassToolProficiency {

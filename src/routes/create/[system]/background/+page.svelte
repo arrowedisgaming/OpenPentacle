@@ -4,7 +4,7 @@
 	import { onDestroy } from 'svelte';
 	import { wizardStore } from '$lib/stores/wizard.js';
 	import type { BackgroundDefinition, SpellDefinition } from '$lib/types/content-pack.js';
-	import type { AbilityBonus, FeatChoiceSelection } from '$lib/types/character.js';
+	import type { AbilityBonus, FeatChoiceSelection, ProficiencySelection } from '$lib/types/character.js';
 	import type { AbilityId } from '$lib/types/common.js';
 	import { ABILITY_NAMES } from '$lib/types/common.js';
 	import { kebabToTitle } from '$lib/utils/format.js';
@@ -31,6 +31,12 @@
 
 	// The selected background definition
 	const selectedBg = $derived(backgrounds.find((b) => b.id === selectedId) ?? null);
+
+	// Tool proficiency choice state (e.g., Soldier: gaming set choice)
+	const bgToolChoices = $derived(
+		(selectedBg?.toolProficiencies ?? []).filter((tp) => tp.isChoice && tp.choices?.length)
+	);
+	let bgToolSelections = $state<string[]>([]);
 
 	// Extract the three eligible abilities from the background
 	const eligibleAbilities = $derived(
@@ -62,7 +68,7 @@
 	let plus2Ability = $state<AbilityId | ''>(init.plus2);
 	let plus1Ability = $state<AbilityId | ''>(init.plus1);
 
-	// Reset ASI choices when background changes
+	// Reset ASI choices and tool selections when background changes
 	$effect(() => {
 		// Track selectedId to reset when it changes
 		if (selectedId) {
@@ -71,6 +77,7 @@
 			if (existingBgId !== selectedId) {
 				plus2Ability = '';
 				plus1Ability = '';
+				bgToolSelections = [];
 			}
 		}
 	});
@@ -245,8 +252,15 @@
 		return [];
 	}
 
+	function bgToolChoicesComplete(): boolean {
+		return bgToolChoices.every((tp) => {
+			const needed = tp.choiceCount ?? 1;
+			return bgToolSelections.length >= needed;
+		});
+	}
+
 	function proceed() {
-		if (!selectedId || !asiComplete() || !isFeatConfigComplete()) return;
+		if (!selectedId || !asiComplete() || !isFeatConfigComplete() || !bgToolChoicesComplete()) return;
 
 		// Store background bonuses in originBonuses (filter out old background bonuses first)
 		const existingOriginBonuses = (wizardStore.getCharacter()?.abilityScores?.originBonuses ?? [])
@@ -259,6 +273,24 @@
 			? [{ featId: bgDef.feat, source: 'background', choices: buildOriginFeatChoices() }]
 			: [];
 
+		// Build background tool proficiencies
+		const bgToolProfs: ProficiencySelection[] = [];
+		if (bgDef) {
+			for (const tp of bgDef.toolProficiencies) {
+				if (tp.isChoice) {
+					for (const val of bgToolSelections) {
+						bgToolProfs.push({ type: 'tool', value: val, source: `background:${selectedId}` });
+					}
+				} else {
+					bgToolProfs.push({ type: 'tool', value: tp.value, source: `background:${selectedId}` });
+				}
+			}
+		}
+
+		// Preserve proficiencies from other steps, replace background-sourced
+		const existingProfs = (wizardStore.getCharacter()?.proficiencies ?? [])
+			.filter((p) => !p.source.startsWith('background:'));
+
 		wizardStore.updateCharacter({
 			background: {
 				backgroundId: selectedId,
@@ -268,7 +300,8 @@
 				...wizardStore.getCharacter()!.abilityScores,
 				originBonuses: [...existingOriginBonuses, ...bgBonuses]
 			},
-			feats
+			feats,
+			proficiencies: [...existingProfs, ...bgToolProfs]
 		});
 		wizardStore.completeStep();
 		goto(`/create/${systemId}/skills`);
@@ -291,7 +324,7 @@
 		backLabel="Back"
 		nextLabel="Next: Skills"
 		onNext={proceed}
-		nextDisabled={!selectedId || !asiComplete() || !isFeatConfigComplete()}
+		nextDisabled={!selectedId || !asiComplete() || !isFeatConfigComplete() || !bgToolChoicesComplete()}
 		compact
 	/>
 
@@ -326,7 +359,34 @@
 				<div class="mt-4 space-y-2 text-sm">
 					<p><span class="font-medium">Skills:</span> {selectedBg.skillProficiencies.map(p => kebabToTitle(p.value)).join(', ')}</p>
 					{#if selectedBg.toolProficiencies.length > 0}
-						<p><span class="font-medium">Tools:</span> {selectedBg.toolProficiencies.map(p => kebabToTitle(p.value)).join(', ')}</p>
+						<p><span class="font-medium">Tools:</span> {selectedBg.toolProficiencies.filter(p => !p.isChoice).map(p => kebabToTitle(p.value)).join(', ') || ''}</p>
+						{#each bgToolChoices as tp}
+							{@const max = tp.choiceCount ?? 1}
+							<div class="mt-2">
+								<span class="text-sm font-medium">Choose {max} {kebabToTitle(tp.value)}:</span>
+								<div class="mt-1 flex flex-wrap gap-1.5">
+									{#each tp.choices ?? [] as optionId}
+										{@const isSelected = bgToolSelections.includes(optionId)}
+										<button
+											aria-pressed={isSelected}
+											class="rounded-md border px-2.5 py-1.5 text-xs transition-colors
+												{isSelected ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:border-muted-foreground/50'}"
+											onclick={() => {
+												if (isSelected) {
+													bgToolSelections = bgToolSelections.filter((id) => id !== optionId);
+												} else if (bgToolSelections.length < max) {
+													bgToolSelections = [...bgToolSelections, optionId];
+												} else if (max === 1) {
+													bgToolSelections = [optionId];
+												}
+											}}
+										>
+											{kebabToTitle(optionId)}
+										</button>
+									{/each}
+								</div>
+							</div>
+						{/each}
 					{/if}
 					{#if selectedBg.languages.length > 0}
 						<p><span class="font-medium">Languages:</span> {selectedBg.languages.map(l => kebabToTitle(l.value)).join(', ')}</p>
@@ -471,6 +531,6 @@
 		backLabel="Back"
 		nextLabel="Next: Skills"
 		onNext={proceed}
-		nextDisabled={!selectedId || !asiComplete() || !isFeatConfigComplete()}
+		nextDisabled={!selectedId || !asiComplete() || !isFeatConfigComplete() || !bgToolChoicesComplete()}
 	/>
 </div>

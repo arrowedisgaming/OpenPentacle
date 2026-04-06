@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { wizardStore } from '$lib/stores/wizard.js';
 	import type { OriginLayer, OriginOption, OriginSubOption } from '$lib/types/content-pack.js';
-	import type { OriginSelection, OriginChoice } from '$lib/types/character.js';
+	import type { OriginSelection, OriginChoice, ProficiencySelection } from '$lib/types/character.js';
 	import { ABILITY_NAMES } from '$lib/types/common.js';
 	import type { AbilityId } from '$lib/types/common.js';
 	import PageHeader from '$lib/components/ui/page-header/PageHeader.svelte';
@@ -161,7 +161,28 @@
 			};
 		});
 
-		wizardStore.updateCharacter({ origins });
+		// Build language proficiencies from origin data
+		const languageProfs: ProficiencySelection[] = [];
+		for (const layer of originLayers) {
+			const opt = getSelectedOption(layer);
+			if (!opt) continue;
+			for (const lang of opt.languages) {
+				languageProfs.push({
+					type: 'language',
+					value: lang.toLowerCase(),
+					source: `origin:${opt.id}`
+				});
+			}
+		}
+
+		// Preserve proficiencies from other steps, replace origin-sourced ones
+		const existingProfs = (wizardStore.getCharacter()?.proficiencies ?? [])
+			.filter((p) => !p.source.startsWith('origin:'));
+
+		wizardStore.updateCharacter({
+			origins,
+			proficiencies: [...existingProfs, ...languageProfs]
+		});
 		wizardStore.completeStep();
 		goto(`/create/${systemId}/abilities`);
 	}

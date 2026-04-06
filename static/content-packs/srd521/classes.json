@@ -620,7 +620,10 @@
       "int": 10,
       "wis": 12,
       "cha": 8
-    }
+    },
+    "resourceDefinitions": [
+      { "id": "rages", "name": "Rages", "recovery": "long" }
+    ]
   },
   {
     "id": "bard",
@@ -3646,7 +3649,10 @@
       "int": 10,
       "wis": 14,
       "cha": 8
-    }
+    },
+    "resourceDefinitions": [
+      { "id": "focusPoints", "name": "Focus Points", "recovery": "short" }
+    ]
   },
   {
     "id": "paladin",
@@ -6941,7 +6947,10 @@
       "int": 8,
       "wis": 12,
       "cha": 15
-    }
+    },
+    "resourceDefinitions": [
+      { "id": "sorceryPoints", "name": "Sorcery Points", "recovery": "long" }
+    ]
   },
   {
     "id": "warlock",

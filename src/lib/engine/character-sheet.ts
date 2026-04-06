@@ -7,6 +7,8 @@ import { proficiencyBonus } from './proficiency.js';
 import { calculateMaxHP } from './hit-points.js';
 import { calculateAC } from './armor-class.js';
 import { calculateSpellSlots } from './spell-slots.js';
+import { getCharacterResources, getSpellSlotResources } from './resources.js';
+import type { ComputedResource, SpellSlotResource } from './resources.js';
 
 /** Fully computed character sheet with all derived values */
 export interface ComputedSheet {
@@ -30,6 +32,8 @@ export interface ComputedSheet {
 	pactSlots: { count: number; level: number } | null;
 	spellSaveDC: Record<string, number>; // classId → DC
 	spellAttackBonus: Record<string, number>; // classId → bonus
+	resources: ComputedResource[];
+	spellSlotResources: { slots: SpellSlotResource[]; pactSlots: SpellSlotResource | null };
 }
 
 /** Compute all derived values from raw character data + content pack */
@@ -158,6 +162,10 @@ export function computeSheet(data: CharacterData, pack: ContentPack): ComputedSh
 		}
 	}
 
+	// Class resources and spell slot usage
+	const resources = getCharacterResources(data, pack);
+	const spellSlotResources = getSpellSlotResources(spellSlots, pactSlots, data);
+
 	return {
 		name: data.name,
 		level: data.level,
@@ -178,7 +186,9 @@ export function computeSheet(data: CharacterData, pack: ContentPack): ComputedSh
 		spellSlots,
 		pactSlots,
 		spellSaveDC,
-		spellAttackBonus
+		spellAttackBonus,
+		resources,
+		spellSlotResources
 	};
 }
 

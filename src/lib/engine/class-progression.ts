@@ -1,5 +1,5 @@
 import type { ClassDefinition, ClassFeature, SubclassDefinition } from '$lib/types/content-pack.js';
-import type { FeatureChoiceSelection } from '$lib/types/character.js';
+import type { FeatureChoiceSelection, ProficiencySelection } from '$lib/types/character.js';
 
 /** Name used for ASI features in progression data */
 const ASI_FEATURE_NAME = 'Ability Score Improvement';
@@ -142,4 +142,49 @@ export function resolveFeatureChoiceProficiencies(
 	}
 
 	return extra;
+}
+
+/**
+ * Resolve language proficiencies from class features with mechanicalEffect "language:*".
+ * Also resolves language feature choices (e.g., Thieves' Cant grants Thieves' Cant + 1 choice).
+ */
+export function resolveClassLanguages(
+	classDef: ClassDefinition,
+	characterLevel: number,
+	featureChoices: FeatureChoiceSelection[]
+): ProficiencySelection[] {
+	const languages: ProficiencySelection[] = [];
+
+	for (const row of classDef.progression) {
+		if (row.level > characterLevel) continue;
+		for (const feature of row.features) {
+			const match = feature.mechanicalEffect?.match(/^language:(.+)$/);
+			if (match) {
+				languages.push({
+					type: 'language',
+					value: match[1],
+					source: `class:${classDef.id}:feature:${feature.id}`
+				});
+			}
+			// Resolve language choices on this feature (e.g., Thieves' Cant "pick 1 language")
+			if (feature.choices) {
+				for (const choice of feature.choices) {
+					if (choice.id !== 'language') continue;
+					const fc = featureChoices.find(
+						(s) => s.featureId === feature.id && s.choiceId === 'language'
+					);
+					if (!fc) continue;
+					for (const langId of fc.selectedOptionIds) {
+						languages.push({
+							type: 'language',
+							value: langId,
+							source: `class:${classDef.id}:feature:${feature.id}`
+						});
+					}
+				}
+			}
+		}
+	}
+
+	return languages;
 }

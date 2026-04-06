@@ -58,6 +58,9 @@ export interface CharacterData {
 	/** Hit points */
 	hitPoints: HitPointData;
 
+	/** Usage state for class resources. Key = "{classId}:{resourceId}", value = number used */
+	resourceUsage?: Record<string, number>;
+
 	/** Currency */
 	currency: CurrencyData;
 
@@ -134,6 +137,10 @@ export interface SpellData {
 	preparedSpellIds: string[];
 	spellSlots: Record<number, number>; // level → slots
 	pactSlots?: { count: number; level: number };
+	/** Spell slots currently used. Key = spell level (as string), value = slots used */
+	spellSlotsUsed?: Record<string, number>;
+	/** Pact magic slots currently used */
+	pactSlotsUsed?: number;
 }
 
 export interface SpellKnown {

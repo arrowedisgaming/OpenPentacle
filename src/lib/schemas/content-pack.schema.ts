@@ -153,6 +153,12 @@ const classProgressionSchema = z.object({
 	spellSlots: z.array(z.number().int().min(0)).optional()
 });
 
+const resourceDefinitionSchema = z.object({
+	id: z.string().min(1),
+	name: z.string().min(1),
+	recovery: z.enum(['short', 'long', 'none'])
+});
+
 const classDefinitionSchema = z.object({
 	id: z.string().min(1),
 	name: z.string().min(1),
@@ -185,7 +191,8 @@ const classDefinitionSchema = z.object({
 	progression: z.array(classProgressionSchema).min(1),
 	subclasses: z.array(subclassSchema),
 	spellcasting: spellcastingConfigSchema.optional(),
-	suggestedAbilityScores: z.record(abilityIdSchema, z.number().int()).optional()
+	suggestedAbilityScores: z.record(abilityIdSchema, z.number().int()).optional(),
+	resourceDefinitions: z.array(resourceDefinitionSchema).optional()
 });
 
 // ─── Backgrounds ─────────────────────────────────────────────
